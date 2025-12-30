@@ -1,0 +1,47 @@
+{
+  "name": "tourism-app-backend",
+  "version": "1.0.0",
+  "description": "Backend API pour l'application de réservation touristique - Module 1",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "db:migrate": "node src/database/migrate.js",
+    "db:seed": "node src/database/seed.js",
+    "test": "jest --coverage",
+    "test:watch": "jest --watch",
+    "lint": "eslint src/**/*.js"
+  },
+  "keywords": [
+    "tourism",
+    "booking",
+    "microservices",
+    "rest-api",
+    "nodejs",
+    "express",
+    "postgresql"
+  ],
+  "author": "Tourism App Team",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.21.0",
+    "pg": "^8.13.0",
+    "dotenv": "^16.4.5",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "morgan": "^1.10.0",
+    "joi": "^17.13.3",
+    "bcrypt": "^5.1.1",
+    "jsonwebtoken": "^9.0.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.7",
+    "jest": "^29.7.0",
+    "supertest": "^7.0.0",
+    "eslint": "^9.15.0"
+  },
+  "engines": {
+    "node": ">=22.0.0",
+    "npm": ">=10.0.0"
+  }
+}
