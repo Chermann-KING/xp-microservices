@@ -32,6 +32,36 @@ POST /api/v1/tours-catalog/tours/{tourId}/book
 
 En adhérant à ces limites, nous assurons que chaque microservice reste concentré, maintenable et découplé des autres services.
 
+### Exemple du Monde Réel : Catalogue de Produits E-commerce
+
+Considérons une plateforme e-commerce. Le microservice Product Catalog gérerait les produits, leurs descriptions, images, prix et niveaux de stock. Son API permettrait aux clients de rechercher des produits, consulter les détails des produits et obtenir des informations sur les stocks.
+
+**Ce qu'il gère :**
+- ✅ Détails des produits
+- ✅ Images et descriptions
+- ✅ Prix et disponibilité en stock
+
+**Ce qu'il ne gère PAS :**
+- ❌ Ajout d'articles au panier (appartient au microservice Cart)
+- ❌ Traitement des commandes (appartient au microservice Order)
+
+Le Bounded Context du Product Catalog concerne strictement les produits disponibles.
+
+### Scénario Hypothétique : Catalogue de Cours Universitaires
+
+Imaginons un système universitaire construit avec des microservices. Un microservice Course Catalog gérerait les cours, leurs descriptions, prérequis, horaires et instructeurs.
+
+**Fonctionnalités de l'API :**
+- ✅ Parcourir les cours
+- ✅ Consulter les détails des cours
+- ✅ Vérifier la disponibilité des places
+
+**Hors du périmètre :**
+- ❌ Inscription des étudiants (microservice Student Enrollment)
+- ❌ Soumission des notes (microservice Grading)
+
+L'API du microservice Course Catalog se concentre uniquement sur l'offre académique elle-même.
+
 ---
 
 ## Principes de Conception d'API RESTful
@@ -887,24 +917,44 @@ GET /api/v1/tours-catalog/tours/search?query=eiffel&minPrice=50&maxPrice=100
 
 ### Exemple 1 : API du Service de Listage Airbnb
 
-Le microservice de listage d'Airbnb gère toutes les propriétés disponibles (appartements, maisons, etc.). Son API expose des endpoints pour :
+La plateforme Airbnb dispose probablement d'un microservice "Listing Service" (Service de Listage). Son API expose des endpoints pour gérer les annonces de propriétés.
 
-- Récupérer les listages avec filtrage (emplacement, prix, type de propriété)
-- Créer de nouveaux listages (pour les hôtes)
-- Mettre à jour les détails des listages
-- Supprimer les listages
+**Interactions des hôtes :**
+- Lorsqu'un hôte crée une nouvelle annonce, il interagit avec `POST /api/listings`
+- Mise à jour des détails : `PUT /api/listings/{listingId}`
+- Gestion des photos, équipements, règles de la maison
 
-L'API ne gère **pas** les réservations ou les paiements, qui sont gérés par des microservices séparés, suivant les principes du Bounded Context.
+**Interactions des invités :**
+- Recherche de propriétés : `GET /api/listings` avec paramètres (location, dates, gamme de prix)
+- Détails d'une annonce spécifique : `GET /api/listings/{listingId}`
+- Consultation du calendrier de disponibilité
+
+**Limites du Bounded Context :**
+- ✅ L'API se concentre uniquement sur les attributs de la propriété
+- ✅ Calendrier de disponibilité
+- ✅ Informations fournies par l'hôte
+- ❌ Ne gère PAS les réservations (Booking Service séparé)
+- ❌ Ne gère PAS la messagerie (Messaging Service séparé)
+- ❌ Ne gère PAS les paiements (Payment Service séparé)
 
 ### Exemple 2 : API du Service de Catalogue Spotify
 
-Le microservice de catalogue de Spotify gère les informations sur les chansons, albums et artistes. Son API fournit des endpoints pour :
+L'immense bibliothèque musicale de Spotify est gérée par un microservice "Catalog Service" (Service de Catalogue). Son API permet aux applications clientes (et autres services internes) de rechercher des artistes, albums et pistes.
 
-- Rechercher des chansons, albums et artistes
-- Récupérer les métadonnées des pistes (durée, genre, date de sortie)
-- Obtenir les listes de lecture organisées
+**Endpoints typiques :**
+- `GET /api/v1/catalog/artists/{artistId}/albums` - Récupère tous les albums d'un artiste spécifique
+- `GET /api/v1/catalog/tracks/{trackId}` - Fournit les métadonnées d'une chanson particulière
+- `GET /api/v1/catalog/search?q=bohemian+rhapsody` - Recherche dans le catalogue
 
-Le service de catalogue ne gère **pas** la lecture des flux audio ou les abonnements utilisateurs, qui appartiennent à d'autres Bounded Contexts.
+**Focus du service :**
+- ✅ Données descriptives du contenu musical (titre, artiste, durée, genre)
+- ✅ Pochettes d'albums et images d'artistes
+- ✅ Relations entre artistes, albums et pistes
+- ❌ Ne gère PAS la lecture (Playback Service séparé)
+- ❌ Ne gère PAS les playlists utilisateur (Playlist Service séparé)
+- ❌ Ne gère PAS les recommandations (Recommendation Service séparé)
+
+Cette séparation permet à Spotify de faire évoluer indépendamment la gestion du catalogue, le moteur de recommandations et le système de lecture, chacun optimisé pour ses besoins spécifiques.
 
 ---
 
