@@ -71,41 +71,47 @@ Ce projet est une application complète de réservation touristique construite p
 ```
 xp-microservices/
 ├── docs/                           # Documentation et leçons
-│   ├── module-1/
-│   │   └── lecon-1-introduction-etude-de-cas.md
-│   ├── module-2/
-│   ├── module-3/
-│   ├── module-4/
-│   ├── module-5/
-│   ├── module-6/
-│   └── module-7/
+│   └── module-1/
+│       ├── lecon-1-introduction-etude-de-cas.md
+│       ├── lecon-2-react-fundamentals.md
+│       ├── lecon-3-setup-environnement.md
+│       ├── lecon-4-restful-api-design.md
+│       ├── lecon-5-microservices-intro.md
+│       ├── lecon-6-monolithe-vs-microservices.md
+│       └── exercices/
+│           ├── lecon-1.1-solutions.md
+│           ├── lecon-1.3-solutions.md
+│           ├── lecon-1.4-solutions.md
+│           ├── lecon-1.5-solutions.md
+│           └── lecon-1.6-solutions.md
 │
-├── app/                            # Code de l'application
-│   ├── frontend/                   # Application React
-│   └── backend/                    # Microservices
-│       ├── tour-catalog-service/
-│       ├── booking-service/
-│       ├── user-service/
-│       ├── payment-service/
-│       ├── notification-service/
-│       └── api-gateway/
+├── app/
+│   ├── frontend/                   # Application React (à venir)
+│   └── backend/                    # API Backend monolithique (Module 1)
+│       ├── src/
+│       │   ├── server.js           # Serveur Express principal
+│       │   ├── config/db.js        # Configuration PostgreSQL
+│       │   ├── routes/             # Routes API (tours, bookings)
+│       │   └── database/           # Migrations et seeds
+│       ├── package.json
+│       └── README.md               # Documentation API
 │
-├── sources/                        # Documents sources
 ├── ROADMAP.md                      # Roadmap détaillée des modules
 ├── CURRICULUM.md                   # Liste complète des 42 leçons
+├── MODULE-1-COMPLETE.md            # Résumé Module 1 terminé
 └── README.md                       # Ce fichier
 ```
 
 ## Parcours d'apprentissage
 
-### Module 1 : Fondements du Développement Web Moderne (6 leçons)
+### Module 1 : Fondements du Développement Web Moderne (6 leçons) ✅
 
 - ✅ Introduction à l'étude de cas
-- React Fundamentals
-- Setup environnement fullstack
-- RESTful API Design
-- Introduction aux microservices
-- Monolithe vs Microservices
+- ✅ React Fundamentals
+- ✅ Setup environnement fullstack
+- ✅ RESTful API Design
+- ✅ Introduction aux microservices
+- ✅ Monolithe vs Microservices
 
 ### Module 2 : Conception et Implémentation des Microservices (6 leçons)
 
@@ -156,23 +162,65 @@ xp-microservices/
 
 ## Progression actuelle
 
-**1/42 leçons complétées (2.4%)**
+**6/42 leçons complétées (14.3%)** - Module 1 terminé ✅
+
+| Module                   | Statut     | Leçons |
+| ------------------------ | ---------- | ------ |
+| Module 1 - Fondements    | ✅ Terminé | 6/6    |
+| Module 2 - Microservices | 🔜 À venir | 0/6    |
+| Module 3 - SOLID & React | 🔜 À venir | 0/6    |
+| Module 4 - Paiements     | 🔜 À venir | 0/6    |
+| Module 5 - Event-Driven  | 🔜 À venir | 0/6    |
+| Module 6 - Déploiement   | 🔜 À venir | 0/6    |
+| Module 7 - Testing       | 🔜 À venir | 0/6    |
 
 Voir [ROADMAP.md](ROADMAP.md) pour plus de détails sur chaque module.
 Voir [CURRICULUM.md](CURRICULUM.md) pour la liste complète des leçons.
+Voir [MODULE-1-COMPLETE.md](MODULE-1-COMPLETE.md) pour le résumé du Module 1.
 
 ## Comment utiliser ce projet
 
 ### Prérequis
 
-- Node.js (version LTS recommandée)
-- PostgreSQL
-- Docker (pour les modules avancés)
+- Node.js 22+ (LTS recommandé)
+- PostgreSQL 16+
+- npm 10+
 - Git
 
-### Installation
+### Installation du Backend (Module 1)
 
-Les instructions détaillées seront fournies dans la Leçon 1.3 (Setup Fullstack Environment).
+```bash
+# Cloner le projet
+git clone <url-du-repo>
+cd xp-microservices
+
+# Installer les dépendances backend
+cd app/backend
+npm install
+
+# Configurer l'environnement
+cp .env.example .env
+# Éditer .env avec vos paramètres PostgreSQL
+
+# Créer les tables
+npm run db:migrate
+
+# Insérer les données de test
+npm run db:seed
+
+# Lancer le serveur
+npm run dev
+```
+
+Le serveur démarre sur `http://localhost:3000`
+
+**Endpoints disponibles :**
+
+- `GET /api/v1/tours` - Liste des visites
+- `GET /api/v1/bookings` - Liste des réservations
+- `GET /health` - État du serveur
+
+Voir [app/backend/README.md](app/backend/README.md) pour la documentation API complète.
 
 ### Approche d'apprentissage
 
@@ -207,9 +255,10 @@ Les instructions détaillées seront fournies dans la Leçon 1.3 (Setup Fullstac
 
 ## Prochaines étapes
 
-1. Commencer la Leçon 1.2 : React Fundamentals
-2. Configurer l'environnement de développement (Leçon 1.3)
-3. Continuer progressivement module par module
+1. ✅ ~~Module 1 terminé~~
+2. 🔜 Commencer le Module 2 : Domain-Driven Design
+3. 🔜 Séparer le monolithe en microservices
+4. 🔜 Implémenter la communication inter-services
 
 ---
 
