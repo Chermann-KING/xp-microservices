@@ -925,3 +925,11 @@ Le service de catalogue ne gère **pas** la lecture des flux audio ou les abonne
 Dans cette leçon, nous avons conçu une API RESTful complète pour le microservice Tour Catalog. Nous avons défini des endpoints clairs pour gérer les visites, catégories, destinations et avis, en respectant les limites du Bounded Context. En suivant les principes RESTful, en implémentant une gestion cohérente des erreurs et en adoptant une stratégie de versionnage, nous avons créé une API robuste, maintenable et évolutive.
 
 Dans la prochaine leçon, nous passerons à l'implémentation de ce microservice en utilisant Node.js 24.x et Express 4.21.x, en transformant cette conception en code fonctionnel.
+
+---
+
+## Navigation
+
+- **⬅️ Précédent** : [Leçon 2.1 - Domain-Driven Design et Bounded Contexts](lecon-1-domain-driven-design-bounded-contexts.md)
+- **➡️ Suivant** : [Leçon 2.3 - Implémentation du Tour Catalog Service](lecon-3-implementation-tour-catalog-service.md)
+- **🏠 Retour** : [Sommaire du Module 2](README.md)

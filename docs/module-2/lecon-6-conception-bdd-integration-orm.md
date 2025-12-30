@@ -794,4 +794,12 @@ Cette gestion de base de données indépendante au sein de chaque service pose l
 
 ---
 
+## Navigation
+
+- **⬅️ Précédent** : [Leçon 2.5 - Implémentation du Booking Management Service](lecon-5-implementation-booking-management-service.md)
+- **➡️ Suivant** : Module 3 (à venir)
+- **🏠 Retour** : [Sommaire du Module 2](README.md)
+
+---
+
 **Leçon complétée** ✅

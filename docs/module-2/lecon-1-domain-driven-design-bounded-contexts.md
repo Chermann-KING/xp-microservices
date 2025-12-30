@@ -795,7 +795,11 @@ Le Domain-Driven Design, et spécifiquement le concept de **Bounded Contexts**, 
 
 ---
 
-**Prochaine leçon** : [Leçon 2.2 - Implémentation du Tour Catalog Service](lecon-2-tour-catalog-service.md)
+## Navigation
+
+- **⬅️ Précédent** : [README du Module 2](README.md)
+- **➡️ Suivant** : [Leçon 2.2 - Conception de l'API Tour Catalog](lecon-2-conception-api-tour-catalog.md)
+- **🏠 Retour** : [Sommaire du Module 2](README.md)
 
 ---
 

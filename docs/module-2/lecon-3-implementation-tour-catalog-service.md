@@ -1353,3 +1353,11 @@ Dans cette leçon, nous avons construit un microservice Tour Catalog fonctionnel
 - Un stockage en mémoire pour les données (à remplacer par PostgreSQL dans les leçons suivantes)
 
 Dans la prochaine leçon, nous concevrons l'API pour le microservice Booking Management, qui permettra aux utilisateurs de réserver des visites et de gérer leurs réservations.
+
+---
+
+## Navigation
+
+- **⬅️ Précédent** : [Leçon 2.2 - Conception de l'API Tour Catalog](lecon-2-conception-api-tour-catalog.md)
+- **➡️ Suivant** : [Leçon 2.4 - Conception de l'API Booking Management](lecon-4-conception-api-booking-management.md)
+- **🏠 Retour** : [Sommaire du Module 2](README.md)

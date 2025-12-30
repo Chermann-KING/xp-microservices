@@ -1290,3 +1290,11 @@ Dans cette leçon, nous avons implémenté un microservice Booking Management co
 - Validation des données et des transitions de statut
 
 Dans les prochaines leçons, nous intégrerons PostgreSQL avec Sequelize pour persister les données, et nous ajouterons des fonctionnalités avancées comme les webhooks, les notifications et la gestion des paiements.
+
+---
+
+## Navigation
+
+- **⬅️ Précédent** : [Leçon 2.4 - Conception de l'API Booking Management](lecon-4-conception-api-booking-management.md)
+- **➡️ Suivant** : [Leçon 2.6 - Conception de Base de Données et Intégration ORM](lecon-6-conception-bdd-integration-orm.md)
+- **🏠 Retour** : [Sommaire du Module 2](README.md)

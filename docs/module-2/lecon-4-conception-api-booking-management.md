@@ -768,3 +768,11 @@ Dans cette leçon, nous avons conçu une API RESTful complète pour le microserv
 - Les liens HATEOAS pour guider les clients API
 
 Dans la prochaine leçon, nous implémenterons ce microservice en utilisant Node.js 24.x et Express 4.21.x, en intégrant la logique métier, la validation et l'orchestration avec d'autres services.
+
+---
+
+## Navigation
+
+- **⬅️ Précédent** : [Leçon 2.3 - Implémentation du Tour Catalog Service](lecon-3-implementation-tour-catalog-service.md)
+- **➡️ Suivant** : [Leçon 2.5 - Implémentation du Booking Management Service](lecon-5-implementation-booking-management-service.md)
+- **🏠 Retour** : [Sommaire du Module 2](README.md)
