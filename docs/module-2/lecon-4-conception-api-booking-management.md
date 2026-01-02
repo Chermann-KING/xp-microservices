@@ -167,18 +167,18 @@ POST /api/v1/booking-management/bookings
     "infants": 0,
     "details": [
       {
-        "name": "Jean Dupont",
-        "age": 35,
+        "name": "Tony Stark",
+        "age": 45,
         "type": "adult"
       },
       {
-        "name": "Marie Dupont",
-        "age": 32,
+        "name": "Pepper Potts",
+        "age": 42,
         "type": "adult"
       },
       {
-        "name": "Pierre Dupont",
-        "age": 8,
+        "name": "Peter Parker",
+        "age": 16,
         "type": "child"
       }
     ]
@@ -336,18 +336,18 @@ GET /api/v1/booking-management/bookings/{bookingId}
         "totalCount": 3,
         "details": [
           {
-            "name": "Jean Dupont",
-            "age": 35,
+            "name": "Tony Stark",
+            "age": 45,
             "type": "adult"
           },
           {
-            "name": "Marie Dupont",
-            "age": 32,
+            "name": "Pepper Potts",
+            "age": 42,
             "type": "adult"
           },
           {
-            "name": "Pierre Dupont",
-            "age": 8,
+            "name": "Peter Parker",
+            "age": 16,
             "type": "child"
           }
         ]

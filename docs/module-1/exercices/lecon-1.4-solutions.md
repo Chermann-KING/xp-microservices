@@ -45,7 +45,7 @@ Accept: application/json
       "tour_id": "tropical-paradise-getaway",
       "user": {
         "id": "user-456",
-        "name": "Marie Dupont",
+        "name": "Hermione Granger",
         "avatar_url": "https://..."
       },
       "rating": 5,
@@ -59,7 +59,7 @@ Accept: application/json
       "tour_id": "tropical-paradise-getaway",
       "user": {
         "id": "user-321",
-        "name": "Jean Martin"
+        "name": "Harry Potter"
       },
       "rating": 4,
       "title": "Très bonne expérience",
@@ -129,7 +129,7 @@ Content-Type: application/json
   "tour_id": "tropical-paradise-getaway",
   "user": {
     "id": "user-456",
-    "name": "Marie Dupont"
+    "name": "Katniss Everdeen"
   },
   "rating": 5,
   "title": "Tour exceptionnel !",
@@ -182,7 +182,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
   "tour_id": "tropical-paradise-getaway",
   "user": {
     "id": "user-456",
-    "name": "Marie Dupont"
+    "name": "Katniss Everdeen"
   },
   "rating": 4,
   "title": "Expérience inoubliable !",

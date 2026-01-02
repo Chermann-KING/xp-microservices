@@ -1125,9 +1125,9 @@ curl -X POST http://localhost:3002/api/v1/booking-management/bookings \
       "children": 1,
       "infants": 0,
       "details": [
-        {"name": "Jean Dupont", "age": 35, "type": "adult"},
-        {"name": "Marie Dupont", "age": 32, "type": "adult"},
-        {"name": "Pierre Dupont", "age": 8, "type": "child"}
+        {"name": "Tony Stark", "age": 45, "type": "adult"},
+        {"name": "Pepper Potts", "age": 42, "type": "adult"},
+        {"name": "Peter Parker", "age": 16, "type": "child"}
       ]
     },
     "specialRequests": "Régime végétarien"
