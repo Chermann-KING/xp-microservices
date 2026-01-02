@@ -1356,6 +1356,17 @@ Dans la prochaine leçon, nous concevrons l'API pour le microservice Booking Man
 
 ---
 
+## Note sur les Concepts Avancés
+
+Cette leçon couvre l'implémentation de base d'un microservice. Les concepts suivants seront abordés dans les modules ultérieurs :
+
+- **Logging Structuré** : Winston/Pino pour logs en production → **Module 6 (Leçon 6.5 - ELK Stack)**
+- **Tests Unitaires et d'Intégration** : Jest, Supertest → **Module 7 (Leçons 7.1-7.2)**
+- **Validation Avancée** : Joi, express-validator → **Module 3 (Leçon 3.4 - ISP)**
+- **Sécurité** : Helmet, rate limiting, CORS configuré → **Module 4 (Leçons 4.4-4.6)**
+
+---
+
 ## Navigation
 
 - **⬅️ Précédent** : [Leçon 2.2 - Conception de l'API Tour Catalog](lecon-2-conception-api-tour-catalog.md)

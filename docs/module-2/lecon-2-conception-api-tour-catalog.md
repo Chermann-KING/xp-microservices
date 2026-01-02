@@ -978,6 +978,16 @@ Dans la prochaine leçon, nous passerons à l'implémentation de ce microservice
 
 ---
 
+## Note sur les Concepts Avancés
+
+Cette leçon couvre les fondamentaux de la conception d'API RESTful pour microservices. Les concepts suivants seront abordés dans les modules ultérieurs :
+
+- **Sécurité et Authentification** : JWT, OAuth2, et sécurisation des endpoints → **Module 4 (Leçons 4.4-4.6)**
+- **Rate Limiting et Circuit Breaker** : Protection contre les abus et gestion des pannes → **Module 6 (Leçon 6.4 - API Gateway)**
+- **Caching HTTP** : Stratégies de cache avec ETag et If-Modified-Since → **Module 7 (Leçon 7.6 - Performance)**
+
+---
+
 ## Navigation
 
 - **⬅️ Précédent** : [Leçon 2.1 - Domain-Driven Design et Bounded Contexts](lecon-1-domain-driven-design-bounded-contexts.md)

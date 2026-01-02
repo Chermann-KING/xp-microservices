@@ -1293,6 +1293,18 @@ Dans les prochaines leçons, nous intégrerons PostgreSQL avec Sequelize pour pe
 
 ---
 
+## Note sur les Concepts Avancés
+
+Cette leçon implémente un microservice de base avec orchestration simple. Les concepts suivants seront abordés dans les modules ultérieurs :
+
+- **Timeout et Retry Logic** : Gestion robuste des appels inter-services → **Module 5 (Leçon 5.5)**
+- **Circuit Breaker** : Protection contre les cascades de pannes → **Module 6 (Leçon 6.4)**
+- **Saga Pattern** : Rollback des réservations en cas d'échec de paiement → **Module 5 (Leçon 5.3)**
+- **Tests d'Intégration** : Validation des flux complets → **Module 7 (Leçon 7.2)**
+- **Optimistic Locking** : Éviter les réservations simultanées sur les mêmes places → **Module 5 (Leçon 5.5)**
+
+---
+
 ## Navigation
 
 - **⬅️ Précédent** : [Leçon 2.4 - Conception de l'API Booking Management](lecon-4-conception-api-booking-management.md)

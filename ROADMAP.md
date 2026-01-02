@@ -111,7 +111,7 @@ Cette roadmap détaille le parcours d'apprentissage pour construire une applicat
 - **Leçon 2** : Implementing Asynchronous Communication with Message Queues (RabbitMQ, Kafka)
 - **Leçon 3** : Saga Pattern for Distributed Transactions
 - **Leçon 4** : Designing and Implementing the Notification Microservice
-- **Leçon 5** : Handling Concurrency and Idempotency in Transactions
+- **Leçon 5** : Handling Concurrency and Idempotency in Transactions (Optimistic/Pessimistic Locking)
 - **Leçon 6** : Building Real-time Features with WebSockets for Tour Availability
 
 ### Concepts clés :
@@ -122,6 +122,8 @@ Cette roadmap détaille le parcours d'apprentissage pour construire une applicat
 - Transactions distribuées
 - Microservice de notifications
 - Concurrence et idempotence
+- **Optimistic/Pessimistic Locking**
+- **Retry Logic et Timeout strategies**
 - WebSockets temps réel
 
 ---
@@ -135,7 +137,7 @@ Cette roadmap détaille le parcours d'apprentissage pour construire une applicat
 - **Leçon 1** : Containerization with Docker for Microservices
 - **Leçon 2** : Orchestration with Docker Compose and Kubernetes Fundamentals
 - **Leçon 3** : Deploying Microservices to Cloud Platforms (AWS, Azure, GCP)
-- **Leçon 4** : API Gateway Implementation for Centralized Access
+- **Leçon 4** : API Gateway Implementation for Centralized Access (Circuit Breaker, Rate Limiting, Load Balancing)
 - **Leçon 5** : Centralized Logging and Monitoring with ELK Stack (Elasticsearch, Logstash, Kibana)
 - **Leçon 6** : Scaling Microservices Horizontally and Vertically
 
@@ -146,6 +148,9 @@ Cette roadmap détaille le parcours d'apprentissage pour construire une applicat
 - Kubernetes
 - Cloud platforms (AWS, Azure, GCP)
 - API Gateway
+- **Circuit Breaker Pattern**
+- **Rate Limiting**
+- **Load Balancing**
 - ELK Stack (monitoring)
 - Scaling horizontal et vertical
 

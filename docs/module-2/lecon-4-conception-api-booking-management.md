@@ -771,6 +771,17 @@ Dans la prochaine leçon, nous implémenterons ce microservice en utilisant Node
 
 ---
 
+## Note sur les Concepts Avancés
+
+Cette leçon couvre la conception d'API pour la gestion des réservations. Les concepts suivants seront abordés dans les modules ultérieurs :
+
+- **Transactions Distribuées** : Saga pattern pour cohérence inter-services → **Module 5 (Leçon 5.3)**
+- **Gestion de la Concurrence** : Optimistic/Pessimistic locking pour éviter les race conditions → **Module 5 (Leçon 5.5)**
+- **Résilience** : Retry logic, timeout, circuit breaker → **Modules 5 et 6 (Leçons 5.5 et 6.4)**
+- **Sécurité** : Authentification et autorisation des opérations → **Module 4 (Leçons 4.4-4.6)**
+
+---
+
 ## Navigation
 
 - **⬅️ Précédent** : [Leçon 2.3 - Implémentation du Tour Catalog Service](lecon-3-implementation-tour-catalog-service.md)
