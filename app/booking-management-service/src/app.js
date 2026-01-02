@@ -1,7 +1,15 @@
+/**
+ * Application Express - Booking Management Service
+ * Leçon 2.6 - Intégration PostgreSQL/Sequelize
+ */
+
 import express from "express";
 import cors from "cors";
-import bookingRoutes from "./routes/bookingRoutes.js";
+
+// Routes Sequelize (PostgreSQL)
+import bookingRoutes from "./routes/booking.routes.js";
 import availabilityRoutes from "./routes/availabilityRoutes.js";
+
 import { errorHandler } from "./middleware/errorHandler.js";
 
 const app = express();
