@@ -71,30 +71,44 @@ Ce projet est une application complète de réservation touristique construite p
 ```
 xp-microservices/
 ├── docs/                           # Documentation et leçons
-│   └── module-1/
-│       ├── lecon-1-introduction-etude-de-cas.md
-│       ├── lecon-2-react-fundamentals.md
-│       ├── lecon-3-setup-environnement.md
-│       ├── lecon-4-restful-api-design.md
-│       ├── lecon-5-microservices-intro.md
-│       ├── lecon-6-monolithe-vs-microservices.md
-│       └── exercices/
-│           ├── lecon-1.1-solutions.md
-│           ├── lecon-1.3-solutions.md
-│           ├── lecon-1.4-solutions.md
-│           ├── lecon-1.5-solutions.md
-│           └── lecon-1.6-solutions.md
+│   ├── module-1/                   # Fondements (6 leçons)
+│   └── module-2/                   # Microservices (6 leçons)
 │
 ├── app/
 │   ├── frontend/                   # Application React (à venir)
-│   └── backend/                    # API Backend monolithique (Module 1)
-│       ├── src/
-│       │   ├── server.js           # Serveur Express principal
-│       │   ├── config/db.js        # Configuration PostgreSQL
-│       │   ├── routes/             # Routes API (tours, bookings)
-│       │   └── database/           # Migrations et seeds
-│       ├── package.json
-│       └── README.md               # Documentation API
+│   │
+│   ├── backend/                    # API Backend monolithique (Module 1)
+│   │   ├── src/
+│   │   │   ├── server.js
+│   │   │   ├── config/db.js
+│   │   │   ├── routes/
+│   │   │   └── database/
+│   │   └── package.json
+│   │
+│   ├── tour-catalog-service/       # 🆕 Microservice Catalogue (Port 3001)
+│   │   ├── server.js
+│   │   └── src/
+│   │       ├── app.js
+│   │       ├── controllers/        # tour, category, destination
+│   │       ├── models/             # In-memory storage
+│   │       ├── routes/
+│   │       ├── middleware/
+│   │       └── utils/
+│   │
+│   └── booking-management-service/ # 🆕 Microservice Réservations (Port 3002)
+│       ├── server.js
+│       └── src/
+│           ├── app.js
+│           ├── config/services.js  # URLs des services
+│           ├── controllers/        # booking, availability
+│           ├── models/
+│           ├── routes/
+│           ├── services/           # Communication inter-services
+│           │   ├── tourCatalogService.js  ← Axios
+│           │   ├── availabilityService.js
+│           │   └── bookingStateMachine.js
+│           ├── middleware/
+│           └── utils/
 │
 ├── ROADMAP.md                      # Roadmap détaillée des modules
 ├── CURRICULUM.md                   # Liste complète des 42 leçons
@@ -113,12 +127,12 @@ xp-microservices/
 - ✅ Introduction aux microservices
 - ✅ Monolithe vs Microservices
 
-### Module 2 : Conception et Implémentation des Microservices (6 leçons)
+### Module 2 : Conception et Implémentation des Microservices (6 leçons) 🔄
 
-- Domain-Driven Design
-- Tour Catalog Microservice (Design + Implementation)
-- Booking Management Microservice (Design + Implementation)
-- Database Design et ORM
+- ✅ Domain-Driven Design (Leçons 2.1-2.2)
+- ✅ Tour Catalog Microservice - Design + Implementation (Leçon 2.3)
+- ✅ Booking Management Microservice - Design + Implementation (Leçon 2.5)
+- 🔜 Database Design et ORM avec PostgreSQL (Leçon 2.6)
 
 ### Module 3 : Principes SOLID et React Avancé (6 leçons)
 
@@ -162,17 +176,17 @@ xp-microservices/
 
 ## Progression actuelle
 
-**6/42 leçons complétées (14.3%)** - Module 1 terminé ✅
+**11/42 leçons complétées (26.2%)** - Module 2 en cours 🔄
 
-| Module                   | Statut     | Leçons |
-| ------------------------ | ---------- | ------ |
-| Module 1 - Fondements    | ✅ Terminé | 6/6    |
-| Module 2 - Microservices | 🔜 À venir | 0/6    |
-| Module 3 - SOLID & React | 🔜 À venir | 0/6    |
-| Module 4 - Paiements     | 🔜 À venir | 0/6    |
-| Module 5 - Event-Driven  | 🔜 À venir | 0/6    |
-| Module 6 - Déploiement   | 🔜 À venir | 0/6    |
-| Module 7 - Testing       | 🔜 À venir | 0/6    |
+| Module                   | Statut      | Leçons |
+| ------------------------ | ----------- | ------ |
+| Module 1 - Fondements    | ✅ Terminé  | 6/6    |
+| Module 2 - Microservices | 🔄 En cours | 5/6    |
+| Module 3 - SOLID & React | 🔜 À venir  | 0/6    |
+| Module 4 - Paiements     | 🔜 À venir  | 0/6    |
+| Module 5 - Event-Driven  | 🔜 À venir  | 0/6    |
+| Module 6 - Déploiement   | 🔜 À venir  | 0/6    |
+| Module 7 - Testing       | 🔜 À venir  | 0/6    |
 
 Voir [ROADMAP.md](ROADMAP.md) pour plus de détails sur chaque module.
 Voir [CURRICULUM.md](CURRICULUM.md) pour la liste complète des leçons.
@@ -187,7 +201,7 @@ Voir [MODULE-1-COMPLETE.md](MODULE-1-COMPLETE.md) pour le résumé du Module 1.
 - npm 10+
 - Git
 
-### Installation du Backend (Module 1)
+### Installation du Backend Monolithique (Module 1)
 
 ```bash
 # Cloner le projet
@@ -214,11 +228,35 @@ npm run dev
 
 Le serveur démarre sur `http://localhost:3000`
 
-**Endpoints disponibles :**
+### Installation des Microservices (Module 2)
 
-- `GET /api/v1/tours` - Liste des visites
-- `GET /api/v1/bookings` - Liste des réservations
-- `GET /health` - État du serveur
+```bash
+# Terminal 1 - Tour Catalog Service
+cd app/tour-catalog-service
+npm install
+npm run dev
+# → http://localhost:3001
+
+# Terminal 2 - Booking Management Service
+cd app/booking-management-service
+npm install
+npm run dev
+# → http://localhost:3002
+```
+
+**Endpoints Tour Catalog (Port 3001) :**
+
+- `GET/POST /api/v1/tours-catalog/tours` - Gestion des visites
+- `GET/POST /api/v1/tours-catalog/categories` - Catégories
+- `GET/POST /api/v1/tours-catalog/destinations` - Destinations
+- `GET /health` - État du service
+
+**Endpoints Booking Management (Port 3002) :**
+
+- `GET/POST /api/v1/booking-management/bookings` - Réservations
+- `PATCH /api/v1/booking-management/bookings/:id/status` - Changement d'état
+- `GET /api/v1/booking-management/availability` - Disponibilités
+- `GET /health` - État du service
 
 Voir [app/backend/README.md](app/backend/README.md) pour la documentation API complète.
 
@@ -256,9 +294,11 @@ Voir [app/backend/README.md](app/backend/README.md) pour la documentation API co
 ## Prochaines étapes
 
 1. ✅ ~~Module 1 terminé~~
-2. 🔜 Commencer le Module 2 : Domain-Driven Design
-3. 🔜 Séparer le monolithe en microservices
-4. 🔜 Implémenter la communication inter-services
+2. ✅ ~~Domain-Driven Design (Leçons 2.1-2.2)~~
+3. ✅ ~~Tour Catalog Service implémenté (Leçon 2.3)~~
+4. ✅ ~~Booking Management Service implémenté (Leçon 2.5)~~
+5. 🔜 Database Design avec PostgreSQL (Leçon 2.6)
+6. 🔜 Module 3 : Principes SOLID et React Avancé
 
 ---
 

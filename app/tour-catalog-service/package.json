@@ -1,0 +1,31 @@
+{
+    "name": "tour-catalog-service",
+    "version": "1.0.0",
+    "description": "Tour Catalog Microservice for Tourism Booking Application",
+    "main": "server.js",
+    "type": "module",
+    "scripts": {
+        "start": "node server.js",
+        "dev": "nodemon server.js"
+    },
+    "keywords": [
+        "microservice",
+        "tour",
+        "catalog",
+        "rest-api"
+    ],
+    "author": "Tourism App Team",
+    "license": "MIT",
+    "dependencies": {
+        "express": "^4.21.1",
+        "dotenv": "^16.4.7",
+        "uuid": "^11.0.3",
+        "cors": "^2.8.5"
+    },
+    "devDependencies": {
+        "nodemon": "^3.1.9"
+    },
+    "engines": {
+        "node": ">=22.0.0"
+    }
+}
