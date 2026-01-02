@@ -45,13 +45,13 @@ Accept: application/json
       "tour_id": "tropical-paradise-getaway",
       "user": {
         "id": "user-456",
-        "name": "Marie Dupont",
+        "name": "Hermione Granger",
         "avatar_url": "https://..."
       },
       "rating": 5,
       "title": "Expérience inoubliable !",
       "comment": "Une visite absolument magnifique. Les paysages étaient à couper le souffle.",
-      "created_at": "2025-12-15T10:30:00Z",
+      "created_at": "2026-10-15T10:30:00Z",
       "verified_booking": true
     },
     {
@@ -59,12 +59,12 @@ Accept: application/json
       "tour_id": "tropical-paradise-getaway",
       "user": {
         "id": "user-321",
-        "name": "Jean Martin"
+        "name": "Harry Potter"
       },
       "rating": 4,
       "title": "Très bonne expérience",
       "comment": "Guide très compétent, quelques imprévus mais globalement excellent.",
-      "created_at": "2025-12-10T14:20:00Z",
+      "created_at": "2026-10-10T14:20:00Z",
       "verified_booking": true
     }
   ],
@@ -129,7 +129,7 @@ Content-Type: application/json
   "tour_id": "tropical-paradise-getaway",
   "user": {
     "id": "user-456",
-    "name": "Marie Dupont"
+    "name": "Katniss Everdeen"
   },
   "rating": 5,
   "title": "Tour exceptionnel !",
@@ -138,7 +138,7 @@ Content-Type: application/json
     "https://cdn.tourism-app.com/uploads/photo1.jpg",
     "https://cdn.tourism-app.com/uploads/photo2.jpg"
   ],
-  "created_at": "2025-12-30T09:15:00Z",
+  "created_at": "2026-10-20T09:15:00Z",
   "verified_booking": true,
   "helpful_count": 0
 }
@@ -182,13 +182,13 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
   "tour_id": "tropical-paradise-getaway",
   "user": {
     "id": "user-456",
-    "name": "Marie Dupont"
+    "name": "Katniss Everdeen"
   },
   "rating": 4,
   "title": "Expérience inoubliable !",
   "comment": "Une visite absolument magnifique...",
-  "created_at": "2025-12-15T10:30:00Z",
-  "updated_at": "2025-12-30T09:20:00Z",
+  "created_at": "2026-10-15T10:30:00Z",
+  "updated_at": "2026-10-20T09:20:00Z",
   "verified_booking": true
 }
 ```
@@ -254,7 +254,7 @@ Content-Type: application/json
   "error": {
     "code": "REVIEW_NOT_FOUND",
     "message": "L'avis avec l'ID 'review-456' n'existe pas ou a déjà été supprimé",
-    "timestamp": "2025-12-30T09:25:00Z"
+    "timestamp": "2026-10-20T09:25:00Z"
   }
 }
 ```
@@ -268,7 +268,7 @@ Content-Type: application/json
   "error": {
     "code": "FORBIDDEN",
     "message": "Vous n'êtes pas autorisé à supprimer cet avis. Seul l'auteur peut supprimer son propre avis.",
-    "timestamp": "2025-12-30T09:25:00Z"
+    "timestamp": "2026-10-20T09:25:00Z"
   }
 }
 ```
@@ -466,19 +466,19 @@ Content-Type: application/json
   "error": {
     "code": "VALIDATION_ERROR",
     "message": "La réservation ne peut pas être traitée en raison d'erreurs de validation",
-    "timestamp": "2025-12-30T10:45:00Z",
+    "timestamp": "2026-10-20T10:45:00Z",
     "request_id": "req_7d8f9a2b3c4e5f6g"
   },
   "validation_errors": [
     {
       "field": "booking_date",
       "code": "DATE_NOT_AVAILABLE",
-      "message": "La date sélectionnée (2025-12-25) n'est pas disponible pour ce tour",
+      "message": "La date sélectionnée (2026-10-25) n'est pas disponible pour ce tour",
       "details": {
-        "requested_date": "2025-12-25",
+        "requested_date": "2026-10-25",
         "next_available_dates": [
-          "2025-12-27",
-          "2025-12-29",
+          "2026-10-27",
+          "2026-10-29",
           "2026-01-03"
         ]
       }

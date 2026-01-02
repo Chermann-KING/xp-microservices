@@ -193,7 +193,8 @@ Ce document liste toutes les 42 leçons réparties sur 7 modules.
 ### Leçon 5.5 - Concurrency & Idempotency
 
 - Gestion concurrence
-- Locking
+- **Optimistic/Pessimistic Locking**
+- **Retry Logic et Timeout Strategies**
 - Idempotence
 
 ### Leçon 5.6 - WebSockets Real-time
@@ -228,7 +229,9 @@ Ce document liste toutes les 42 leçons réparties sur 7 modules.
 
 - Rôle API Gateway
 - Routing
-- Rate limiting
+- **Circuit Breaker Pattern**
+- **Rate Limiting**
+- **Load Balancing**
 
 ### Leçon 6.5 - Logging & Monitoring
 

@@ -248,7 +248,7 @@ Lorsqu'un client demande une ressource, le serveur renvoie une **représentation
   "durationDays": 7,
   "pricePerPerson": 1200.0,
   "availability": {
-    "2025-12-01": 5,
+    "2026-08-01": 5,
     "2026-01-15": 10
   },
   "imageUrl": "https://example.com/images/andes-trek.jpg",
@@ -530,7 +530,7 @@ Les utilisateurs peuvent filtrer par destination, plage de dates, compagnie aér
 L'API exposerait des paramètres comme :
 
 ```http
-GET /flights?destination=NYC&startDate=2025-07-01&endDate=2025-07-07&airline=Delta&sortBy=price&order=asc&limit=20&offset=0
+GET /flights?destination=NYC&startDate=2026-07-01&endDate=2026-07-07&airline=Delta&sortBy=price&order=asc&limit=20&offset=0
 ```
 
 ---
@@ -567,7 +567,7 @@ Pour les requêtes **POST**, **PUT** et **PATCH**, le client envoie des données
   "durationDays": 5,
   "pricePerPerson": 800.0,
   "availability": {
-    "2025-03-10": 8
+    "2026-03-10": 8
   }
 }
 ```
@@ -589,7 +589,7 @@ Le corps de réponse du serveur contient la représentation de la ressource dema
   "durationDays": 5,
   "pricePerPerson": 800.0,
   "availability": {
-    "2025-03-10": 8
+    "2026-03-10": 8
   },
   "imageUrl": "https://example.com/images/jungle-expedition.jpg",
   "links": [
@@ -671,7 +671,7 @@ GET /v1/tours?type=adventure&destination=Thailand&sort_by=pricePerPerson&order=a
     "type": "adventure",
     "durationDays": 3,
     "pricePerPerson": 350.0,
-    "availability": { "2025-04-01": 10 },
+    "availability": { "2026-04-01": 10 },
     "imageUrl": "https://example.com/images/thailand-jungle.jpg",
     "links": [
       { "rel": "self", "href": "/v1/tours/thailand-trek", "method": "GET" }
@@ -685,7 +685,7 @@ GET /v1/tours?type=adventure&destination=Thailand&sort_by=pricePerPerson&order=a
     "type": "adventure",
     "durationDays": 7,
     "pricePerPerson": 800.0,
-    "availability": { "2025-06-15": 8 },
+    "availability": { "2026-06-15": 8 },
     "imageUrl": "https://example.com/images/thai-islands.jpg",
     "links": [
       { "rel": "self", "href": "/v1/tours/island-hop", "method": "GET" }
@@ -716,8 +716,8 @@ Content-Type: application/json
     "durationDays": 14,
     "pricePerPerson": 2500.00,
     "availability": {
-        "2025-05-01": 20,
-        "2025-09-10": 15
+        "2026-05-01": 20,
+        "2026-09-10": 15
     },
     "imageUrl": "https://example.com/images/europe-tour.jpg"
 }
@@ -735,8 +735,8 @@ Content-Type: application/json
   "durationDays": 14,
   "pricePerPerson": 2500.0,
   "availability": {
-    "2025-05-01": 20,
-    "2025-09-10": 15
+    "2026-05-01": 20,
+    "2026-09-10": 15
   },
   "imageUrl": "https://example.com/images/europe-tour.jpg",
   "links": [

@@ -491,11 +491,11 @@ src/
 // Données utilisateur : Structure flexible
 const user = {
   id: "user_123",
-  email: "user@example.com",
+  email: "leia.organa@rebellion.com",
   password: "hashed_password",
   profile: {
-    firstName: "Marie",
-    lastName: "Dupont",
+    firstName: "Leia",
+    lastName: "Organa",
     preferences: {
       language: "fr",
       notifications: {
@@ -734,7 +734,7 @@ if (cachedUser) return cachedUser; // Évite appel Auth Service
 const booking = {
   id: 1,
   userId: 123,
-  userEmail: "user@example.com", // Répliqué depuis Auth Service
+  userEmail: "leia.organa@rebellion.com", // Répliqué depuis Auth Service
   tourId: 456,
   tourName: "Paris Tour" // Répliqué depuis Tour Catalog
 };
