@@ -127,12 +127,12 @@ xp-microservices/
 - ✅ Introduction aux microservices
 - ✅ Monolithe vs Microservices
 
-### Module 2 : Conception et Implémentation des Microservices (6 leçons) 🔄
+### Module 2 : Conception et Implémentation des Microservices (6 leçons) ✅
 
 - ✅ Domain-Driven Design (Leçons 2.1-2.2)
-- ✅ Tour Catalog Microservice - Design + Implementation (Leçon 2.3)
-- ✅ Booking Management Microservice - Design + Implementation (Leçon 2.5)
-- 🔜 Database Design et ORM avec PostgreSQL (Leçon 2.6)
+- ✅ Tour Catalog Microservice - Design + Implementation (Leçons 2.2-2.3)
+- ✅ Booking Management Microservice - Design + Implementation (Leçons 2.4-2.5)
+- ✅ Database Design et ORM avec PostgreSQL/Sequelize (Leçon 2.6)
 
 ### Module 3 : Principes SOLID et React Avancé (6 leçons)
 
@@ -176,17 +176,17 @@ xp-microservices/
 
 ## Progression actuelle
 
-**11/42 leçons complétées (26.2%)** - Module 2 en cours 🔄
+**12/42 leçons complétées (28.6%)** - Module 2 terminé ✅
 
-| Module                   | Statut      | Leçons |
-| ------------------------ | ----------- | ------ |
-| Module 1 - Fondements    | ✅ Terminé  | 6/6    |
-| Module 2 - Microservices | 🔄 En cours | 5/6    |
-| Module 3 - SOLID & React | 🔜 À venir  | 0/6    |
-| Module 4 - Paiements     | 🔜 À venir  | 0/6    |
-| Module 5 - Event-Driven  | 🔜 À venir  | 0/6    |
-| Module 6 - Déploiement   | 🔜 À venir  | 0/6    |
-| Module 7 - Testing       | 🔜 À venir  | 0/6    |
+| Module                   | Statut     | Leçons |
+| ------------------------ | ---------- | ------ |
+| Module 1 - Fondements    | ✅ Terminé | 6/6    |
+| Module 2 - Microservices | ✅ Terminé | 6/6    |
+| Module 3 - SOLID & React | 🔜 À venir | 0/6    |
+| Module 4 - Paiements     | 🔜 À venir | 0/6    |
+| Module 5 - Event-Driven  | 🔜 À venir | 0/6    |
+| Module 6 - Déploiement   | 🔜 À venir | 0/6    |
+| Module 7 - Testing       | 🔜 À venir | 0/6    |
 
 Voir [ROADMAP.md](ROADMAP.md) pour plus de détails sur chaque module.
 Voir [CURRICULUM.md](CURRICULUM.md) pour la liste complète des leçons.
@@ -294,11 +294,12 @@ Voir [app/backend/README.md](app/backend/README.md) pour la documentation API co
 ## Prochaines étapes
 
 1. ✅ ~~Module 1 terminé~~
-2. ✅ ~~Domain-Driven Design (Leçons 2.1-2.2)~~
-3. ✅ ~~Tour Catalog Service implémenté (Leçon 2.3)~~
-4. ✅ ~~Booking Management Service implémenté (Leçon 2.5)~~
-5. 🔜 Database Design avec PostgreSQL (Leçon 2.6)
-6. 🔜 Module 3 : Principes SOLID et React Avancé
+2. ✅ ~~Module 2 terminé~~
+   - ~~Domain-Driven Design (Leçons 2.1-2.2)~~
+   - ~~Tour Catalog Service (Leçons 2.2-2.3)~~
+   - ~~Booking Management Service (Leçons 2.4-2.5)~~
+   - ~~PostgreSQL + Sequelize ORM (Leçon 2.6)~~
+3. 🔜 Module 3 : Principes SOLID et React Avancé
 
 ---
 

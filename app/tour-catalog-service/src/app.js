@@ -1,9 +1,17 @@
-import express from 'express';
-import cors from 'cors';
-import tourRoutes from './routes/tourRoutes.js';
-import categoryRoutes from './routes/categoryRoutes.js';
-import destinationRoutes from './routes/destinationRoutes.js';
-import { errorHandler } from './middleware/errorHandler.js';
+/**
+ * Application Express - Tour Catalog Service
+ * Leçon 2.6 - Intégration PostgreSQL/Sequelize
+ */
+
+import express from "express";
+import cors from "cors";
+
+// Routes Sequelize (PostgreSQL)
+import tourRoutes from "./routes/tour.routes.js";
+import categoryRoutes from "./routes/category.routes.js";
+import destinationRoutes from "./routes/destination.routes.js";
+
+import { errorHandler } from "./middleware/errorHandler.js";
 
 const app = express();
 
@@ -13,7 +21,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Logging middleware pour le développement
-if (process.env.NODE_ENV === 'development') {
+if (process.env.NODE_ENV === "development") {
   app.use((req, res, next) => {
     console.log(`${req.method} ${req.path}`);
     next();
@@ -21,11 +29,11 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 // Health check endpoint
-app.get('/health', (req, res) => {
+app.get("/health", (req, res) => {
   res.status(200).json({
-    status: 'success',
-    message: 'Tour Catalog Service is healthy',
-    timestamp: new Date().toISOString()
+    status: "success",
+    message: "Tour Catalog Service is healthy",
+    timestamp: new Date().toISOString(),
   });
 });
 
@@ -39,12 +47,12 @@ app.use(`${API_BASE}/destinations`, destinationRoutes);
 // Route 404 pour les endpoints non trouvés
 app.use((req, res) => {
   res.status(404).json({
-    status: 'error',
+    status: "error",
     error: {
-      code: 'ENDPOINT_NOT_FOUND',
-      message: 'The requested endpoint does not exist',
-      path: req.path
-    }
+      code: "ENDPOINT_NOT_FOUND",
+      message: "The requested endpoint does not exist",
+      path: req.path,
+    },
   });
 });
 
