@@ -202,8 +202,8 @@ GET /api/v1/tours-catalog/tours
           "https://cdn.example.com/tours/eiffel-tower-1.jpg",
           "https://cdn.example.com/tours/seine-cruise-1.jpg"
         ],
-        "createdAt": "2024-01-15T10:30:00Z",
-        "updatedAt": "2024-12-20T14:22:00Z"
+        "createdAt": "2026-02-10T10:30:00Z",
+        "updatedAt": "2026-12-15T14:22:00Z"
       }
     ],
     "pagination": {
@@ -267,8 +267,8 @@ GET /api/v1/tours-catalog/tours/{tourId}
       "includedItems": ["Guide professionnel", "Billets d'entrée", "Boissons"],
       "excludedItems": ["Repas", "Pourboires"],
       "meetingPoint": "Place du Trocadéro, 75016 Paris",
-      "createdAt": "2024-01-15T10:30:00Z",
-      "updatedAt": "2024-12-20T14:22:00Z"
+      "createdAt": "2026-02-10T10:30:00Z",
+      "updatedAt": "2026-12-15T14:22:00Z"
     }
   }
 }
@@ -580,7 +580,7 @@ GET /api/v1/tours-catalog/tours/{tourId}/reviews
         "userId": "u1s2e3r4-i5d6-7h8e-9r0e-1a2b3c4d5e6f",
         "rating": 5,
         "comment": "Expérience incroyable ! Guide très compétent.",
-        "createdAt": "2024-11-20T15:30:00Z"
+        "createdAt": "2026-11-10T15:30:00Z"
       }
     ],
     "pagination": {
@@ -798,8 +798,8 @@ Lorsqu'une nouvelle version de l'API est publiée :
 **Exemple d'En-tête de Dépréciation :**
 
 ```
-Deprecation: Sun, 30 Jun 2026 23:59:59 GMT
-Sunset: Sun, 31 Dec 2026 23:59:59 GMT
+Deprecation: Mon, 30 Jun 2027 23:59:59 GMT
+Sunset: Thu, 31 Dec 2027 23:59:59 GMT
 Link: </api/v2/tours-catalog/tours>; rel="successor-version"
 ```
 

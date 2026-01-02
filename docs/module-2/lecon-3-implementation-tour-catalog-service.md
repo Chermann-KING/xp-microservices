@@ -377,8 +377,8 @@ let tours = [
     includedItems: ['Guide professionnel', 'Billets d\'entrée', 'Boissons'],
     excludedItems: ['Repas', 'Pourboires'],
     meetingPoint: 'Place du Trocadéro, 75016 Paris',
-    createdAt: new Date('2024-01-15T10:30:00Z'),
-    updatedAt: new Date('2024-12-20T14:22:00Z')
+    createdAt: new Date('2026-02-10T10:30:00Z'),
+    updatedAt: new Date('2026-12-15T14:22:00Z')
   }
 ];
 
@@ -524,8 +524,8 @@ let categories = [
     description: 'Visites riches en adrénaline et activités de plein air',
     imageUrl: 'https://cdn.example.com/categories/adventure.jpg',
     tourCount: 47,
-    createdAt: new Date('2024-01-10T08:00:00Z'),
-    updatedAt: new Date('2024-01-10T08:00:00Z')
+    createdAt: new Date('2026-01-15T08:00:00Z'),
+    updatedAt: new Date('2026-01-15T08:00:00Z')
   },
   {
     id: 'e2f3a4b5-c6d7-8e9f-0a1b-2c3d4e5f6a7b',
@@ -533,8 +533,8 @@ let categories = [
     description: 'Explorez l\'histoire, l\'art et les traditions locales',
     imageUrl: 'https://cdn.example.com/categories/cultural.jpg',
     tourCount: 62,
-    createdAt: new Date('2024-01-10T08:00:00Z'),
-    updatedAt: new Date('2024-01-10T08:00:00Z')
+    createdAt: new Date('2026-01-15T08:00:00Z'),
+    updatedAt: new Date('2026-01-15T08:00:00Z')
   }
 ];
 
@@ -601,8 +601,8 @@ let destinations = [
     description: 'La Ville Lumière',
     imageUrl: 'https://cdn.example.com/destinations/paris.jpg',
     tourCount: 89,
-    createdAt: new Date('2024-01-10T08:00:00Z'),
-    updatedAt: new Date('2024-01-10T08:00:00Z')
+    createdAt: new Date('2026-01-15T08:00:00Z'),
+    updatedAt: new Date('2026-01-15T08:00:00Z')
   }
 ];
 
@@ -1105,7 +1105,7 @@ curl http://localhost:3001/health
 {
   "status": "success",
   "message": "Tour Catalog Service is healthy",
-  "timestamp": "2025-12-30T12:00:00.000Z"
+  "timestamp": "2026-08-15T12:00:00.000Z"
 }
 ```
 

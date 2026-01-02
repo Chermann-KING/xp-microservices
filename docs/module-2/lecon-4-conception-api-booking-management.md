@@ -160,7 +160,7 @@ POST /api/v1/booking-management/bookings
 {
   "customerId": "u1s2e3r4-i5d6-7h8e-9r0e-1a2b3c4d5e6f",
   "tourId": "550e8400-e29b-41d4-a716-446655440000",
-  "travelDate": "2025-06-15T09:00:00Z",
+  "travelDate": "2026-06-15T09:00:00Z",
   "participants": {
     "adults": 2,
     "children": 1,
@@ -197,7 +197,7 @@ POST /api/v1/booking-management/bookings
       "id": "b1o2o3k4-i5n6-7g8i-9d0e-1a2b3c4d5e6f",
       "customerId": "u1s2e3r4-i5d6-7h8e-9r0e-1a2b3c4d5e6f",
       "tourId": "550e8400-e29b-41d4-a716-446655440000",
-      "travelDate": "2025-06-15T09:00:00Z",
+      "travelDate": "2026-06-15T09:00:00Z",
       "participants": {
         "adults": 2,
         "children": 1,
@@ -208,8 +208,8 @@ POST /api/v1/booking-management/bookings
       "status": "pending",
       "paymentStatus": "pending",
       "specialRequests": "Régime végétarien pour le déjeuner",
-      "createdAt": "2025-12-30T14:30:00Z",
-      "updatedAt": "2025-12-30T14:30:00Z",
+      "createdAt": "2026-08-20T14:30:00Z",
+      "updatedAt": "2026-08-20T14:30:00Z",
       "links": {
         "self": "/api/v1/booking-management/bookings/b1o2o3k4-i5n6-7g8i-9d0e-1a2b3c4d5e6f",
         "tour": "/api/v1/tours-catalog/tours/550e8400-e29b-41d4-a716-446655440000",
@@ -275,7 +275,7 @@ GET /api/v1/booking-management/bookings?customerId=u1s2e3r4-i5d6-7h8e-9r0e-1a2b3
         "customerId": "u1s2e3r4-i5d6-7h8e-9r0e-1a2b3c4d5e6f",
         "tourId": "550e8400-e29b-41d4-a716-446655440000",
         "tourTitle": "Visite de la Tour Eiffel et Croisière sur la Seine",
-        "travelDate": "2025-06-15T09:00:00Z",
+        "travelDate": "2026-06-15T09:00:00Z",
         "participants": {
           "adults": 2,
           "children": 1,
@@ -284,8 +284,8 @@ GET /api/v1/booking-management/bookings?customerId=u1s2e3r4-i5d6-7h8e-9r0e-1a2b3
         "totalPrice": 224.97,
         "status": "confirmed",
         "paymentStatus": "paid",
-        "createdAt": "2025-12-30T14:30:00Z",
-        "confirmedAt": "2025-12-30T14:35:00Z"
+        "createdAt": "2026-08-20T14:30:00Z",
+        "confirmedAt": "2026-08-20T14:35:00Z"
       }
     ],
     "pagination": {
@@ -328,7 +328,7 @@ GET /api/v1/booking-management/bookings/{bookingId}
         "duration": 4,
         "meetingPoint": "Place du Trocadéro, 75016 Paris"
       },
-      "travelDate": "2025-06-15T09:00:00Z",
+      "travelDate": "2026-06-15T09:00:00Z",
       "participants": {
         "adults": 2,
         "children": 1,
@@ -356,9 +356,9 @@ GET /api/v1/booking-management/bookings/{bookingId}
       "status": "confirmed",
       "paymentStatus": "paid",
       "specialRequests": "Régime végétarien pour le déjeuner",
-      "createdAt": "2025-12-30T14:30:00Z",
-      "updatedAt": "2025-12-30T14:35:00Z",
-      "confirmedAt": "2025-12-30T14:35:00Z",
+      "createdAt": "2026-08-20T14:30:00Z",
+      "updatedAt": "2026-08-20T14:35:00Z",
+      "confirmedAt": "2026-08-20T14:35:00Z",
       "links": {
         "self": "/api/v1/booking-management/bookings/b1o2o3k4-i5n6-7g8i-9d0e-1a2b3c4d5e6f",
         "tour": "/api/v1/tours-catalog/tours/550e8400-e29b-41d4-a716-446655440000",
@@ -402,8 +402,8 @@ PATCH /api/v1/booking-management/bookings/{bookingId}/status
     "booking": {
       "id": "b1o2o3k4-i5n6-7g8i-9d0e-1a2b3c4d5e6f",
       "status": "confirmed",
-      "confirmedAt": "2025-12-30T14:35:00Z",
-      "updatedAt": "2025-12-30T14:35:00Z"
+      "confirmedAt": "2026-08-20T14:35:00Z",
+      "updatedAt": "2026-08-20T14:35:00Z"
     }
   }
 }
@@ -450,7 +450,7 @@ POST /api/v1/booking-management/bookings/{bookingId}/cancel
     "booking": {
       "id": "b1o2o3k4-i5n6-7g8i-9d0e-1a2b3c4d5e6f",
       "status": "cancelled",
-      "cancelledAt": "2025-12-30T16:00:00Z",
+      "cancelledAt": "2026-08-20T16:00:00Z",
       "cancellationReason": "Change of travel plans",
       "refundStatus": "pending"
     }
@@ -510,7 +510,7 @@ GET /api/v1/booking-management/availability
 **Exemple de Requête :**
 
 ```
-GET /api/v1/booking-management/availability?tourId=550e8400-e29b-41d4-a716-446655440000&date=2025-06-15
+GET /api/v1/booking-management/availability?tourId=550e8400-e29b-41d4-a716-446655440000&date=2026-06-15
 ```
 
 **Réponse (200 OK) :**
@@ -521,7 +521,7 @@ GET /api/v1/booking-management/availability?tourId=550e8400-e29b-41d4-a716-44665
   "data": {
     "availability": {
       "tourId": "550e8400-e29b-41d4-a716-446655440000",
-      "date": "2025-06-15T00:00:00Z",
+      "date": "2026-06-15T00:00:00Z",
       "maxCapacity": 20,
       "bookedSeats": 12,
       "availableSeats": 8,
@@ -580,7 +580,7 @@ GET /api/v1/booking-management/availability?tourId=550e8400-e29b-41d4-a716-44665
 {
   "customerId": "u1s2e3r4-i5d6-7h8e-9r0e-1a2b3c4d5e6f",
   "tourId": "550e8400-e29b-41d4-a716-446655440000",
-  "travelDate": "2025-06-15T09:00:00Z",
+  "travelDate": "2026-06-15T09:00:00Z",
   "participants": {
     "adults": 15,
     "children": 0
@@ -600,7 +600,7 @@ GET /api/v1/booking-management/availability?tourId=550e8400-e29b-41d4-a716-44665
       "requestedSeats": 15,
       "availableSeats": 8,
       "tourId": "550e8400-e29b-41d4-a716-446655440000",
-      "date": "2025-06-15T09:00:00Z"
+      "date": "2026-06-15T09:00:00Z"
     }
   }
 }
@@ -654,7 +654,7 @@ POST /api/v1/booking-management/webhooks/payment-confirmation
   "status": "paid",
   "amount": 224.97,
   "currency": "EUR",
-  "paidAt": "2025-12-30T14:35:00Z"
+  "paidAt": "2026-08-20T14:35:00Z"
 }
 ```
 
@@ -707,7 +707,7 @@ POST /api/v1/booking-management/webhooks/payment-confirmation
     "booking": {
       "id": "b1o2o3k4-i5n6-7g8i-9d0e-1a2b3c4d5e6f",
       "status": "cancelled",
-      "cancelledAt": "2025-12-30T16:00:00Z",
+      "cancelledAt": "2026-08-20T16:00:00Z",
       "refund": {
         "amount": 112.49,
         "percentage": 50,

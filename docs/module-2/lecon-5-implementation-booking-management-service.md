@@ -1108,7 +1108,7 @@ curl http://localhost:3002/health
 #### 2. Vérifier la Disponibilité
 
 ```bash
-curl "http://localhost:3002/api/v1/booking-management/availability?tourId=550e8400-e29b-41d4-a716-446655440000&date=2025-06-15"
+curl "http://localhost:3002/api/v1/booking-management/availability?tourId=550e8400-e29b-41d4-a716-446655440000&date=2026-06-15"
 ```
 
 #### 3. Créer une Nouvelle Réservation
@@ -1119,7 +1119,7 @@ curl -X POST http://localhost:3002/api/v1/booking-management/bookings \
   -d '{
     "customerId": "u1s2e3r4-i5d6-7h8e-9r0e-1a2b3c4d5e6f",
     "tourId": "550e8400-e29b-41d4-a716-446655440000",
-    "travelDate": "2025-06-15T09:00:00Z",
+    "travelDate": "2026-06-15T09:00:00Z",
     "participants": {
       "adults": 2,
       "children": 1,

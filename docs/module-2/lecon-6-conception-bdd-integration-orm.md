@@ -538,7 +538,7 @@ async function deleteTour(id) {
     difficulty: "difficult",
     imageCover: "himalayas-trek.jpg",
     maxGroupSize: 10,
-    startDates: [new Date("2025-08-15"), new Date("2025-09-20")],
+    startDates: [new Date("2026-08-15"), new Date("2026-09-20")],
   };
 
   const tour1 = await createTour(newTourData);
