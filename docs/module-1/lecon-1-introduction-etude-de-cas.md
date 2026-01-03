@@ -4,7 +4,25 @@
 
 ---
 
-## Vue d'ensemble
+## Objectifs pédagogiques
+
+- Comprendre le contexte et les objectifs de l'application de réservation touristique
+- Identifier les exigences fonctionnelles clés d'une plateforme de voyage moderne
+- Découvrir l'architecture technique globale du projet
+- Se familiariser avec les différents modules et fonctionnalités à développer
+
+## Prérequis
+
+- Aucun prérequis technique spécifique pour cette leçon d'introduction
+- Intérêt pour le développement web fullstack et les architectures modernes
+
+## Durée estimée
+
+45 minutes
+
+---
+
+## Introduction
 
 Cette leçon présente une étude de cas complète : une **application de réservation touristique**. Cette application servira d'exemple principal tout au long du cours, illustrant comment construire un système fullstack basé sur les microservices en utilisant React pour le frontend et Node.js avec Express pour le backend, tout en respectant les principes SOLID.
 
@@ -152,4 +170,14 @@ Cette première leçon offrait un aperçu général de l'étude de cas de la dem
 
 Dans les prochaines leçons, nous plongerons dans les bases du développement web moderne, en commençant par les bases de React. Cela vous dotera des compétences nécessaires pour construire l'interface interactive de notre application. Ensuite, nous mettrons en place l'environnement de développement fullstack, couvrant les outils et technologies essentiels nécessaires au développement frontend et backend, puis nous approfondirons les principes de conception d'API RESTful, essentiels pour une communication efficace des microservices.
 
-**Prochaine leçon** : [Leçon 1.2 - React Fundamentals: Components, Props, and State Management](lecon-2-react-fundamentals.md)
+---
+
+## Navigation
+
+- **⬅️ Précédent** : [Sommaire du Module 1](README.md)
+- **➡️ Suivant** : [Leçon 1.2 - Les fondamentaux de React](lecon-2-react-fundamentals.md)
+- **🏠 Retour** : [Sommaire du Module 1](README.md)
+
+---
+
+**Leçon complétée** ✅

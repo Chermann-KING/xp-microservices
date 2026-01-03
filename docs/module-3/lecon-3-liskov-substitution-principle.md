@@ -965,9 +965,13 @@ Dans notre application de réservation touristique, adhérer au LSP signifie que
 | **Invariants**     | Doivent être préservés                               |
 | **Substitution**   | Doit être transparente pour les clients              |
 
-### Prochaine étape
+---
 
-La prochaine leçon, **Principe de Ségrégation des Interfaces (ISP)**, s'appuie sur cette fondation en nous guidant sur comment concevoir des interfaces encore plus précises et spécifiques aux clients, ce qui supporte davantage le LSP en garantissant que les clients ne dépendent que des méthodes qu'ils utilisent réellement.
+## Navigation
+
+- **⬅️ Précédent** : [Leçon 3.2 - Le Principe Ouvert/Fermé (OCP)](lecon-2-open-closed-principle.md)
+- **➡️ Suivant** : Leçon 3.4 - Le Principe de Ségrégation des Interfaces (ISP) *(à venir)*
+- **🏠 Retour** : [Sommaire du Module 3](README.md)
 
 ---
 

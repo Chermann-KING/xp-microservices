@@ -4,7 +4,26 @@
 
 ---
 
-## Vue d'ensemble
+## Objectifs pédagogiques
+
+- Comprendre le Principe Ouvert/Fermé et son importance pour la maintenabilité
+- Identifier les violations de l'OCP dans le code existant
+- Appliquer l'OCP via les patterns Strategy, Factory et Plugin
+- Concevoir des composants React et des microservices extensibles
+
+## Prérequis
+
+- [Leçon 3.1 : Principe de Responsabilité Unique (SRP)](lecon-1-single-responsibility-principle.md)
+- Connaissance des concepts d'héritage, composition et polymorphisme
+- Expérience avec les composants React et les hooks
+
+## Durée estimée
+
+2 heures
+
+---
+
+## Introduction
 
 Le **Principe Ouvert/Fermé** (Open/Closed Principle - OCP) stipule que les entités logicielles (classes, modules, fonctions, etc.) doivent être **ouvertes à l'extension**, mais **fermées à la modification**. Cela signifie que le comportement d'un composant peut être étendu **sans modifier son code source**.
 
@@ -926,11 +945,11 @@ Ce principe, souvent réalisé via l'**abstraction** et le **polymorphisme**, es
 
 ---
 
-## Prochaine leçon
+## Navigation
 
-Comprendre le OCP prépare le terrain pour saisir les autres principes SOLID. Dans la prochaine leçon, nous explorerons le **Principe de Substitution de Liskov (LSP)**, qui s'appuie sur l'idée de **substituabilité** et l'utilisation correcte de l'héritage et des interfaces pour s'assurer que l'extension de types existants ne casse pas le code client.
-
-**➡️ [Leçon 3.3 - Le Principe de Substitution de Liskov (LSP)](lecon-3-liskov-substitution-principle.md)**
+- **⬅️ Précédent** : [Leçon 3.1 - Le Principe de Responsabilité Unique (SRP)](lecon-1-single-responsibility-principle.md)
+- **➡️ Suivant** : [Leçon 3.3 - Le Principe de Substitution de Liskov (LSP)](lecon-3-liskov-substitution-principle.md)
+- **🏠 Retour** : [Sommaire du Module 3](README.md)
 
 ---
 

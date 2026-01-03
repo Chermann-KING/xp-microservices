@@ -4,9 +4,28 @@
 
 ---
 
-## Vue d'ensemble
+## Objectifs pédagogiques
 
-Après avoir conçu l'API du microservice Booking Management dans la leçon précédente, nous allons maintenant implémenter ce service en utilisant Node.js 24.x et Express 4.21.x. Cette implémentation inclut la gestion complète du cycle de vie des réservations, la vérification de disponibilité, la communication avec d'autres microservices et l'orchestration des flux de travail.
+- Implémenter une API RESTful pour la gestion des réservations
+- Gérer le cycle de vie complet d'une réservation avec transitions de statut
+- Mettre en place la communication entre microservices avec Axios
+- Valider les données entrantes et gérer les erreurs métier
+
+## Prérequis
+
+- [Leçon 2.3 : Implémentation du Tour Catalog Service](lecon-3-implementation-tour-catalog-service.md)
+- [Leçon 2.4 : Conception de l'API Booking Management](lecon-4-conception-api-booking-management.md)
+- Expérience avec les promesses et async/await en JavaScript
+
+## Durée estimée
+
+3 heures
+
+---
+
+## Introduction
+
+Après avoir conçu l'API du microservice Booking Management dans la leçon précédente, nous allons maintenant implémenter ce service en utilisant Node.js et Express. Cette implémentation inclut la gestion complète du cycle de vie des réservations, la vérification de disponibilité, la communication avec d'autres microservices et l'orchestration des flux de travail.
 
 Nous utiliserons un stockage en mémoire pour cette première version, puis nous intégrerons PostgreSQL avec Sequelize dans les leçons ultérieures.
 
@@ -124,15 +143,15 @@ node_modules/
 ```javascript
 export const servicesConfig = {
   tourCatalog: {
-    baseURL: process.env.TOUR_CATALOG_SERVICE_URL || 'http://localhost:3001',
-    apiPath: '/api/v1/tours-catalog',
-    timeout: 5000
+    baseURL: process.env.TOUR_CATALOG_SERVICE_URL || "http://localhost:3001",
+    apiPath: "/api/v1/tours-catalog",
+    timeout: 5000,
   },
   paymentGateway: {
-    baseURL: process.env.PAYMENT_GATEWAY_SERVICE_URL || 'http://localhost:3003',
-    apiPath: '/api/v1/payment-gateway',
-    timeout: 5000
-  }
+    baseURL: process.env.PAYMENT_GATEWAY_SERVICE_URL || "http://localhost:3003",
+    apiPath: "/api/v1/payment-gateway",
+    timeout: 5000,
+  },
 };
 ```
 
@@ -143,8 +162,8 @@ export const servicesConfig = {
 ### server.js
 
 ```javascript
-import dotenv from 'dotenv';
-import app from './src/app.js';
+import dotenv from "dotenv";
+import app from "./src/app.js";
 
 dotenv.config();
 
@@ -153,18 +172,20 @@ const PORT = process.env.PORT || 3002;
 app.listen(PORT, () => {
   console.log(`🚀 Booking Management Service running on port ${PORT}`);
   console.log(`📍 Environment: ${process.env.NODE_ENV}`);
-  console.log(`🔗 API Base URL: http://localhost:${PORT}${process.env.API_BASE_PATH}/${process.env.API_VERSION}`);
+  console.log(
+    `🔗 API Base URL: http://localhost:${PORT}${process.env.API_BASE_PATH}/${process.env.API_VERSION}`
+  );
 });
 ```
 
 ### src/app.js
 
 ```javascript
-import express from 'express';
-import cors from 'cors';
-import bookingRoutes from './routes/bookingRoutes.js';
-import availabilityRoutes from './routes/availabilityRoutes.js';
-import { errorHandler } from './middleware/errorHandler.js';
+import express from "express";
+import cors from "cors";
+import bookingRoutes from "./routes/bookingRoutes.js";
+import availabilityRoutes from "./routes/availabilityRoutes.js";
+import { errorHandler } from "./middleware/errorHandler.js";
 
 const app = express();
 
@@ -174,7 +195,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Logging middleware
-if (process.env.NODE_ENV === 'development') {
+if (process.env.NODE_ENV === "development") {
   app.use((req, res, next) => {
     console.log(`${req.method} ${req.path}`);
     next();
@@ -182,11 +203,11 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 // Health check endpoint
-app.get('/health', (req, res) => {
+app.get("/health", (req, res) => {
   res.status(200).json({
-    status: 'success',
-    message: 'Booking Management Service is healthy',
-    timestamp: new Date().toISOString()
+    status: "success",
+    message: "Booking Management Service is healthy",
+    timestamp: new Date().toISOString(),
   });
 });
 
@@ -199,12 +220,12 @@ app.use(`${API_BASE}/availability`, availabilityRoutes);
 // Route 404
 app.use((req, res) => {
   res.status(404).json({
-    status: 'error',
+    status: "error",
     error: {
-      code: 'ENDPOINT_NOT_FOUND',
-      message: 'The requested endpoint does not exist',
-      path: req.path
-    }
+      code: "ENDPOINT_NOT_FOUND",
+      message: "The requested endpoint does not exist",
+      path: req.path,
+    },
   });
 });
 
@@ -223,18 +244,24 @@ export default app;
 ```javascript
 export const sendSuccess = (res, data, statusCode = 200) => {
   res.status(statusCode).json({
-    status: 'success',
-    data
+    status: "success",
+    data,
   });
 };
 
-export const sendError = (res, code, message, details = null, statusCode = 400) => {
+export const sendError = (
+  res,
+  code,
+  message,
+  details = null,
+  statusCode = 400
+) => {
   const errorResponse = {
-    status: 'error',
+    status: "error",
     error: {
       code,
-      message
-    }
+      message,
+    },
   };
 
   if (details) {
@@ -253,7 +280,7 @@ export const createPagination = (page, limit, totalItems) => {
     currentPage,
     totalPages,
     totalItems,
-    itemsPerPage
+    itemsPerPage,
   };
 };
 
@@ -269,10 +296,11 @@ export const addBookingHateoasLinks = (booking) => {
       self: `${baseUrl}/booking-management/bookings/${booking.id}`,
       tour: `${baseUrl}/tours-catalog/tours/${booking.tourId}`,
       cancel: `${baseUrl}/booking-management/bookings/${booking.id}/cancel`,
-      payment: booking.paymentStatus === 'pending'
-        ? `${baseUrl}/payment-gateway/payments/create?bookingId=${booking.id}`
-        : undefined
-    }
+      payment:
+        booking.paymentStatus === "pending"
+          ? `${baseUrl}/payment-gateway/payments/create?bookingId=${booking.id}`
+          : undefined,
+    },
   };
 };
 ```
@@ -285,56 +313,57 @@ export const addBookingHateoasLinks = (booking) => {
 
 ```javascript
 export const errorHandler = (err, req, res, next) => {
-  console.error('Error:', err);
+  console.error("Error:", err);
 
-  if (err.name === 'ValidationError') {
+  if (err.name === "ValidationError") {
     return res.status(400).json({
-      status: 'error',
+      status: "error",
       error: {
-        code: 'VALIDATION_ERROR',
+        code: "VALIDATION_ERROR",
         message: err.message,
-        details: err.details || null
-      }
+        details: err.details || null,
+      },
     });
   }
 
-  if (err.name === 'NotFoundError') {
+  if (err.name === "NotFoundError") {
     return res.status(404).json({
-      status: 'error',
+      status: "error",
       error: {
-        code: err.code || 'RESOURCE_NOT_FOUND',
+        code: err.code || "RESOURCE_NOT_FOUND",
         message: err.message,
-        details: err.details || null
-      }
+        details: err.details || null,
+      },
     });
   }
 
-  if (err.name === 'ConflictError') {
+  if (err.name === "ConflictError") {
     return res.status(409).json({
-      status: 'error',
+      status: "error",
       error: {
-        code: err.code || 'CONFLICT',
+        code: err.code || "CONFLICT",
         message: err.message,
-        details: err.details || null
-      }
+        details: err.details || null,
+      },
     });
   }
 
   res.status(err.statusCode || 500).json({
-    status: 'error',
+    status: "error",
     error: {
-      code: 'INTERNAL_SERVER_ERROR',
-      message: process.env.NODE_ENV === 'development'
-        ? err.message
-        : 'An unexpected error occurred'
-    }
+      code: "INTERNAL_SERVER_ERROR",
+      message:
+        process.env.NODE_ENV === "development"
+          ? err.message
+          : "An unexpected error occurred",
+    },
   });
 };
 
 export class NotFoundError extends Error {
   constructor(message, code, details = null) {
     super(message);
-    this.name = 'NotFoundError';
+    this.name = "NotFoundError";
     this.code = code;
     this.details = details;
   }
@@ -343,7 +372,7 @@ export class NotFoundError extends Error {
 export class ValidationError extends Error {
   constructor(message, details = null) {
     super(message);
-    this.name = 'ValidationError';
+    this.name = "ValidationError";
     this.details = details;
   }
 }
@@ -351,7 +380,7 @@ export class ValidationError extends Error {
 export class ConflictError extends Error {
   constructor(message, code, details = null) {
     super(message);
-    this.name = 'ConflictError';
+    this.name = "ConflictError";
     this.code = code;
     this.details = details;
   }
@@ -365,12 +394,12 @@ export class ConflictError extends Error {
 ### src/services/tourCatalogService.js
 
 ```javascript
-import axios from 'axios';
-import { servicesConfig } from '../config/services.js';
+import axios from "axios";
+import { servicesConfig } from "../config/services.js";
 
 const tourCatalogAPI = axios.create({
   baseURL: `${servicesConfig.tourCatalog.baseURL}${servicesConfig.tourCatalog.apiPath}`,
-  timeout: servicesConfig.tourCatalog.timeout
+  timeout: servicesConfig.tourCatalog.timeout,
 });
 
 /**
@@ -412,7 +441,7 @@ const availabilityData = new Map();
  * Génère une clé unique pour la disponibilité (tourId + date)
  */
 const generateAvailabilityKey = (tourId, date) => {
-  const dateStr = new Date(date).toISOString().split('T')[0];
+  const dateStr = new Date(date).toISOString().split("T")[0];
   return `${tourId}_${dateStr}`;
 };
 
@@ -426,7 +455,7 @@ export const initializeAvailability = (tourId, date, maxCapacity) => {
       tourId,
       date,
       maxCapacity,
-      bookedSeats: 0
+      bookedSeats: 0,
     });
   }
 };
@@ -449,7 +478,7 @@ export const getAvailability = (tourId, date, maxCapacity = 20) => {
     maxCapacity: availability.maxCapacity,
     bookedSeats: availability.bookedSeats,
     availableSeats: availability.maxCapacity - availability.bookedSeats,
-    isAvailable: (availability.maxCapacity - availability.bookedSeats) > 0
+    isAvailable: availability.maxCapacity - availability.bookedSeats > 0,
   };
 };
 
@@ -461,7 +490,7 @@ export const reserveSeats = (tourId, date, numberOfSeats) => {
   const availability = availabilityData.get(key);
 
   if (!availability) {
-    throw new Error('Availability not initialized');
+    throw new Error("Availability not initialized");
   }
 
   if (availability.maxCapacity - availability.bookedSeats < numberOfSeats) {
@@ -484,7 +513,10 @@ export const releaseSeats = (tourId, date, numberOfSeats) => {
     return;
   }
 
-  availability.bookedSeats = Math.max(0, availability.bookedSeats - numberOfSeats);
+  availability.bookedSeats = Math.max(
+    0,
+    availability.bookedSeats - numberOfSeats
+  );
   availabilityData.set(key, availability);
 };
 ```
@@ -500,10 +532,10 @@ export const releaseSeats = (tourId, date, numberOfSeats) => {
  * États possibles d'une réservation
  */
 export const BookingStatus = {
-  PENDING: 'pending',
-  CONFIRMED: 'confirmed',
-  COMPLETED: 'completed',
-  CANCELLED: 'cancelled'
+  PENDING: "pending",
+  CONFIRMED: "confirmed",
+  COMPLETED: "completed",
+  CANCELLED: "cancelled",
 };
 
 /**
@@ -513,7 +545,7 @@ const validTransitions = {
   [BookingStatus.PENDING]: [BookingStatus.CONFIRMED, BookingStatus.CANCELLED],
   [BookingStatus.CONFIRMED]: [BookingStatus.COMPLETED, BookingStatus.CANCELLED],
   [BookingStatus.COMPLETED]: [],
-  [BookingStatus.CANCELLED]: []
+  [BookingStatus.CANCELLED]: [],
 };
 
 /**
@@ -545,8 +577,8 @@ export const canBeCancelled = (status) => {
 ### src/models/bookingModel.js
 
 ```javascript
-import { v4 as uuidv4 } from 'uuid';
-import { BookingStatus } from '../services/bookingStateMachine.js';
+import { v4 as uuidv4 } from "uuid";
+import { BookingStatus } from "../services/bookingStateMachine.js";
 
 // Stockage en mémoire des réservations
 let bookings = [];
@@ -555,7 +587,11 @@ let bookings = [];
  * Calcule le nombre total de participants
  */
 const calculateTotalParticipants = (participants) => {
-  return (participants.adults || 0) + (participants.children || 0) + (participants.infants || 0);
+  return (
+    (participants.adults || 0) +
+    (participants.children || 0) +
+    (participants.infants || 0)
+  );
 };
 
 /**
@@ -566,25 +602,29 @@ export const findAll = (filters = {}) => {
 
   // Filtrage par client
   if (filters.customerId) {
-    result = result.filter(b => b.customerId === filters.customerId);
+    result = result.filter((b) => b.customerId === filters.customerId);
   }
 
   // Filtrage par visite
   if (filters.tourId) {
-    result = result.filter(b => b.tourId === filters.tourId);
+    result = result.filter((b) => b.tourId === filters.tourId);
   }
 
   // Filtrage par statut
   if (filters.status) {
-    result = result.filter(b => b.status === filters.status);
+    result = result.filter((b) => b.status === filters.status);
   }
 
   // Filtrage par date
   if (filters.dateFrom) {
-    result = result.filter(b => new Date(b.travelDate) >= new Date(filters.dateFrom));
+    result = result.filter(
+      (b) => new Date(b.travelDate) >= new Date(filters.dateFrom)
+    );
   }
   if (filters.dateTo) {
-    result = result.filter(b => new Date(b.travelDate) <= new Date(filters.dateTo));
+    result = result.filter(
+      (b) => new Date(b.travelDate) <= new Date(filters.dateTo)
+    );
   }
 
   // Pagination
@@ -597,7 +637,7 @@ export const findAll = (filters = {}) => {
 
   return {
     bookings: paginatedResult,
-    totalItems: result.length
+    totalItems: result.length,
   };
 };
 
@@ -605,14 +645,16 @@ export const findAll = (filters = {}) => {
  * Récupère une réservation par ID
  */
 export const findById = (id) => {
-  return bookings.find(b => b.id === id);
+  return bookings.find((b) => b.id === id);
 };
 
 /**
  * Crée une nouvelle réservation
  */
 export const create = (bookingData) => {
-  const totalParticipants = calculateTotalParticipants(bookingData.participants);
+  const totalParticipants = calculateTotalParticipants(
+    bookingData.participants
+  );
 
   const newBooking = {
     id: uuidv4(),
@@ -621,17 +663,17 @@ export const create = (bookingData) => {
     travelDate: bookingData.travelDate,
     participants: {
       ...bookingData.participants,
-      totalCount: totalParticipants
+      totalCount: totalParticipants,
     },
     totalPrice: bookingData.totalPrice,
     status: BookingStatus.PENDING,
-    paymentStatus: 'pending',
+    paymentStatus: "pending",
     specialRequests: bookingData.specialRequests || null,
     createdAt: new Date(),
     updatedAt: new Date(),
     confirmedAt: null,
     cancelledAt: null,
-    cancellationReason: null
+    cancellationReason: null,
   };
 
   bookings.push(newBooking);
@@ -642,7 +684,7 @@ export const create = (bookingData) => {
  * Met à jour le statut d'une réservation
  */
 export const updateStatus = (id, newStatus, additionalData = {}) => {
-  const index = bookings.findIndex(b => b.id === id);
+  const index = bookings.findIndex((b) => b.id === id);
 
   if (index === -1) {
     return null;
@@ -652,7 +694,7 @@ export const updateStatus = (id, newStatus, additionalData = {}) => {
   const updates = {
     status: newStatus,
     updatedAt: new Date(),
-    ...additionalData
+    ...additionalData,
   };
 
   // Ajouter le timestamp approprié
@@ -664,7 +706,7 @@ export const updateStatus = (id, newStatus, additionalData = {}) => {
 
   bookings[index] = {
     ...bookings[index],
-    ...updates
+    ...updates,
   };
 
   return bookings[index];
@@ -674,7 +716,7 @@ export const updateStatus = (id, newStatus, additionalData = {}) => {
  * Met à jour partiellement une réservation
  */
 export const partialUpdate = (id, updates) => {
-  const index = bookings.findIndex(b => b.id === id);
+  const index = bookings.findIndex((b) => b.id === id);
 
   if (index === -1) {
     return null;
@@ -683,7 +725,7 @@ export const partialUpdate = (id, updates) => {
   bookings[index] = {
     ...bookings[index],
     ...updates,
-    updatedAt: new Date()
+    updatedAt: new Date(),
   };
 
   return bookings[index];
@@ -693,7 +735,7 @@ export const partialUpdate = (id, updates) => {
  * Supprime une réservation
  */
 export const remove = (id) => {
-  const index = bookings.findIndex(b => b.id === id);
+  const index = bookings.findIndex((b) => b.id === id);
 
   if (index === -1) {
     return false;
@@ -711,12 +753,25 @@ export const remove = (id) => {
 ### src/controllers/bookingController.js
 
 ```javascript
-import * as BookingModel from '../models/bookingModel.js';
-import * as TourCatalogService from '../services/tourCatalogService.js';
-import * as AvailabilityService from '../services/availabilityService.js';
-import { isValidTransition, canBeCancelled, BookingStatus } from '../services/bookingStateMachine.js';
-import { sendSuccess, sendError, createPagination, addBookingHateoasLinks } from '../utils/response.js';
-import { NotFoundError, ValidationError, ConflictError } from '../middleware/errorHandler.js';
+import * as BookingModel from "../models/bookingModel.js";
+import * as TourCatalogService from "../services/tourCatalogService.js";
+import * as AvailabilityService from "../services/availabilityService.js";
+import {
+  isValidTransition,
+  canBeCancelled,
+  BookingStatus,
+} from "../services/bookingStateMachine.js";
+import {
+  sendSuccess,
+  sendError,
+  createPagination,
+  addBookingHateoasLinks,
+} from "../utils/response.js";
+import {
+  NotFoundError,
+  ValidationError,
+  ConflictError,
+} from "../middleware/errorHandler.js";
 
 /**
  * Calcule le prix total de la réservation
@@ -739,9 +794,18 @@ const calculateTotalPrice = (tour, participants) => {
  */
 export const getAllBookings = (req, res, next) => {
   try {
-    const { customerId, tourId, status, dateFrom, dateTo, page, limit } = req.query;
+    const { customerId, tourId, status, dateFrom, dateTo, page, limit } =
+      req.query;
 
-    const filters = { customerId, tourId, status, dateFrom, dateTo, page, limit };
+    const filters = {
+      customerId,
+      tourId,
+      status,
+      dateFrom,
+      dateTo,
+      page,
+      limit,
+    };
     const { bookings, totalItems } = BookingModel.findAll(filters);
 
     const pagination = createPagination(page, limit, totalItems);
@@ -762,8 +826,8 @@ export const getBookingById = async (req, res, next) => {
 
     if (!booking) {
       throw new NotFoundError(
-        'The requested booking does not exist',
-        'BOOKING_NOT_FOUND',
+        "The requested booking does not exist",
+        "BOOKING_NOT_FOUND",
         { bookingId }
       );
     }
@@ -773,11 +837,13 @@ export const getBookingById = async (req, res, next) => {
 
     const enrichedBooking = {
       ...booking,
-      tourDetails: tour ? {
-        title: tour.title,
-        duration: tour.duration,
-        meetingPoint: tour.meetingPoint
-      } : null
+      tourDetails: tour
+        ? {
+            title: tour.title,
+            duration: tour.duration,
+            meetingPoint: tour.meetingPoint,
+          }
+        : null,
     };
 
     const bookingWithLinks = addBookingHateoasLinks(enrichedBooking);
@@ -793,22 +859,22 @@ export const getBookingById = async (req, res, next) => {
  */
 export const createBooking = async (req, res, next) => {
   try {
-    const { customerId, tourId, travelDate, participants, specialRequests } = req.body;
+    const { customerId, tourId, travelDate, participants, specialRequests } =
+      req.body;
 
     // Validation
     if (!customerId || !tourId || !travelDate || !participants) {
-      throw new ValidationError(
-        'Missing required fields',
-        { required: ['customerId', 'tourId', 'travelDate', 'participants'] }
-      );
+      throw new ValidationError("Missing required fields", {
+        required: ["customerId", "tourId", "travelDate", "participants"],
+      });
     }
 
     // Vérifier l'existence de la visite
     const tour = await TourCatalogService.getTourDetails(tourId);
     if (!tour) {
       throw new NotFoundError(
-        'The requested tour does not exist',
-        'TOUR_NOT_FOUND',
+        "The requested tour does not exist",
+        "TOUR_NOT_FOUND",
         { tourId }
       );
     }
@@ -820,29 +886,34 @@ export const createBooking = async (req, res, next) => {
       (participants.infants || 0);
 
     // Vérifier la disponibilité
-    const availability = AvailabilityService.getAvailability(tourId, travelDate, tour.maxGroupSize);
+    const availability = AvailabilityService.getAvailability(
+      tourId,
+      travelDate,
+      tour.maxGroupSize
+    );
 
     if (availability.availableSeats < totalParticipants) {
       throw new ConflictError(
-        'Not enough available seats for the requested date',
-        'INSUFFICIENT_CAPACITY',
+        "Not enough available seats for the requested date",
+        "INSUFFICIENT_CAPACITY",
         {
           requestedSeats: totalParticipants,
           availableSeats: availability.availableSeats,
           tourId,
-          date: travelDate
+          date: travelDate,
         }
       );
     }
 
     // Réserver les places
-    const reserved = AvailabilityService.reserveSeats(tourId, travelDate, totalParticipants);
+    const reserved = AvailabilityService.reserveSeats(
+      tourId,
+      travelDate,
+      totalParticipants
+    );
 
     if (!reserved) {
-      throw new ConflictError(
-        'Failed to reserve seats',
-        'RESERVATION_FAILED'
-      );
+      throw new ConflictError("Failed to reserve seats", "RESERVATION_FAILED");
     }
 
     // Calculer le prix total
@@ -855,7 +926,7 @@ export const createBooking = async (req, res, next) => {
       travelDate,
       participants,
       totalPrice,
-      specialRequests
+      specialRequests,
     });
 
     const bookingWithLinks = addBookingHateoasLinks(newBooking);
@@ -878,8 +949,8 @@ export const updateBookingStatus = (req, res, next) => {
 
     if (!booking) {
       throw new NotFoundError(
-        'The requested booking does not exist',
-        'BOOKING_NOT_FOUND',
+        "The requested booking does not exist",
+        "BOOKING_NOT_FOUND",
         { bookingId }
       );
     }
@@ -891,13 +962,15 @@ export const updateBookingStatus = (req, res, next) => {
         {
           currentStatus: booking.status,
           requestedStatus: status,
-          allowedTransitions: getValidTransitions(booking.status)
+          allowedTransitions: getValidTransitions(booking.status),
         }
       );
     }
 
     // Mettre à jour le statut
-    const updatedBooking = BookingModel.updateStatus(bookingId, status, { reason });
+    const updatedBooking = BookingModel.updateStatus(bookingId, status, {
+      reason,
+    });
 
     sendSuccess(res, { booking: updatedBooking });
   } catch (error) {
@@ -917,8 +990,8 @@ export const cancelBooking = (req, res, next) => {
 
     if (!booking) {
       throw new NotFoundError(
-        'The requested booking does not exist',
-        'BOOKING_NOT_FOUND',
+        "The requested booking does not exist",
+        "BOOKING_NOT_FOUND",
         { bookingId }
       );
     }
@@ -927,14 +1000,18 @@ export const cancelBooking = (req, res, next) => {
     if (!canBeCancelled(booking.status)) {
       throw new ConflictError(
         `Booking with status ${booking.status} cannot be cancelled`,
-        'CANNOT_CANCEL',
+        "CANNOT_CANCEL",
         { status: booking.status }
       );
     }
 
     // Libérer les places
     const totalParticipants = booking.participants.totalCount;
-    AvailabilityService.releaseSeats(booking.tourId, booking.travelDate, totalParticipants);
+    AvailabilityService.releaseSeats(
+      booking.tourId,
+      booking.travelDate,
+      totalParticipants
+    );
 
     // Mettre à jour le statut
     const updatedBooking = BookingModel.updateStatus(
@@ -942,18 +1019,18 @@ export const cancelBooking = (req, res, next) => {
       BookingStatus.CANCELLED,
       {
         cancellationReason: reason,
-        refundStatus: requestRefund ? 'pending' : 'not_requested'
+        refundStatus: requestRefund ? "pending" : "not_requested",
       }
     );
 
     res.status(200).json({
-      status: 'success',
+      status: "success",
       data: {
-        booking: updatedBooking
+        booking: updatedBooking,
       },
       message: requestRefund
-        ? 'Booking cancelled successfully. Refund will be processed within 5-7 business days.'
-        : 'Booking cancelled successfully.'
+        ? "Booking cancelled successfully. Refund will be processed within 5-7 business days."
+        : "Booking cancelled successfully.",
     });
   } catch (error) {
     next(error);
@@ -970,8 +1047,8 @@ export const deleteBooking = (req, res, next) => {
 
     if (!deleted) {
       throw new NotFoundError(
-        'The requested booking does not exist',
-        'BOOKING_NOT_FOUND',
+        "The requested booking does not exist",
+        "BOOKING_NOT_FOUND",
         { bookingId }
       );
     }
@@ -986,10 +1063,10 @@ export const deleteBooking = (req, res, next) => {
 ### src/controllers/availabilityController.js
 
 ```javascript
-import * as AvailabilityService from '../services/availabilityService.js';
-import * as TourCatalogService from '../services/tourCatalogService.js';
-import { sendSuccess, sendError } from '../utils/response.js';
-import { NotFoundError, ValidationError } from '../middleware/errorHandler.js';
+import * as AvailabilityService from "../services/availabilityService.js";
+import * as TourCatalogService from "../services/tourCatalogService.js";
+import { sendSuccess, sendError } from "../utils/response.js";
+import { NotFoundError, ValidationError } from "../middleware/errorHandler.js";
 
 /**
  * Vérifie la disponibilité d'une visite
@@ -1000,10 +1077,9 @@ export const checkAvailability = async (req, res, next) => {
 
     // Validation
     if (!tourId || !date) {
-      throw new ValidationError(
-        'Missing required parameters',
-        { required: ['tourId', 'date'] }
-      );
+      throw new ValidationError("Missing required parameters", {
+        required: ["tourId", "date"],
+      });
     }
 
     // Vérifier l'existence de la visite
@@ -1011,21 +1087,25 @@ export const checkAvailability = async (req, res, next) => {
 
     if (!tour) {
       throw new NotFoundError(
-        'The requested tour does not exist',
-        'TOUR_NOT_FOUND',
+        "The requested tour does not exist",
+        "TOUR_NOT_FOUND",
         { tourId }
       );
     }
 
     // Récupérer la disponibilité
-    const availability = AvailabilityService.getAvailability(tourId, date, tour.maxGroupSize);
+    const availability = AvailabilityService.getAvailability(
+      tourId,
+      date,
+      tour.maxGroupSize
+    );
 
     // Ajouter les prix
     const enrichedAvailability = {
       ...availability,
       pricePerAdult: tour.price,
       pricePerChild: tour.price * 0.5,
-      pricePerInfant: 0.00
+      pricePerInfant: 0.0,
     };
 
     sendSuccess(res, { availability: enrichedAvailability });
@@ -1042,24 +1122,24 @@ export const checkAvailability = async (req, res, next) => {
 ### src/routes/bookingRoutes.js
 
 ```javascript
-import express from 'express';
+import express from "express";
 import {
   getAllBookings,
   getBookingById,
   createBooking,
   updateBookingStatus,
   cancelBooking,
-  deleteBooking
-} from '../controllers/bookingController.js';
+  deleteBooking,
+} from "../controllers/bookingController.js";
 
 const router = express.Router();
 
-router.get('/', getAllBookings);
-router.get('/:bookingId', getBookingById);
-router.post('/', createBooking);
-router.patch('/:bookingId/status', updateBookingStatus);
-router.post('/:bookingId/cancel', cancelBooking);
-router.delete('/:bookingId', deleteBooking);
+router.get("/", getAllBookings);
+router.get("/:bookingId", getBookingById);
+router.post("/", createBooking);
+router.patch("/:bookingId/status", updateBookingStatus);
+router.post("/:bookingId/cancel", cancelBooking);
+router.delete("/:bookingId", deleteBooking);
 
 export default router;
 ```
@@ -1067,12 +1147,12 @@ export default router;
 ### src/routes/availabilityRoutes.js
 
 ```javascript
-import express from 'express';
-import { checkAvailability } from '../controllers/availabilityController.js';
+import express from "express";
+import { checkAvailability } from "../controllers/availabilityController.js";
 
 const router = express.Router();
 
-router.get('/', checkAvailability);
+router.get("/", checkAvailability);
 
 export default router;
 ```
@@ -1214,11 +1294,11 @@ curl -X POST http://localhost:3002/api/v1/booking-management/bookings/{bookingId
 
 ```javascript
 // src/routes/webhookRoutes.js
-import express from 'express';
+import express from "express";
 
 const router = express.Router();
 
-router.post('/payment-confirmation', async (req, res) => {
+router.post("/payment-confirmation", async (req, res) => {
   const { bookingId, paymentId, status, amount } = req.body;
 
   // Valider et traiter le paiement

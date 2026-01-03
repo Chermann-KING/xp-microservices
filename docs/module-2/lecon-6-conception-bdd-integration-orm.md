@@ -4,7 +4,26 @@
 
 ---
 
-## Vue d'ensemble
+## Objectifs pédagogiques
+
+- Comprendre les principes de conception de bases de données pour microservices
+- Maîtriser le concept de propriété des données par service
+- Utiliser Sequelize comme ORM pour Node.js avec PostgreSQL
+- Définir des modèles, associations et migrations de base de données
+
+## Prérequis
+
+- [Leçon 2.1 : Domain-Driven Design et Bounded Contexts](lecon-1-domain-driven-design-bounded-contexts.md)
+- [Leçon 2.3 : Implémentation du Tour Catalog Service](lecon-3-implementation-tour-catalog-service.md)
+- Connaissance de base des bases de données relationnelles et SQL
+
+## Durée estimée
+
+3 heures
+
+---
+
+## Introduction
 
 Les bases de données relationnelles constituent une fondation robuste pour les microservices, permettant aux services individuels de gérer leurs propres données de manière indépendante. Ce choix de conception s'aligne avec le principe de couplage lâche des microservices et permet aux services d'évoluer sans impacter les autres. Les Object-Relational Mappers (ORM) simplifient l'interaction avec ces bases de données en mappant les schémas de base de données vers des objets de langage de programmation, abstrayant les complexités des requêtes SQL et permettant aux développeurs de travailler avec des paradigmes orientés objet familiers.
 
@@ -797,9 +816,13 @@ Cette gestion de base de données indépendante au sein de chaque service pose l
 ## Navigation
 
 - **⬅️ Précédent** : [Leçon 2.5 - Implémentation du Booking Management Service](lecon-5-implementation-booking-management-service.md)
-- **➡️ Suivant** : Module 3 (à venir)
+- **➡️ Suivant** : [Module 3 - Leçon 3.1 : Principe de Responsabilité Unique (SRP)](../module-3/lecon-1-single-responsibility-principle.md)
 - **🏠 Retour** : [Sommaire du Module 2](README.md)
 
 ---
 
-**Leçon complétée** ✅
+🎉 **Félicitations !** Vous avez terminé le **Module 2 : Conception et Implémentation des Microservices Principaux**.
+
+Vous êtes maintenant prêt à apprendre les principes SOLID pour améliorer la qualité de votre code.
+
+**Module complété** ✅

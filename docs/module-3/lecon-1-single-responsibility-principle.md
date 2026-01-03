@@ -4,7 +4,26 @@
 
 ---
 
-## Vue d'ensemble
+## Objectifs pédagogiques
+
+- Comprendre le Principe de Responsabilité Unique et son importance
+- Identifier les violations du SRP dans le code existant
+- Appliquer le SRP à la décomposition des microservices
+- Concevoir des composants React avec une responsabilité unique
+
+## Prérequis
+
+- [Leçon 1.5 : Introduction à l'architecture microservices](../module-1/lecon-5-microservices-intro.md)
+- [Leçon 1.2 : Les fondamentaux de React](../module-1/lecon-2-react-fundamentals.md)
+- [Leçon 2.1 : Domain-Driven Design et Bounded Contexts](../module-2/lecon-1-domain-driven-design-bounded-contexts.md)
+
+## Durée estimée
+
+2 heures
+
+---
+
+## Introduction
 
 Le **Principe de Responsabilité Unique** (Single Responsibility Principle - SRP) est un principe fondamental de conception stipulant qu'un module, une classe ou une fonction doit avoir **une seule raison de changer**. Dans le contexte des microservices, cela signifie que chaque microservice doit encapsuler une **capacité métier unique**. Pour les composants React, cela implique qu'un composant doit être responsable d'**une seule partie de l'interface** ou d'**un seul aspect de la fonctionnalité**.
 
@@ -753,13 +772,11 @@ En appliquant systématiquement le SRP, vous construisez des systèmes **robuste
 
 ---
 
-## Prochaine leçon
+## Navigation
 
-Dans la prochaine leçon, nous explorerons le **Principe Ouvert/Fermé (OCP)**, qui complète le SRP en se concentrant sur la manière de rendre votre code **extensible sans nécessiter de modifications** aux composants existants et testés.
-
-Ce principe s'appuie sur la base solide fournie par le SRP, permettant une évolution robuste et flexible du système.
-
-**➡️ [Leçon 3.2 - Le Principe Ouvert/Fermé (OCP)](lecon-2-open-closed-principle.md)**
+- **⬅️ Précédent** : [Module 2 - Leçon 2.6 : Conception BDD et ORM](../module-2/lecon-6-conception-bdd-integration-orm.md)
+- **➡️ Suivant** : [Leçon 3.2 - Le Principe Ouvert/Fermé (OCP)](lecon-2-open-closed-principle.md)
+- **🏠 Retour** : [Sommaire du Module 3](README.md)
 
 ---
 

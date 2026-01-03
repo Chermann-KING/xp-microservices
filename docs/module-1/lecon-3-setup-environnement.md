@@ -4,7 +4,28 @@
 
 ---
 
-## Vue d'ensemble
+## Objectifs pédagogiques
+
+- Installer et configurer Node.js avec un gestionnaire de versions (nvm)
+- Comprendre le rôle de npm dans la gestion des dépendances
+- Installer et configurer PostgreSQL pour la persistance des données
+- Mettre en place Express.js pour créer des APIs web
+- Préparer un environnement de développement complet et fonctionnel
+
+## Prérequis
+
+- [Leçon 1.1 : Introduction à l'étude de cas](lecon-1-introduction-etude-de-cas.md)
+- [Leçon 1.2 : Fondamentaux de React](lecon-2-react-fundamentals.md)
+- Accès administrateur sur votre machine pour l'installation de logiciels
+- Familiarité de base avec le terminal/ligne de commande
+
+## Durée estimée
+
+2 heures
+
+---
+
+## Introduction
 
 Le développement d'une application fullstack basée sur les microservices nécessite un environnement robuste et cohérent. Cette leçon se concentre sur la configuration des outils essentiels : **Node.js** pour la logique côté serveur, **Express.js** pour la construction d'APIs web, et **PostgreSQL** pour la gestion de base de données.
 
@@ -742,7 +763,11 @@ La prochaine leçon approfondira les **Principes de Design d'API RESTful et Bonn
 
 ---
 
-**Prochaine leçon** : [Leçon 1.4 - Principes de Design d'API RESTful et Bonnes Pratiques](lecon-4-restful-api-design.md)
+## Navigation
+
+- **⬅️ Précédent** : [Leçon 1.2 - Les fondamentaux de React](lecon-2-react-fundamentals.md)
+- **➡️ Suivant** : [Leçon 1.4 - Principes de Design d'API RESTful](lecon-4-restful-api-design.md)
+- **🏠 Retour** : [Sommaire du Module 1](README.md)
 
 ---
 

@@ -4,13 +4,32 @@
 
 ---
 
-## Vue d'ensemble
+## Objectifs pédagogiques
+
+- Comprendre les caractéristiques de l'architecture monolithique
+- Comparer objectivement les avantages et inconvénients des deux approches
+- Identifier les critères de choix entre monolithe et microservices
+- Appliquer ces connaissances au contexte de notre application de réservation touristique
+
+## Prérequis
+
+- [Leçon 1.1 : Introduction à l'étude de cas](lecon-1-introduction-etude-de-cas.md)
+- [Leçon 1.4 : Principes de Design d'API RESTful](lecon-4-restful-api-design.md)
+- [Leçon 1.5 : Introduction à l'architecture microservices](lecon-5-microservices-intro.md)
+
+## Durée estimée
+
+1 heure 15 minutes
+
+---
+
+## Introduction
 
 L'architecture logicielle définit la structure fondamentale d'un système logiciel, influençant sa scalabilité, sa maintenabilité et son évolution. Deux styles architecturaux proéminents, monolithique et microservices, offrent des approches distinctes pour construire des applications, chacune avec son propre ensemble d'avantages et d'inconvénients. Comprendre ces compromis est crucial pour prendre des décisions de conception éclairées, particulièrement lors du développement de systèmes complexes comme notre application de réservation touristique.
 
 ---
 
-## Architecture monolithique
+## Comprendre l'architecture monolithique
 
 Une architecture monolithique représente une approche traditionnelle où tous les composants d'une application sont étroitement couplés et fonctionnent comme une seule unité unifiée. Cela signifie que l'ensemble de l'application — frontend, logique backend et interactions avec la base de données — est regroupé dans un package de déploiement unique. Tout changement, aussi petit soit-il, nécessite généralement de reconstruire et redéployer l'ensemble de l'application.
 
@@ -168,18 +187,18 @@ La décision d'adopter une architecture monolithique ou microservices n'est pas 
 
 ### Tableau comparatif
 
-| Fonctionnalité / Aspect | Architecture monolithique | Architecture microservices |
-|-------------------------|---------------------------|----------------------------|
-| **Développement initial** | Plus simple, plus rapide pour les petites équipes et applications | Configuration plus complexe, surcharge initiale plus élevée |
-| **Déploiement** | Artefact unique, application entière redéployée | Déploiements indépendants pour chaque service, livraison continue possible |
-| **Scalabilité** | Évolue comme une seule unité (verticale ou horizontale pour toute l'app) | Mise à l'échelle indépendante pour chaque service |
-| **Flexibilité** | Faible, difficile d'introduire de nouvelles technologies | Élevée, développement polyglotte possible |
-| **Taille/Structure équipe** | Petites équipes colocalisées bénéficient le plus | Grandes équipes distribuées avec propriété spécialisée |
-| **Tolérance aux pannes** | Faible, défaillance dans une partie peut impacter tout le système | Élevée, défaillance isolée aux services individuels |
-| **Complexité** | Faible (initialement), augmente avec la croissance de l'application | Élevée (intrinsèquement), due à la nature distribuée |
-| **Gestion des données** | Base de données unique et partagée est courante | Décentralisée, chaque service gère ses propres données |
-| **Communication** | Appels de fonction dans le processus | Appels réseau (HTTP, RPC, files d'attente de messages) |
-| **Refactoring** | Difficile en raison du couplage serré | Plus facile dans les limites du service, plus difficile entre services |
+| Fonctionnalité / Aspect     | Architecture monolithique                                                | Architecture microservices                                                 |
+| --------------------------- | ------------------------------------------------------------------------ | -------------------------------------------------------------------------- |
+| **Développement initial**   | Plus simple, plus rapide pour les petites équipes et applications        | Configuration plus complexe, surcharge initiale plus élevée                |
+| **Déploiement**             | Artefact unique, application entière redéployée                          | Déploiements indépendants pour chaque service, livraison continue possible |
+| **Scalabilité**             | Évolue comme une seule unité (verticale ou horizontale pour toute l'app) | Mise à l'échelle indépendante pour chaque service                          |
+| **Flexibilité**             | Faible, difficile d'introduire de nouvelles technologies                 | Élevée, développement polyglotte possible                                  |
+| **Taille/Structure équipe** | Petites équipes colocalisées bénéficient le plus                         | Grandes équipes distribuées avec propriété spécialisée                     |
+| **Tolérance aux pannes**    | Faible, défaillance dans une partie peut impacter tout le système        | Élevée, défaillance isolée aux services individuels                        |
+| **Complexité**              | Faible (initialement), augmente avec la croissance de l'application      | Élevée (intrinsèquement), due à la nature distribuée                       |
+| **Gestion des données**     | Base de données unique et partagée est courante                          | Décentralisée, chaque service gère ses propres données                     |
+| **Communication**           | Appels de fonction dans le processus                                     | Appels réseau (HTTP, RPC, files d'attente de messages)                     |
+| **Refactoring**             | Difficile en raison du couplage serré                                    | Plus facile dans les limites du service, plus difficile entre services     |
 
 ### Quand envisager un monolithe
 
@@ -275,6 +294,16 @@ Dans les prochaines leçons, nous plongerons plus profondément dans la construc
 
 ---
 
-**Prochaine étape** : [Module 2 - Conception et Implémentation des Microservices Principaux](../module-2/lecon-1-domain-driven-design.md)
+## Navigation
 
-**Félicitations !** Vous avez terminé le **Module 1 : Fondements du Développement Web Moderne et des Microservices**. Vous êtes maintenant prêt à passer à l'implémentation concrète des microservices.
+- **⬅️ Précédent** : [Leçon 1.5 - Introduction à l'architecture microservices](lecon-5-microservices-intro.md)
+- **➡️ Suivant** : [Module 2 - Leçon 2.1 : Domain-Driven Design](../module-2/lecon-1-domain-driven-design-bounded-contexts.md)
+- **🏠 Retour** : [Sommaire du Module 1](README.md)
+
+---
+
+🎉 **Félicitations !** Vous avez terminé le **Module 1 : Fondements du Développement Web Moderne et des Microservices**.
+
+Vous êtes maintenant prêt à passer à l'implémentation concrète des microservices.
+
+**Module complété** ✅

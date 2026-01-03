@@ -4,7 +4,26 @@
 
 ---
 
-## Vue d'ensemble
+## Objectifs pédagogiques
+
+- Concevoir une API RESTful pour la gestion des réservations
+- Définir le cycle de vie complet d'une réservation et ses transitions de statut
+- Comprendre la coordination entre microservices via des événements
+- Appliquer le principe de Bounded Context à un contexte transactionnel
+
+## Prérequis
+
+- [Leçon 2.1 : Domain-Driven Design et Bounded Contexts](lecon-1-domain-driven-design-bounded-contexts.md)
+- [Leçon 2.2 : Conception de l'API Tour Catalog](lecon-2-conception-api-tour-catalog.md)
+- Compréhension du cycle de vie des ressources REST
+
+## Durée estimée
+
+2 heures
+
+---
+
+## Introduction
 
 Le microservice Booking Management est responsable de la gestion complète du cycle de vie des réservations dans notre application de tourisme. Contrairement au microservice Tour Catalog qui se concentre sur la présentation et la gestion des informations des visites, le Booking Management gère les transactions de réservation, le suivi des statuts et la coordination avec d'autres microservices comme Payment Gateway et Notification Service.
 
@@ -37,17 +56,17 @@ Il est important de comprendre les limites de ce Bounded Context :
 
 ```javascript
 // ✅ Correct : Dans le Bounded Context Booking Management
-POST /api/v1/booking-management/bookings
+POST / api / v1 / booking - management / bookings;
 // Crée une nouvelle réservation
 
-PATCH /api/v1/booking-management/bookings/{bookingId}/status
+PATCH / api / v1 / booking - management / bookings / { bookingId } / status;
 // Met à jour le statut d'une réservation
 
 // ❌ Incorrect : En dehors du Bounded Context
-POST /api/v1/booking-management/process-payment
+POST / api / v1 / booking - management / process - payment;
 // Le traitement des paiements appartient au Payment Gateway
 
-GET /api/v1/booking-management/tours/{tourId}
+GET / api / v1 / booking - management / tours / { tourId };
 // Les détails des visites appartiennent au Tour Catalog
 ```
 
@@ -61,21 +80,21 @@ Une réservation représente l'engagement d'un client à participer à une visit
 
 **Attributs principaux :**
 
-| Attribut | Type | Description |
-|----------|------|-------------|
-| `id` | UUID | Identifiant unique de la réservation |
-| `customerId` | UUID | Identifiant du client (référence externe) |
-| `tourId` | UUID | Identifiant de la visite (référence au Tour Catalog) |
-| `travelDate` | Date | Date de départ de la visite |
-| `participants` | Object | Détails des participants (adultes, enfants) |
-| `totalPrice` | Decimal | Prix total de la réservation |
-| `status` | Enum | Statut actuel (pending, confirmed, completed, cancelled) |
-| `paymentStatus` | Enum | Statut du paiement (pending, paid, refunded) |
-| `specialRequests` | String | Demandes spéciales du client |
-| `createdAt` | DateTime | Date de création de la réservation |
-| `updatedAt` | DateTime | Date de dernière modification |
-| `confirmedAt` | DateTime | Date de confirmation |
-| `cancelledAt` | DateTime | Date d'annulation (si applicable) |
+| Attribut          | Type     | Description                                              |
+| ----------------- | -------- | -------------------------------------------------------- |
+| `id`              | UUID     | Identifiant unique de la réservation                     |
+| `customerId`      | UUID     | Identifiant du client (référence externe)                |
+| `tourId`          | UUID     | Identifiant de la visite (référence au Tour Catalog)     |
+| `travelDate`      | Date     | Date de départ de la visite                              |
+| `participants`    | Object   | Détails des participants (adultes, enfants)              |
+| `totalPrice`      | Decimal  | Prix total de la réservation                             |
+| `status`          | Enum     | Statut actuel (pending, confirmed, completed, cancelled) |
+| `paymentStatus`   | Enum     | Statut du paiement (pending, paid, refunded)             |
+| `specialRequests` | String   | Demandes spéciales du client                             |
+| `createdAt`       | DateTime | Date de création de la réservation                       |
+| `updatedAt`       | DateTime | Date de dernière modification                            |
+| `confirmedAt`     | DateTime | Date de confirmation                                     |
+| `cancelledAt`     | DateTime | Date d'annulation (si applicable)                        |
 
 **Structure des Participants :**
 
@@ -528,7 +547,7 @@ GET /api/v1/booking-management/availability?tourId=550e8400-e29b-41d4-a716-44665
       "isAvailable": true,
       "pricePerAdult": 89.99,
       "pricePerChild": 44.99,
-      "pricePerInfant": 0.00
+      "pricePerInfant": 0.0
     }
   }
 }
@@ -561,16 +580,16 @@ GET /api/v1/booking-management/availability?tourId=550e8400-e29b-41d4-a716-44665
 
 ### Codes d'Erreur Courants
 
-| Code de Statut HTTP | Code d'Erreur | Message |
-|---------------------|---------------|---------|
-| 400 | INVALID_REQUEST | The request body contains invalid data |
-| 400 | INVALID_STATUS_TRANSITION | Cannot transition from current status to requested status |
-| 404 | BOOKING_NOT_FOUND | The requested booking does not exist |
-| 404 | TOUR_NOT_FOUND | The requested tour does not exist |
-| 409 | INSUFFICIENT_CAPACITY | Not enough available seats for the requested date |
-| 409 | ALREADY_CANCELLED | The booking has already been cancelled |
-| 409 | CANNOT_CANCEL | The booking cannot be cancelled at this stage |
-| 500 | INTERNAL_SERVER_ERROR | An unexpected error occurred |
+| Code de Statut HTTP | Code d'Erreur             | Message                                                   |
+| ------------------- | ------------------------- | --------------------------------------------------------- |
+| 400                 | INVALID_REQUEST           | The request body contains invalid data                    |
+| 400                 | INVALID_STATUS_TRANSITION | Cannot transition from current status to requested status |
+| 404                 | BOOKING_NOT_FOUND         | The requested booking does not exist                      |
+| 404                 | TOUR_NOT_FOUND            | The requested tour does not exist                         |
+| 409                 | INSUFFICIENT_CAPACITY     | Not enough available seats for the requested date         |
+| 409                 | ALREADY_CANCELLED         | The booking has already been cancelled                    |
+| 409                 | CANNOT_CANCEL             | The booking cannot be cancelled at this stage             |
+| 500                 | INTERNAL_SERVER_ERROR     | An unexpected error occurred                              |
 
 ### Exemple de Validation d'Erreur
 
