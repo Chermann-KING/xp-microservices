@@ -1,5 +1,9 @@
 # Leçon 3.3 : Principe de Substitution de Liskov (LSP)
 
+**Module 3** : Principes SOLID, Design Patterns et React Avancé
+
+---
+
 ## Objectifs pédagogiques
 
 - Comprendre le Principe de Substitution de Liskov et son importance
@@ -970,7 +974,7 @@ Dans notre application de réservation touristique, adhérer au LSP signifie que
 ## Navigation
 
 - **⬅️ Précédent** : [Leçon 3.2 - Le Principe Ouvert/Fermé (OCP)](lecon-2-open-closed-principle.md)
-- **➡️ Suivant** : Leçon 3.4 - Le Principe de Ségrégation des Interfaces (ISP) _(à venir)_
+- **➡️ Suivant** : [Leçon 3.4 - Le Principe de Ségrégation des Interfaces (ISP)](lecon-3-liskov-substitution-principle.md)
 - **🏠 Retour** : [Sommaire du Module 3](README.md)
 
 ---

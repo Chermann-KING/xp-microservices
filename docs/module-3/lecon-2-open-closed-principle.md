@@ -1,6 +1,6 @@
 # Leçon 3.2 - Le Principe Ouvert/Fermé (OCP) pour un Code Extensible
 
-**Module 3** : Principes SOLID et Design Patterns
+**Module 3** : Principes SOLID, Design Patterns et React Avancé
 
 ---
 
