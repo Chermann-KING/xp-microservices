@@ -174,9 +174,8 @@ Dans les prochaines leçons, nous plongerons dans les bases du développement we
 
 ## Navigation
 
-- **⬅️ Précédent** : [Sommaire du Module 1](README.md)
-- **➡️ Suivant** : [Leçon 1.2 - Les fondamentaux de React](lecon-2-react-fundamentals.md)
 - **🏠 Retour** : [Sommaire du Module 1](README.md)
+- **➡️ Suivant** : [Leçon 1.2 - Les fondamentaux de React](lecon-2-react-fundamentals.md)
 
 ---
 

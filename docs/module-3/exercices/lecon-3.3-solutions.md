@@ -838,7 +838,7 @@ const notificationService = new NotificationServiceV2([
 ]);
 
 // Créer différents types de destinataires
-const emailRecipient = new EmailRecipient("user@example.com", "Jean Dupont");
+const emailRecipient = new EmailRecipient("tchalla@wakanda.com", "T'Challa");
 const phoneRecipient = new PhoneRecipient("612345678", "+33");
 const deviceRecipient = new DeviceRecipient("device_abc123xyz789", "android");
 
@@ -1105,14 +1105,14 @@ function App() {
 
   // Utilisateur authentifié complet
   const authenticatedUser = {
-    fullName: "Marie Dupont",
-    profilePictureUrl: "https://example.com/marie.jpg",
+    fullName: "Shuri",
+    profilePictureUrl: "https://wakanda.com/shuri.jpg",
     isAuthenticated: true,
   };
 
   // Utilisateur authentifié avec données partielles
   const partialAuthUser = {
-    fullName: "Pierre Martin",
+    fullName: "Peter Parker",
     // Pas de profilePictureUrl - le composant doit gérer ce cas
     isAuthenticated: true,
   };
@@ -1289,7 +1289,7 @@ describe("LSP Compliance Tests for Avatar Components", () => {
     });
 
     test("AuthenticatedUserAvatar peut remplacer GuestUserAvatar dans le conteneur", () => {
-      const authUser = { fullName: "Marie", isAuthenticated: true };
+      const authUser = { fullName: "Wanda Maximoff", isAuthenticated: true };
       renderAvatarContainer(AuthenticatedUserAvatar, authUser);
 
       const container = screen.getByTestId("avatar-container");
@@ -1456,15 +1456,17 @@ describe("UserDashboard avec hook substituable", () => {
 
   test("affiche les données utilisateur quand chargées", () => {
     useUserData.mockReturnValue({
-      user: { fullName: "Jean Dupont", email: "jean@example.com" },
+      user: { fullName: "Tony Stark", email: "tony@starkindustries.com" },
       isLoading: false,
       error: null,
       refetch: jest.fn(),
     });
 
     render(<UserDashboard userId="123" />);
-    expect(screen.getByText("Bienvenue, Jean Dupont")).toBeInTheDocument();
-    expect(screen.getByText("Email: jean@example.com")).toBeInTheDocument();
+    expect(screen.getByText("Bienvenue, Tony Stark")).toBeInTheDocument();
+    expect(
+      screen.getByText("Email: tony@starkindustries.com")
+    ).toBeInTheDocument();
   });
 
   test("affiche erreur et permet de réessayer", () => {

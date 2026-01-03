@@ -800,14 +800,14 @@ function App() {
   const users = [
     {
       id: "u1",
-      name: "Alice Martin",
-      email: "alice@example.com",
+      name: "Natasha Romanoff",
+      email: "natasha@avengers.com",
       isLoyaltyMember: true,
     },
     {
       id: "u2",
-      name: "Bob Dupont",
-      email: "bob@example.com",
+      name: "Steve Rogers",
+      email: "steve@avengers.com",
       isLoyaltyMember: false,
     },
   ];

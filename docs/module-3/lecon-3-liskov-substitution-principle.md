@@ -970,7 +970,7 @@ Dans notre application de réservation touristique, adhérer au LSP signifie que
 ## Navigation
 
 - **⬅️ Précédent** : [Leçon 3.2 - Le Principe Ouvert/Fermé (OCP)](lecon-2-open-closed-principle.md)
-- **➡️ Suivant** : Leçon 3.4 - Le Principe de Ségrégation des Interfaces (ISP) *(à venir)*
+- **➡️ Suivant** : Leçon 3.4 - Le Principe de Ségrégation des Interfaces (ISP) _(à venir)_
 - **🏠 Retour** : [Sommaire du Module 3](README.md)
 
 ---

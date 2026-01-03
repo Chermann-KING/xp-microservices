@@ -117,7 +117,7 @@ Les props sont passées aux composants comme des attributs lorsqu'ils sont rendu
 
 ```jsx
 function ComposantParent() {
-  const nomUtilisateur = "Alice";
+  const nomUtilisateur = "Pepper Potts";
   const idTour = "TOUR_001";
 
   return (
