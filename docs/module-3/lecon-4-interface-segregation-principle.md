@@ -971,7 +971,7 @@ Ce principe supporte directement la **modularité** et l'**indépendance** que l
 ## Navigation
 
 - **⬅️ Précédent** : [Leçon 3.3 - Le Principe de Substitution de Liskov (LSP)](lecon-3-liskov-substitution-principle.md)
-- **➡️ Suivant** : [Leçon 3.5 - Le Principe d'Inversion des Dépendances (DIP)](C:\Users\cherm\Development\xp-microservices\docs\module-3\lecon-5-dependency-inversion-principle.md)
+- **➡️ Suivant** : [Leçon 3.5 - Le Principe d'Inversion des Dépendances (DIP)](lecon-5-dependency-inversion-principle.md)
 - **🏠 Retour** : [Sommaire du Module 3](README.md)
 
 ---
