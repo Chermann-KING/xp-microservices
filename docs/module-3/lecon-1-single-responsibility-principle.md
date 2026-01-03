@@ -49,7 +49,7 @@ Dans une architecture microservices, le SRP guide la **décomposition du systèm
 
 ### Exemple 1 : Microservice Tour Catalog
 
-Dans notre application touristique TourCraft, le **Tour Catalog Microservice** est responsable uniquement de la gestion des informations sur les visites.
+Dans notre application de réservation touristique, le **Tour Catalog Microservice** est responsable uniquement de la gestion des informations sur les visites.
 
 | Aspect                | Description                                                                                                              |
 | --------------------- | ------------------------------------------------------------------------------------------------------------------------ |
@@ -210,7 +210,7 @@ Ces responsabilités appartiennent à d'autres composants ou services.
 
 ## Exemples pratiques et démonstrations
 
-Illustrons le SRP avec des exemples plus concrets de notre application touristique TourCraft.
+Illustrons le SRP avec des exemples plus concrets de notre application de réservation touristique.
 
 ### Microservices : Séparation des préoccupations pour la gestion des utilisateurs
 
