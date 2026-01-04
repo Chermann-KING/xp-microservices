@@ -4,7 +4,28 @@
 
 ---
 
-## Vue d'ensemble
+## Objectifs pédagogiques
+
+- Comprendre les principes fondamentaux de l'architecture REST
+- Maîtriser la conception d'URIs et la gestion des ressources
+- Appliquer les méthodes HTTP de manière appropriée (GET, POST, PUT, DELETE, PATCH)
+- Implémenter les bonnes pratiques pour les codes de statut et la gestion des erreurs
+- Concevoir des APIs versionnées, paginées et sécurisées
+
+## Prérequis
+
+- [Leçon 1.1 : Introduction à l'étude de cas](lecon-1-introduction-etude-de-cas.md)
+- [Leçon 1.2 : Fondamentaux de React](lecon-2-react-fundamentals.md)
+- [Leçon 1.3 : Configuration de l'environnement](lecon-3-setup-environnement.md)
+- Connaissances de base du protocole HTTP
+
+## Durée estimée
+
+2 heures
+
+---
+
+## Introduction
 
 Le design d'API RESTful se concentre sur la création de services web légers, maintenables et évolutifs, utilisant principalement les méthodes HTTP standard pour la communication. Cette approche permet à divers clients, tels que les navigateurs web, les applications mobiles ou d'autres microservices, d'interagir avec les ressources de manière cohérente et prévisible.
 
@@ -12,7 +33,7 @@ Le respect des principes établis garantit que les APIs sont intuitives pour les
 
 ---
 
-## Principes RESTful fondamentaux
+## Comprendre les principes RESTful
 
 **REST** (Representational State Transfer) est un style architectural, pas un protocole, qui exploite les standards web existants. Il définit un ensemble de contraintes qui, lorsqu'elles sont appliquées, créent un système sans état, client-serveur, cacheable, en couches avec une interface uniforme.
 
@@ -810,11 +831,11 @@ Ces principes sont particulièrement vitaux alors que nous passons à la concept
 
 ---
 
-### Prochaine leçon
+## Navigation
 
-La prochaine leçon introduira l'**architecture microservices** en détail, ses avantages et ses défis, préparant le terrain pour la conception et l'implémentation de nos microservices principaux.
-
-**Prochaine leçon** : [Leçon 1.5 - Introduction à l'Architecture Microservices et ses Avantages](lecon-5-microservices-intro.md)
+- **⬅️ Précédent** : [Leçon 1.3 - Configuration de l'environnement](lecon-3-setup-environnement.md)
+- **➡️ Suivant** : [Leçon 1.5 - Introduction à l'architecture microservices](lecon-5-microservices-intro.md)
+- **🏠 Retour** : [Sommaire du Module 1](README.md)
 
 ---
 

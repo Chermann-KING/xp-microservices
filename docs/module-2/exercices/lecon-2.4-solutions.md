@@ -87,7 +87,7 @@ Content-Type: application/json
 {
   "participants": [
     {
-      "name": "Bruce Wayne",
+      "name": "Steve Rogers",
       "age": 40,
       "type": "adult"
     }
@@ -104,12 +104,12 @@ Content-Type: application/json
   "date": "2026-08-25",
   "participants": [
     {
-      "name": "Diana Prince",
+      "name": "Natasha Romanoff",
       "age": 30,
       "type": "adult"
     },
     {
-      "name": "Clark Kent",
+      "name": "Clint Barton",
       "age": 35,
       "type": "adult"
     }
@@ -132,7 +132,7 @@ PATCH /api/v1/booking-management/bookings/b1o2o3k4-i5n6-7g8i-9d0e-1a2b3c4d5e6f
   "date": "2026-08-25",
   "participants": [
     {
-      "name": "Diana Prince",
+      "name": "Natasha Romanoff",
       "age": 30,
       "type": "adult"
     }
@@ -154,7 +154,7 @@ PATCH /api/v1/booking-management/bookings/b1o2o3k4-i5n6-7g8i-9d0e-1a2b3c4d5e6f
       "date": "2026-08-25",
       "participants": [
         {
-          "name": "Diana Prince",
+          "name": "Natasha Romanoff",
           "age": 30,
           "type": "adult"
         }
@@ -291,8 +291,8 @@ Si le nombre de participants change, le prix total doit être recalculé et un p
     "booking": {
       "id": "b1o2o3k4-i5n6-7g8i-9d0e-1a2b3c4d5e6f",
       "participants": [
-        { "name": "Diana Prince", "age": 30, "type": "adult" },
-        { "name": "Clark Kent", "age": 35, "type": "adult" }
+        { "name": "Natasha Romanoff", "age": 30, "type": "adult" },
+        { "name": "Clint Barton", "age": 35, "type": "adult" }
       ],
       "totalPrice": 179.98,
       "pricingDetails": {
@@ -316,7 +316,7 @@ Si le nombre de participants change, le prix total doit être recalculé et un p
     "booking": {
       "id": "b1o2o3k4-i5n6-7g8i-9d0e-1a2b3c4d5e6f",
       "participants": [
-        { "name": "Diana Prince", "age": 30, "type": "adult" }
+        { "name": "Natasha Romanoff", "age": 30, "type": "adult" }
       ],
       "totalPrice": 89.99,
       "pricingDetails": {

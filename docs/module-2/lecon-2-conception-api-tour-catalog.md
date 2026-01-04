@@ -4,7 +4,26 @@
 
 ---
 
-## Vue d'ensemble
+## Objectifs pédagogiques
+
+- Concevoir une API RESTful cohérente pour le microservice Tour Catalog
+- Appliquer le concept de Bounded Context à la définition des endpoints
+- Maîtriser la séparation des préoccupations entre microservices
+- Définir des ressources et opérations alignées avec le domaine métier
+
+## Prérequis
+
+- [Leçon 1.4 : Conception d'API RESTful](../module-1/lecon-4-restful-api-design.md)
+- [Leçon 2.1 : Domain-Driven Design et Bounded Contexts](lecon-1-domain-driven-design-bounded-contexts.md)
+- Connaissance des principes REST et des codes HTTP
+
+## Durée estimée
+
+2 heures
+
+---
+
+## Introduction
 
 La conception de l'API pour le microservice Tour Catalog nécessite une compréhension claire de son Bounded Context et des ressources spécifiques qu'il gère. Ce microservice est responsable de maintenir toutes les informations relatives aux visites disponibles, y compris leurs descriptions, itinéraires, prix, disponibilités et médias associés. L'API sert d'interface principale pour que d'autres microservices et clients externes interagissent avec ces données.
 
@@ -22,11 +41,11 @@ Par exemple, l'API du Tour Catalog devrait fournir des endpoints pour récupére
 
 ```javascript
 // ✅ Correct : Dans le Bounded Context Tour Catalog
-GET /api/v1/tours-catalog/tours/{tourId}
+GET / api / v1 / tours - catalog / tours / { tourId };
 // Récupère les détails d'une visite spécifique
 
 // ❌ Incorrect : En dehors du Bounded Context Tour Catalog
-POST /api/v1/tours-catalog/tours/{tourId}/book
+POST / api / v1 / tours - catalog / tours / { tourId } / book;
 // Cela devrait appartenir au microservice Booking Management
 ```
 
@@ -37,11 +56,13 @@ En adhérant à ces limites, nous assurons que chaque microservice reste concent
 Considérons une plateforme e-commerce. Le microservice Product Catalog gérerait les produits, leurs descriptions, images, prix et niveaux de stock. Son API permettrait aux clients de rechercher des produits, consulter les détails des produits et obtenir des informations sur les stocks.
 
 **Ce qu'il gère :**
+
 - ✅ Détails des produits
 - ✅ Images et descriptions
 - ✅ Prix et disponibilité en stock
 
 **Ce qu'il ne gère PAS :**
+
 - ❌ Ajout d'articles au panier (appartient au microservice Cart)
 - ❌ Traitement des commandes (appartient au microservice Order)
 
@@ -52,11 +73,13 @@ Le Bounded Context du Product Catalog concerne strictement les produits disponib
 Imaginons un système universitaire construit avec des microservices. Un microservice Course Catalog gérerait les cours, leurs descriptions, prérequis, horaires et instructeurs.
 
 **Fonctionnalités de l'API :**
+
 - ✅ Parcourir les cours
 - ✅ Consulter les détails des cours
 - ✅ Vérifier la disponibilité des places
 
 **Hors du périmètre :**
+
 - ❌ Inscription des étudiants (microservice Student Enrollment)
 - ❌ Soumission des notes (microservice Grading)
 
@@ -100,22 +123,22 @@ Les méthodes HTTP définissent l'action à effectuer sur une ressource :
 
 ```javascript
 // Récupérer toutes les visites
-GET /api/v1/tours-catalog/tours
+GET / api / v1 / tours - catalog / tours;
 
 // Récupérer une visite spécifique
-GET /api/v1/tours-catalog/tours/{tourId}
+GET / api / v1 / tours - catalog / tours / { tourId };
 
 // Créer une nouvelle visite
-POST /api/v1/tours-catalog/tours
+POST / api / v1 / tours - catalog / tours;
 
 // Remplacer complètement une visite
-PUT /api/v1/tours-catalog/tours/{tourId}
+PUT / api / v1 / tours - catalog / tours / { tourId };
 
 // Mettre à jour partiellement une visite (par exemple, changer uniquement le prix)
-PATCH /api/v1/tours-catalog/tours/{tourId}
+PATCH / api / v1 / tours - catalog / tours / { tourId };
 
 // Supprimer une visite
-DELETE /api/v1/tours-catalog/tours/{tourId}
+DELETE / api / v1 / tours - catalog / tours / { tourId };
 ```
 
 ### 3. Codes de Statut HTTP
@@ -298,13 +321,11 @@ POST /api/v1/tours-catalog/tours
   "longDescription": "Cette visite guidée vous emmène...",
   "categoryId": "c1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
   "destinationId": "d7e8f9a0-b1c2-3d4e-5f6a-7b8c9d0e1f2a",
-  "price": 75.00,
+  "price": 75.0,
   "duration": 3,
   "maxGroupSize": 15,
   "difficulty": "moderate",
-  "images": [
-    "https://cdn.example.com/tours/louvre-1.jpg"
-  ],
+  "images": ["https://cdn.example.com/tours/louvre-1.jpg"],
   "itinerary": [
     {
       "day": 1,
@@ -329,7 +350,7 @@ POST /api/v1/tours-catalog/tours
       "description": "Explorez le célèbre musée du Louvre",
       "categoryId": "c1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
       "destinationId": "d7e8f9a0-b1c2-3d4e-5f6a-7b8c9d0e1f2a",
-      "price": 75.00,
+      "price": 75.0,
       "duration": 3,
       "maxGroupSize": 15,
       "rating": 0,
@@ -615,7 +636,7 @@ Lors de la création ou de la mise à jour de ressources, les clients doivent en
   "longDescription": "Explorez les rues pavées de Montmartre...",
   "categoryId": "e2f3a4b5-c6d7-8e9f-0a1b-2c3d4e5f6a7b",
   "destinationId": "d7e8f9a0-b1c2-3d4e-5f6a-7b8c9d0e1f2a",
-  "price": 45.00,
+  "price": 45.0,
   "duration": 2.5,
   "maxGroupSize": 12,
   "difficulty": "easy",
@@ -642,7 +663,9 @@ Toutes les réponses suivent une structure cohérente avec un champ `status` et 
 {
   "status": "success",
   "data": {
-    "tour": { /* objet visite */ }
+    "tour": {
+      /* objet visite */
+    }
   }
 }
 ```
@@ -653,7 +676,9 @@ Toutes les réponses suivent une structure cohérente avec un champ `status` et 
 {
   "status": "success",
   "data": {
-    "tours": [ /* tableau d'objets visites */ ],
+    "tours": [
+      /* tableau d'objets visites */
+    ],
     "pagination": {
       "currentPage": 2,
       "totalPages": 15,
@@ -715,14 +740,14 @@ Une gestion cohérente des erreurs est essentielle pour une bonne expérience d�
 
 ### Codes d'Erreur Courants
 
-| Code de Statut HTTP | Code d'Erreur | Message |
-|---------------------|---------------|---------|
-| 400 | INVALID_REQUEST | The request body contains invalid data |
-| 404 | TOUR_NOT_FOUND | The requested tour does not exist |
-| 404 | CATEGORY_NOT_FOUND | The requested category does not exist |
-| 404 | DESTINATION_NOT_FOUND | The requested destination does not exist |
-| 409 | DUPLICATE_ENTRY | A tour with this title already exists |
-| 500 | INTERNAL_SERVER_ERROR | An unexpected error occurred |
+| Code de Statut HTTP | Code d'Erreur         | Message                                  |
+| ------------------- | --------------------- | ---------------------------------------- |
+| 400                 | INVALID_REQUEST       | The request body contains invalid data   |
+| 404                 | TOUR_NOT_FOUND        | The requested tour does not exist        |
+| 404                 | CATEGORY_NOT_FOUND    | The requested category does not exist    |
+| 404                 | DESTINATION_NOT_FOUND | The requested destination does not exist |
+| 409                 | DUPLICATE_ENTRY       | A tour with this title already exists    |
+| 500                 | INTERNAL_SERVER_ERROR | An unexpected error occurred             |
 
 ### Exemple de Validation de Requête
 
@@ -920,16 +945,19 @@ GET /api/v1/tours-catalog/tours/search?query=eiffel&minPrice=50&maxPrice=100
 La plateforme Airbnb dispose probablement d'un microservice "Listing Service" (Service de Listage). Son API expose des endpoints pour gérer les annonces de propriétés.
 
 **Interactions des hôtes :**
+
 - Lorsqu'un hôte crée une nouvelle annonce, il interagit avec `POST /api/listings`
 - Mise à jour des détails : `PUT /api/listings/{listingId}`
 - Gestion des photos, équipements, règles de la maison
 
 **Interactions des invités :**
+
 - Recherche de propriétés : `GET /api/listings` avec paramètres (location, dates, gamme de prix)
 - Détails d'une annonce spécifique : `GET /api/listings/{listingId}`
 - Consultation du calendrier de disponibilité
 
 **Limites du Bounded Context :**
+
 - ✅ L'API se concentre uniquement sur les attributs de la propriété
 - ✅ Calendrier de disponibilité
 - ✅ Informations fournies par l'hôte
@@ -942,11 +970,13 @@ La plateforme Airbnb dispose probablement d'un microservice "Listing Service" (S
 L'immense bibliothèque musicale de Spotify est gérée par un microservice "Catalog Service" (Service de Catalogue). Son API permet aux applications clientes (et autres services internes) de rechercher des artistes, albums et pistes.
 
 **Endpoints typiques :**
+
 - `GET /api/v1/catalog/artists/{artistId}/albums` - Récupère tous les albums d'un artiste spécifique
 - `GET /api/v1/catalog/tracks/{trackId}` - Fournit les métadonnées d'une chanson particulière
 - `GET /api/v1/catalog/search?q=bohemian+rhapsody` - Recherche dans le catalogue
 
 **Focus du service :**
+
 - ✅ Données descriptives du contenu musical (titre, artiste, durée, genre)
 - ✅ Pochettes d'albums et images d'artistes
 - ✅ Relations entre artistes, albums et pistes

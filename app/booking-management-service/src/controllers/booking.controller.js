@@ -1,22 +1,33 @@
 /**
- * Booking Controller - Version Sequelize ORM
- * Booking Management Service - Leçon 2.6
+ * Booking Controller - Version SOLID Refactorisée - Module 3
  *
- * Ce contrôleur utilise Sequelize pour la persistance PostgreSQL.
- * La communication avec Tour Catalog Service reste via HTTP (Axios).
+ * Ce contrôleur suit le principe SRP (Single Responsibility Principle) :
+ * Sa SEULE responsabilité est de gérer le protocole HTTP.
+ *
+ * Responsabilités:
+ * - Extraire les données des requêtes HTTP
+ * - Déléguer le traitement au BookingService
+ * - Formater les réponses HTTP
+ * - Gérer les erreurs HTTP
+ *
+ * Ce qu'il ne fait PAS :
+ * - Logique métier (déléguée au BookingService)
+ * - Accès aux données (délégué au BookingRepository)
+ * - Validation métier (déléguée au BookingService)
  */
 
-import { Booking } from "../models/index.js";
+import { getContainer } from "../config/container.js";
 import { sendSuccess, sendError, createPagination } from "../utils/response.js";
-import { NotFoundError, ValidationError } from "../middleware/errorHandler.js";
-import * as tourCatalogService from "../services/tourCatalogService.js";
-import { Op } from "sequelize";
 
 /**
  * Récupère toutes les réservations avec filtres et pagination
+ * @route GET /api/v1/bookings
  */
 export const getAllBookings = async (req, res, next) => {
   try {
+    const { bookingService } = getContainer();
+
+    // Extraire les paramètres de requête
     const {
       page = 1,
       limit = 10,
@@ -29,44 +40,29 @@ export const getAllBookings = async (req, res, next) => {
       order = "DESC",
     } = req.query;
 
-    const pageNum = parseInt(page, 10);
-    const limitNum = parseInt(limit, 10);
-    const offset = (pageNum - 1) * limitNum;
+    // Construire les filtres
+    const filters = {
+      status,
+      tourId,
+      customerEmail,
+      fromDate,
+      toDate,
+      sort,
+      order,
+    };
 
-    // Construction des filtres
-    const where = {};
+    // Pagination
+    const pagination = {
+      page: parseInt(page, 10),
+      limit: parseInt(limit, 10),
+    };
 
-    if (status) {
-      where.status = status;
-    }
-
-    if (tourId) {
-      where.tourId = tourId;
-    }
-
-    if (customerEmail) {
-      where.customerEmail = { [Op.iLike]: `%${customerEmail}%` };
-    }
-
-    if (fromDate || toDate) {
-      where.tourDate = {};
-      if (fromDate) where.tourDate[Op.gte] = fromDate;
-      if (toDate) where.tourDate[Op.lte] = toDate;
-    }
-
-    // Requête avec pagination
-    const { count, rows: bookings } = await Booking.findAndCountAll({
-      where,
-      order: [[sort, order.toUpperCase()]],
-      limit: limitNum,
-      offset,
-    });
-
-    const pagination = createPagination(pageNum, limitNum, count);
+    // Déléguer au service
+    const result = await bookingService.getAllBookings(filters, pagination);
 
     sendSuccess(res, {
-      bookings: bookings.map((b) => b.toAPIFormat()),
-      pagination,
+      bookings: result.data,
+      pagination: result.pagination,
     });
   } catch (error) {
     next(error);
@@ -75,35 +71,28 @@ export const getAllBookings = async (req, res, next) => {
 
 /**
  * Récupère une réservation par ID
+ * @route GET /api/v1/bookings/:bookingId
  */
 export const getBookingById = async (req, res, next) => {
   try {
+    const { bookingService, tourCatalogService } = getContainer();
     const { bookingId } = req.params;
 
-    const booking = await Booking.findByPk(bookingId);
+    const result = await bookingService.getBookingById(bookingId);
 
-    if (!booking) {
-      throw new NotFoundError(
-        "The requested booking does not exist",
-        "BOOKING_NOT_FOUND",
-        { bookingId }
-      );
-    }
-
-    // Enrichir avec les informations du tour (depuis Tour Catalog Service)
+    // Enrichir avec les informations du tour (optionnel)
     let tourInfo = null;
     try {
-      tourInfo = await tourCatalogService.getTourById(booking.tourId);
+      tourInfo = await tourCatalogService.getTourById(result.data.tourId);
     } catch (err) {
-      // Log l'erreur mais continuer sans les infos du tour
+      // Log mais continue sans les infos du tour
       console.warn(
-        `Impossible de récupérer les infos du tour ${booking.tourId}:`,
-        err.message
+        `Impossible de récupérer les infos du tour ${result.data.tourId}`
       );
     }
 
     const response = {
-      booking: booking.toAPIFormat(),
+      booking: result.data,
     };
 
     if (tourInfo) {
@@ -116,33 +105,41 @@ export const getBookingById = async (req, res, next) => {
 
     sendSuccess(res, response);
   } catch (error) {
+    if (error.code === "BOOKING_NOT_FOUND") {
+      return res.status(404).json({
+        success: false,
+        error: {
+          code: error.code,
+          message: error.message,
+        },
+      });
+    }
     next(error);
   }
 };
 
 /**
  * Récupère les réservations d'un client par email
+ * @route GET /api/v1/bookings/customer/:email
  */
 export const getBookingsByCustomerEmail = async (req, res, next) => {
   try {
+    const { bookingService } = getContainer();
     const { email } = req.params;
     const { page = 1, limit = 10 } = req.query;
 
+    const result = await bookingService.getBookingsByCustomer(email);
+
+    // Pagination côté contrôleur pour ce cas simple
     const pageNum = parseInt(page, 10);
     const limitNum = parseInt(limit, 10);
     const offset = (pageNum - 1) * limitNum;
 
-    const { count, rows: bookings } = await Booking.findAndCountAll({
-      where: { customerEmail: email },
-      order: [["createdAt", "DESC"]],
-      limit: limitNum,
-      offset,
-    });
-
-    const pagination = createPagination(pageNum, limitNum, count);
+    const paginatedData = result.data.slice(offset, offset + limitNum);
+    const pagination = createPagination(pageNum, limitNum, result.data.length);
 
     sendSuccess(res, {
-      bookings: bookings.map((b) => b.toAPIFormat()),
+      bookings: paginatedData,
       pagination,
     });
   } catch (error) {
@@ -152,251 +149,170 @@ export const getBookingsByCustomerEmail = async (req, res, next) => {
 
 /**
  * Crée une nouvelle réservation
+ * @route POST /api/v1/bookings
  */
 export const createBooking = async (req, res, next) => {
   try {
-    const {
-      tourId,
-      customerName,
-      customerEmail,
-      customerPhone,
-      tourDate,
-      numberOfParticipants = 1,
-      specialRequests,
-    } = req.body;
+    const { bookingService, tourCatalogService } = getContainer();
 
-    // Validation basique
-    if (!tourId || !customerName || !customerEmail || !tourDate) {
-      throw new ValidationError("Missing required fields", "VALIDATION_ERROR", {
-        required: ["tourId", "customerName", "customerEmail", "tourDate"],
-      });
-    }
+    const bookingData = {
+      tourId: req.body.tourId,
+      customerName: req.body.customerName,
+      customerEmail: req.body.customerEmail,
+      customerPhone: req.body.customerPhone,
+      tourDate: req.body.tourDate,
+      numberOfParticipants: req.body.numberOfParticipants || 1,
+      specialRequests: req.body.specialRequests,
+    };
 
-    // Vérifier que le tour existe et récupérer son prix
-    let tourInfo;
+    const result = await bookingService.createBooking(bookingData);
+
+    // Enrichir avec les infos du tour pour la réponse
+    let tourInfo = null;
     try {
-      tourInfo = await tourCatalogService.getTourById(tourId);
+      tourInfo = await tourCatalogService.getTourById(bookingData.tourId);
     } catch (err) {
-      throw new NotFoundError("Tour not found in catalog", "TOUR_NOT_FOUND", {
-        tourId,
+      // Continue sans les infos
+    }
+
+    const response = {
+      booking: result.data,
+    };
+
+    if (tourInfo) {
+      response.tour = {
+        id: tourInfo.id,
+        title: tourInfo.title,
+        price: tourInfo.price,
+      };
+    }
+
+    sendSuccess(res, response, 201);
+  } catch (error) {
+    if (error.statusCode) {
+      return res.status(error.statusCode).json({
+        success: false,
+        error: {
+          code: error.code,
+          message: error.message,
+        },
       });
     }
-
-    // Vérifier la disponibilité
-    const availability = await tourCatalogService.checkAvailability(
-      tourId,
-      tourDate,
-      numberOfParticipants
-    );
-
-    if (!availability.available) {
-      throw new ValidationError(
-        "Tour is not available for the selected date and number of participants",
-        "NOT_AVAILABLE",
-        {
-          tourId,
-          tourDate,
-          numberOfParticipants,
-          availableSlots: availability.availableSlots,
-        }
-      );
-    }
-
-    // Calculer le montant total
-    const totalAmount = tourInfo.price * numberOfParticipants;
-
-    // Créer la réservation
-    const newBooking = await Booking.create({
-      tourId,
-      customerName,
-      customerEmail,
-      customerPhone,
-      tourDate,
-      numberOfParticipants,
-      totalAmount,
-      currency: tourInfo.currency || "EUR",
-      specialRequests,
-      status: "pending",
-    });
-
-    sendSuccess(
-      res,
-      {
-        booking: newBooking.toAPIFormat(),
-        tour: {
-          id: tourInfo.id,
-          title: tourInfo.title,
-          price: tourInfo.price,
-        },
-      },
-      201
-    );
-  } catch (error) {
     next(error);
   }
 };
 
 /**
  * Met à jour le statut d'une réservation (machine à états)
+ * @route PATCH /api/v1/bookings/:bookingId/status
  */
 export const updateBookingStatus = async (req, res, next) => {
   try {
+    const { bookingService } = getContainer();
     const { bookingId } = req.params;
     const { status, reason } = req.body;
 
     if (!status) {
-      throw new ValidationError("Status is required", "VALIDATION_ERROR", {
-        required: ["status"],
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: "VALIDATION_ERROR",
+          message: "Status is required",
+        },
       });
     }
 
-    const booking = await Booking.findByPk(bookingId);
+    const result = await bookingService.changeBookingStatus(
+      bookingId,
+      status,
+      reason
+    );
 
-    if (!booking) {
-      throw new NotFoundError(
-        "The requested booking does not exist",
-        "BOOKING_NOT_FOUND",
-        { bookingId }
-      );
-    }
-
-    // Vérifier si la transition est valide
-    if (!booking.canTransitionTo(status)) {
-      throw new ValidationError(
-        `Invalid status transition from '${booking.status}' to '${status}'`,
-        "INVALID_STATUS_TRANSITION",
-        {
-          currentStatus: booking.status,
-          requestedStatus: status,
-          allowedTransitions: Booking.STATE_TRANSITIONS[booking.status],
-        }
-      );
-    }
-
-    // Si annulation, enregistrer la raison
-    if (status === "cancelled" && reason) {
-      booking.cancellationReason = reason;
-    }
-
-    // Effectuer la transition
-    await booking.transitionTo(status);
-
-    sendSuccess(res, { booking: booking.toAPIFormat() });
+    sendSuccess(res, { booking: result.data });
   } catch (error) {
+    if (error.statusCode) {
+      return res.status(error.statusCode).json({
+        success: false,
+        error: {
+          code: error.code,
+          message: error.message,
+        },
+      });
+    }
     next(error);
   }
 };
 
 /**
  * Annule une réservation
+ * @route POST /api/v1/bookings/:bookingId/cancel
  */
 export const cancelBooking = async (req, res, next) => {
   try {
+    const { bookingService } = getContainer();
     const { bookingId } = req.params;
     const { reason } = req.body;
 
-    const booking = await Booking.findByPk(bookingId);
-
-    if (!booking) {
-      throw new NotFoundError(
-        "The requested booking does not exist",
-        "BOOKING_NOT_FOUND",
-        { bookingId }
-      );
-    }
-
-    if (!booking.canTransitionTo("cancelled")) {
-      throw new ValidationError(
-        `Cannot cancel a booking with status '${booking.status}'`,
-        "CANNOT_CANCEL",
-        {
-          currentStatus: booking.status,
-          allowedTransitions: Booking.STATE_TRANSITIONS[booking.status],
-        }
-      );
-    }
-
-    booking.cancellationReason = reason || "Annulée par le client";
-    await booking.transitionTo("cancelled");
+    const result = await bookingService.cancelBooking(
+      bookingId,
+      reason || "Annulée par le client"
+    );
 
     sendSuccess(res, {
-      booking: booking.toAPIFormat(),
-      message: "Booking cancelled successfully",
+      booking: result.data,
+      message: result.message,
     });
   } catch (error) {
+    if (error.statusCode) {
+      return res.status(error.statusCode).json({
+        success: false,
+        error: {
+          code: error.code,
+          message: error.message,
+        },
+      });
+    }
     next(error);
   }
 };
 
 /**
- * Supprime une réservation (admin only, pour les réservations annulées)
+ * Supprime une réservation
+ * @route DELETE /api/v1/bookings/:bookingId
  */
 export const deleteBooking = async (req, res, next) => {
   try {
+    const { bookingService } = getContainer();
     const { bookingId } = req.params;
 
-    const booking = await Booking.findByPk(bookingId);
-
-    if (!booking) {
-      throw new NotFoundError(
-        "The requested booking does not exist",
-        "BOOKING_NOT_FOUND",
-        { bookingId }
-      );
-    }
-
-    // Seules les réservations annulées peuvent être supprimées
-    if (booking.status !== "cancelled") {
-      throw new ValidationError(
-        "Only cancelled bookings can be deleted",
-        "CANNOT_DELETE",
-        { currentStatus: booking.status }
-      );
-    }
-
-    await booking.destroy();
+    await bookingService.deleteBooking(bookingId);
 
     res.status(204).send();
   } catch (error) {
+    if (error.statusCode) {
+      return res.status(error.statusCode).json({
+        success: false,
+        error: {
+          code: error.code,
+          message: error.message,
+        },
+      });
+    }
     next(error);
   }
 };
 
 /**
  * Statistiques des réservations
+ * @route GET /api/v1/bookings/stats
  */
 export const getBookingStats = async (req, res, next) => {
   try {
-    const { sequelize } = Booking;
+    const { bookingService } = getContainer();
 
-    const stats = await Booking.findAll({
-      attributes: [
-        "status",
-        [sequelize.fn("COUNT", sequelize.col("id")), "count"],
-        [sequelize.fn("SUM", sequelize.col("total_amount")), "totalRevenue"],
-      ],
-      group: ["status"],
-      raw: true,
-    });
+    const result = await bookingService.getStatistics();
 
-    const totalBookings = await Booking.count();
-    const totalRevenue = await Booking.sum("totalAmount", {
-      where: { status: { [Op.in]: ["confirmed", "completed"] } },
-    });
-
-    sendSuccess(res, {
-      stats: {
-        total: totalBookings,
-        totalRevenue: totalRevenue || 0,
-        byStatus: stats.reduce((acc, s) => {
-          acc[s.status] = {
-            count: parseInt(s.count, 10),
-            revenue: parseFloat(s.totalRevenue) || 0,
-          };
-          return acc;
-        }, {}),
-      },
-    });
+    sendSuccess(res, { stats: result.data });
   } catch (error) {
     next(error);
   }

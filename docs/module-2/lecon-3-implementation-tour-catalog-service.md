@@ -4,9 +4,28 @@
 
 ---
 
-## Vue d'ensemble
+## Objectifs pédagogiques
 
-Après avoir conçu l'API du microservice Tour Catalog dans la leçon précédente, nous allons maintenant transformer cette conception en code fonctionnel. Cette leçon couvre l'implémentation pratique en utilisant Node.js 24.x et Express 4.21.x, en construisant chaque composant du service étape par étape.
+- Implémenter une API RESTful complète avec Node.js et Express
+- Structurer un microservice selon les bonnes pratiques (routes, contrôleurs, modèles)
+- Gérer la validation des données et les réponses HTTP appropriées
+- Appliquer les concepts de Bounded Context dans le code
+
+## Prérequis
+
+- [Leçon 1.3 : Configuration de l'environnement de développement](../module-1/lecon-3-setup-environnement.md)
+- [Leçon 2.2 : Conception de l'API Tour Catalog](lecon-2-conception-api-tour-catalog.md)
+- Connaissance de base de Node.js et Express
+
+## Durée estimée
+
+3 heures
+
+---
+
+## Introduction
+
+Après avoir conçu l'API du microservice Tour Catalog dans la leçon précédente, nous allons maintenant transformer cette conception en code fonctionnel. Cette leçon couvre l'implémentation pratique en utilisant Node.js et Express, en construisant chaque composant du service étape par étape.
 
 Nous commencerons par configurer le projet, puis nous implémenterons les routes, les contrôleurs, les modèles et la logique métier pour gérer les visites, catégories et destinations.
 
@@ -133,8 +152,8 @@ node_modules/
 ### server.js
 
 ```javascript
-import dotenv from 'dotenv';
-import app from './src/app.js';
+import dotenv from "dotenv";
+import app from "./src/app.js";
 
 // Charger les variables d'environnement
 dotenv.config();
@@ -145,7 +164,9 @@ const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`🚀 Tour Catalog Service running on port ${PORT}`);
   console.log(`📍 Environment: ${process.env.NODE_ENV}`);
-  console.log(`🔗 API Base URL: http://localhost:${PORT}${process.env.API_BASE_PATH}/${process.env.API_VERSION}`);
+  console.log(
+    `🔗 API Base URL: http://localhost:${PORT}${process.env.API_BASE_PATH}/${process.env.API_VERSION}`
+  );
 });
 ```
 
@@ -156,12 +177,12 @@ app.listen(PORT, () => {
 ### src/app.js
 
 ```javascript
-import express from 'express';
-import cors from 'cors';
-import tourRoutes from './routes/tourRoutes.js';
-import categoryRoutes from './routes/categoryRoutes.js';
-import destinationRoutes from './routes/destinationRoutes.js';
-import { errorHandler } from './middleware/errorHandler.js';
+import express from "express";
+import cors from "cors";
+import tourRoutes from "./routes/tourRoutes.js";
+import categoryRoutes from "./routes/categoryRoutes.js";
+import destinationRoutes from "./routes/destinationRoutes.js";
+import { errorHandler } from "./middleware/errorHandler.js";
 
 const app = express();
 
@@ -171,7 +192,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Logging middleware pour le développement
-if (process.env.NODE_ENV === 'development') {
+if (process.env.NODE_ENV === "development") {
   app.use((req, res, next) => {
     console.log(`${req.method} ${req.path}`);
     next();
@@ -179,11 +200,11 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 // Health check endpoint
-app.get('/health', (req, res) => {
+app.get("/health", (req, res) => {
   res.status(200).json({
-    status: 'success',
-    message: 'Tour Catalog Service is healthy',
-    timestamp: new Date().toISOString()
+    status: "success",
+    message: "Tour Catalog Service is healthy",
+    timestamp: new Date().toISOString(),
   });
 });
 
@@ -197,12 +218,12 @@ app.use(`${API_BASE}/destinations`, destinationRoutes);
 // Route 404 pour les endpoints non trouvés
 app.use((req, res) => {
   res.status(404).json({
-    status: 'error',
+    status: "error",
     error: {
-      code: 'ENDPOINT_NOT_FOUND',
-      message: 'The requested endpoint does not exist',
-      path: req.path
-    }
+      code: "ENDPOINT_NOT_FOUND",
+      message: "The requested endpoint does not exist",
+      path: req.path,
+    },
   });
 });
 
@@ -224,21 +245,27 @@ export default app;
  */
 export const sendSuccess = (res, data, statusCode = 200) => {
   res.status(statusCode).json({
-    status: 'success',
-    data
+    status: "success",
+    data,
   });
 };
 
 /**
  * Envoie une réponse d'erreur standardisée
  */
-export const sendError = (res, code, message, details = null, statusCode = 400) => {
+export const sendError = (
+  res,
+  code,
+  message,
+  details = null,
+  statusCode = 400
+) => {
   const errorResponse = {
-    status: 'error',
+    status: "error",
     error: {
       code,
-      message
-    }
+      message,
+    },
   };
 
   if (details) {
@@ -260,7 +287,7 @@ export const createPagination = (page, limit, totalItems) => {
     currentPage,
     totalPages,
     totalItems,
-    itemsPerPage
+    itemsPerPage,
   };
 };
 ```
@@ -276,41 +303,42 @@ export const createPagination = (page, limit, totalItems) => {
  * Middleware de gestion centralisée des erreurs
  */
 export const errorHandler = (err, req, res, next) => {
-  console.error('Error:', err);
+  console.error("Error:", err);
 
   // Erreurs de validation
-  if (err.name === 'ValidationError') {
+  if (err.name === "ValidationError") {
     return res.status(400).json({
-      status: 'error',
+      status: "error",
       error: {
-        code: 'VALIDATION_ERROR',
+        code: "VALIDATION_ERROR",
         message: err.message,
-        details: err.details || null
-      }
+        details: err.details || null,
+      },
     });
   }
 
   // Erreurs de ressource non trouvée
-  if (err.name === 'NotFoundError') {
+  if (err.name === "NotFoundError") {
     return res.status(404).json({
-      status: 'error',
+      status: "error",
       error: {
-        code: err.code || 'RESOURCE_NOT_FOUND',
+        code: err.code || "RESOURCE_NOT_FOUND",
         message: err.message,
-        details: err.details || null
-      }
+        details: err.details || null,
+      },
     });
   }
 
   // Erreur par défaut (500 Internal Server Error)
   res.status(err.statusCode || 500).json({
-    status: 'error',
+    status: "error",
     error: {
-      code: 'INTERNAL_SERVER_ERROR',
-      message: process.env.NODE_ENV === 'development'
-        ? err.message
-        : 'An unexpected error occurred'
-    }
+      code: "INTERNAL_SERVER_ERROR",
+      message:
+        process.env.NODE_ENV === "development"
+          ? err.message
+          : "An unexpected error occurred",
+    },
   });
 };
 
@@ -320,7 +348,7 @@ export const errorHandler = (err, req, res, next) => {
 export class NotFoundError extends Error {
   constructor(message, code, details = null) {
     super(message);
-    this.name = 'NotFoundError';
+    this.name = "NotFoundError";
     this.code = code;
     this.details = details;
   }
@@ -332,7 +360,7 @@ export class NotFoundError extends Error {
 export class ValidationError extends Error {
   constructor(message, details = null) {
     super(message);
-    this.name = 'ValidationError';
+    this.name = "ValidationError";
     this.details = details;
   }
 }
@@ -347,39 +375,40 @@ Pour cette première implémentation, nous utiliserons un stockage en mémoire. 
 ### src/models/tourModel.js
 
 ```javascript
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 
 // Stockage en mémoire des visites
 let tours = [
   {
-    id: '550e8400-e29b-41d4-a716-446655440000',
-    title: 'Visite de la Tour Eiffel et Croisière sur la Seine',
-    description: 'Découvrez les monuments emblématiques de Paris',
-    longDescription: 'Cette visite complète vous emmène à travers les sites les plus célèbres de Paris.',
-    categoryId: 'c1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d',
-    destinationId: 'd7e8f9a0-b1c2-3d4e-5f6a-7b8c9d0e1f2a',
+    id: "550e8400-e29b-41d4-a716-446655440000",
+    title: "Visite de la Tour Eiffel et Croisière sur la Seine",
+    description: "Découvrez les monuments emblématiques de Paris",
+    longDescription:
+      "Cette visite complète vous emmène à travers les sites les plus célèbres de Paris.",
+    categoryId: "c1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
+    destinationId: "d7e8f9a0-b1c2-3d4e-5f6a-7b8c9d0e1f2a",
     price: 89.99,
     duration: 4,
     maxGroupSize: 20,
-    difficulty: 'easy',
+    difficulty: "easy",
     rating: 4.7,
     ratingsCount: 342,
     images: [
-      'https://cdn.example.com/tours/eiffel-tower-1.jpg',
-      'https://cdn.example.com/tours/seine-cruise-1.jpg'
+      "https://cdn.example.com/tours/eiffel-tower-1.jpg",
+      "https://cdn.example.com/tours/seine-cruise-1.jpg",
     ],
     itinerary: [
       {
         day: 1,
-        activities: ['Visite de la Tour Eiffel', 'Croisière sur la Seine']
-      }
+        activities: ["Visite de la Tour Eiffel", "Croisière sur la Seine"],
+      },
     ],
-    includedItems: ['Guide professionnel', 'Billets d\'entrée', 'Boissons'],
-    excludedItems: ['Repas', 'Pourboires'],
-    meetingPoint: 'Place du Trocadéro, 75016 Paris',
-    createdAt: new Date('2026-02-10T10:30:00Z'),
-    updatedAt: new Date('2026-12-15T14:22:00Z')
-  }
+    includedItems: ["Guide professionnel", "Billets d'entrée", "Boissons"],
+    excludedItems: ["Repas", "Pourboires"],
+    meetingPoint: "Place du Trocadéro, 75016 Paris",
+    createdAt: new Date("2026-02-10T10:30:00Z"),
+    updatedAt: new Date("2026-12-15T14:22:00Z"),
+  },
 ];
 
 /**
@@ -390,25 +419,31 @@ export const findAll = (filters = {}) => {
 
   // Filtrage par catégorie
   if (filters.category) {
-    result = result.filter(tour => tour.categoryId === filters.category);
+    result = result.filter((tour) => tour.categoryId === filters.category);
   }
 
   // Filtrage par destination
   if (filters.destination) {
-    result = result.filter(tour => tour.destinationId === filters.destination);
+    result = result.filter(
+      (tour) => tour.destinationId === filters.destination
+    );
   }
 
   // Filtrage par prix
   if (filters.minPrice) {
-    result = result.filter(tour => tour.price >= parseFloat(filters.minPrice));
+    result = result.filter(
+      (tour) => tour.price >= parseFloat(filters.minPrice)
+    );
   }
   if (filters.maxPrice) {
-    result = result.filter(tour => tour.price <= parseFloat(filters.maxPrice));
+    result = result.filter(
+      (tour) => tour.price <= parseFloat(filters.maxPrice)
+    );
   }
 
   // Tri
   if (filters.sort) {
-    const order = filters.order === 'desc' ? -1 : 1;
+    const order = filters.order === "desc" ? -1 : 1;
     result.sort((a, b) => {
       if (a[filters.sort] < b[filters.sort]) return -1 * order;
       if (a[filters.sort] > b[filters.sort]) return 1 * order;
@@ -426,7 +461,7 @@ export const findAll = (filters = {}) => {
 
   return {
     tours: paginatedResult,
-    totalItems: result.length
+    totalItems: result.length,
   };
 };
 
@@ -434,7 +469,7 @@ export const findAll = (filters = {}) => {
  * Récupère une visite par ID
  */
 export const findById = (id) => {
-  return tours.find(tour => tour.id === id);
+  return tours.find((tour) => tour.id === id);
 };
 
 /**
@@ -447,7 +482,7 @@ export const create = (tourData) => {
     rating: 0,
     ratingsCount: 0,
     createdAt: new Date(),
-    updatedAt: new Date()
+    updatedAt: new Date(),
   };
 
   tours.push(newTour);
@@ -458,7 +493,7 @@ export const create = (tourData) => {
  * Met à jour complètement une visite
  */
 export const update = (id, tourData) => {
-  const index = tours.findIndex(tour => tour.id === id);
+  const index = tours.findIndex((tour) => tour.id === id);
 
   if (index === -1) {
     return null;
@@ -470,7 +505,7 @@ export const update = (id, tourData) => {
     rating: tours[index].rating,
     ratingsCount: tours[index].ratingsCount,
     createdAt: tours[index].createdAt,
-    updatedAt: new Date()
+    updatedAt: new Date(),
   };
 
   return tours[index];
@@ -480,7 +515,7 @@ export const update = (id, tourData) => {
  * Met à jour partiellement une visite
  */
 export const partialUpdate = (id, updates) => {
-  const index = tours.findIndex(tour => tour.id === id);
+  const index = tours.findIndex((tour) => tour.id === id);
 
   if (index === -1) {
     return null;
@@ -490,7 +525,7 @@ export const partialUpdate = (id, updates) => {
     ...tours[index],
     ...updates,
     id,
-    updatedAt: new Date()
+    updatedAt: new Date(),
   };
 
   return tours[index];
@@ -500,7 +535,7 @@ export const partialUpdate = (id, updates) => {
  * Supprime une visite
  */
 export const remove = (id) => {
-  const index = tours.findIndex(tour => tour.id === id);
+  const index = tours.findIndex((tour) => tour.id === id);
 
   if (index === -1) {
     return false;
@@ -514,34 +549,34 @@ export const remove = (id) => {
 ### src/models/categoryModel.js
 
 ```javascript
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 
 // Stockage en mémoire des catégories
 let categories = [
   {
-    id: 'c1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d',
-    name: 'Aventure',
-    description: 'Visites riches en adrénaline et activités de plein air',
-    imageUrl: 'https://cdn.example.com/categories/adventure.jpg',
+    id: "c1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
+    name: "Aventure",
+    description: "Visites riches en adrénaline et activités de plein air",
+    imageUrl: "https://cdn.example.com/categories/adventure.jpg",
     tourCount: 47,
-    createdAt: new Date('2026-01-15T08:00:00Z'),
-    updatedAt: new Date('2026-01-15T08:00:00Z')
+    createdAt: new Date("2026-01-15T08:00:00Z"),
+    updatedAt: new Date("2026-01-15T08:00:00Z"),
   },
   {
-    id: 'e2f3a4b5-c6d7-8e9f-0a1b-2c3d4e5f6a7b',
-    name: 'Culturel',
-    description: 'Explorez l\'histoire, l\'art et les traditions locales',
-    imageUrl: 'https://cdn.example.com/categories/cultural.jpg',
+    id: "e2f3a4b5-c6d7-8e9f-0a1b-2c3d4e5f6a7b",
+    name: "Culturel",
+    description: "Explorez l'histoire, l'art et les traditions locales",
+    imageUrl: "https://cdn.example.com/categories/cultural.jpg",
     tourCount: 62,
-    createdAt: new Date('2026-01-15T08:00:00Z'),
-    updatedAt: new Date('2026-01-15T08:00:00Z')
-  }
+    createdAt: new Date("2026-01-15T08:00:00Z"),
+    updatedAt: new Date("2026-01-15T08:00:00Z"),
+  },
 ];
 
 export const findAll = () => categories;
 
 export const findById = (id) => {
-  return categories.find(cat => cat.id === id);
+  return categories.find((cat) => cat.id === id);
 };
 
 export const create = (categoryData) => {
@@ -550,7 +585,7 @@ export const create = (categoryData) => {
     ...categoryData,
     tourCount: 0,
     createdAt: new Date(),
-    updatedAt: new Date()
+    updatedAt: new Date(),
   };
 
   categories.push(newCategory);
@@ -558,7 +593,7 @@ export const create = (categoryData) => {
 };
 
 export const update = (id, categoryData) => {
-  const index = categories.findIndex(cat => cat.id === id);
+  const index = categories.findIndex((cat) => cat.id === id);
 
   if (index === -1) {
     return null;
@@ -569,14 +604,14 @@ export const update = (id, categoryData) => {
     id,
     tourCount: categories[index].tourCount,
     createdAt: categories[index].createdAt,
-    updatedAt: new Date()
+    updatedAt: new Date(),
   };
 
   return categories[index];
 };
 
 export const remove = (id) => {
-  const index = categories.findIndex(cat => cat.id === id);
+  const index = categories.findIndex((cat) => cat.id === id);
 
   if (index === -1) {
     return false;
@@ -590,26 +625,26 @@ export const remove = (id) => {
 ### src/models/destinationModel.js
 
 ```javascript
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 
 // Stockage en mémoire des destinations
 let destinations = [
   {
-    id: 'd7e8f9a0-b1c2-3d4e-5f6a-7b8c9d0e1f2a',
-    name: 'Paris',
-    country: 'France',
-    description: 'La Ville Lumière',
-    imageUrl: 'https://cdn.example.com/destinations/paris.jpg',
+    id: "d7e8f9a0-b1c2-3d4e-5f6a-7b8c9d0e1f2a",
+    name: "Paris",
+    country: "France",
+    description: "La Ville Lumière",
+    imageUrl: "https://cdn.example.com/destinations/paris.jpg",
     tourCount: 89,
-    createdAt: new Date('2026-01-15T08:00:00Z'),
-    updatedAt: new Date('2026-01-15T08:00:00Z')
-  }
+    createdAt: new Date("2026-01-15T08:00:00Z"),
+    updatedAt: new Date("2026-01-15T08:00:00Z"),
+  },
 ];
 
 export const findAll = () => destinations;
 
 export const findById = (id) => {
-  return destinations.find(dest => dest.id === id);
+  return destinations.find((dest) => dest.id === id);
 };
 
 export const create = (destinationData) => {
@@ -618,7 +653,7 @@ export const create = (destinationData) => {
     ...destinationData,
     tourCount: 0,
     createdAt: new Date(),
-    updatedAt: new Date()
+    updatedAt: new Date(),
   };
 
   destinations.push(newDestination);
@@ -626,7 +661,7 @@ export const create = (destinationData) => {
 };
 
 export const update = (id, destinationData) => {
-  const index = destinations.findIndex(dest => dest.id === id);
+  const index = destinations.findIndex((dest) => dest.id === id);
 
   if (index === -1) {
     return null;
@@ -637,14 +672,14 @@ export const update = (id, destinationData) => {
     id,
     tourCount: destinations[index].tourCount,
     createdAt: destinations[index].createdAt,
-    updatedAt: new Date()
+    updatedAt: new Date(),
   };
 
   return destinations[index];
 };
 
 export const remove = (id) => {
-  const index = destinations.findIndex(dest => dest.id === id);
+  const index = destinations.findIndex((dest) => dest.id === id);
 
   if (index === -1) {
     return false;
@@ -662,18 +697,36 @@ export const remove = (id) => {
 ### src/controllers/tourController.js
 
 ```javascript
-import * as TourModel from '../models/tourModel.js';
-import { sendSuccess, sendError, createPagination } from '../utils/response.js';
-import { NotFoundError } from '../middleware/errorHandler.js';
+import * as TourModel from "../models/tourModel.js";
+import { sendSuccess, sendError, createPagination } from "../utils/response.js";
+import { NotFoundError } from "../middleware/errorHandler.js";
 
 /**
  * Récupère toutes les visites avec filtres et pagination
  */
 export const getAllTours = (req, res, next) => {
   try {
-    const { page, limit, category, destination, minPrice, maxPrice, sort, order } = req.query;
+    const {
+      page,
+      limit,
+      category,
+      destination,
+      minPrice,
+      maxPrice,
+      sort,
+      order,
+    } = req.query;
 
-    const filters = { page, limit, category, destination, minPrice, maxPrice, sort, order };
+    const filters = {
+      page,
+      limit,
+      category,
+      destination,
+      minPrice,
+      maxPrice,
+      sort,
+      order,
+    };
     const { tours, totalItems } = TourModel.findAll(filters);
 
     const pagination = createPagination(page, limit, totalItems);
@@ -694,8 +747,8 @@ export const getTourById = (req, res, next) => {
 
     if (!tour) {
       throw new NotFoundError(
-        'The requested tour does not exist',
-        'TOUR_NOT_FOUND',
+        "The requested tour does not exist",
+        "TOUR_NOT_FOUND",
         { tourId }
       );
     }
@@ -714,13 +767,18 @@ export const createTour = (req, res, next) => {
     const tourData = req.body;
 
     // Validation basique
-    if (!tourData.title || !tourData.price || !tourData.categoryId || !tourData.destinationId) {
+    if (
+      !tourData.title ||
+      !tourData.price ||
+      !tourData.categoryId ||
+      !tourData.destinationId
+    ) {
       return sendError(
         res,
-        'VALIDATION_ERROR',
-        'Missing required fields',
+        "VALIDATION_ERROR",
+        "Missing required fields",
         {
-          required: ['title', 'price', 'categoryId', 'destinationId']
+          required: ["title", "price", "categoryId", "destinationId"],
         },
         400
       );
@@ -745,8 +803,8 @@ export const updateTour = (req, res, next) => {
 
     if (!updatedTour) {
       throw new NotFoundError(
-        'The requested tour does not exist',
-        'TOUR_NOT_FOUND',
+        "The requested tour does not exist",
+        "TOUR_NOT_FOUND",
         { tourId }
       );
     }
@@ -769,8 +827,8 @@ export const patchTour = (req, res, next) => {
 
     if (!updatedTour) {
       throw new NotFoundError(
-        'The requested tour does not exist',
-        'TOUR_NOT_FOUND',
+        "The requested tour does not exist",
+        "TOUR_NOT_FOUND",
         { tourId }
       );
     }
@@ -791,8 +849,8 @@ export const deleteTour = (req, res, next) => {
 
     if (!deleted) {
       throw new NotFoundError(
-        'The requested tour does not exist',
-        'TOUR_NOT_FOUND',
+        "The requested tour does not exist",
+        "TOUR_NOT_FOUND",
         { tourId }
       );
     }
@@ -807,9 +865,9 @@ export const deleteTour = (req, res, next) => {
 ### src/controllers/categoryController.js
 
 ```javascript
-import * as CategoryModel from '../models/categoryModel.js';
-import { sendSuccess, sendError } from '../utils/response.js';
-import { NotFoundError } from '../middleware/errorHandler.js';
+import * as CategoryModel from "../models/categoryModel.js";
+import { sendSuccess, sendError } from "../utils/response.js";
+import { NotFoundError } from "../middleware/errorHandler.js";
 
 export const getAllCategories = (req, res, next) => {
   try {
@@ -827,8 +885,8 @@ export const getCategoryById = (req, res, next) => {
 
     if (!category) {
       throw new NotFoundError(
-        'The requested category does not exist',
-        'CATEGORY_NOT_FOUND',
+        "The requested category does not exist",
+        "CATEGORY_NOT_FOUND",
         { categoryId }
       );
     }
@@ -846,9 +904,9 @@ export const createCategory = (req, res, next) => {
     if (!categoryData.name || !categoryData.description) {
       return sendError(
         res,
-        'VALIDATION_ERROR',
-        'Missing required fields',
-        { required: ['name', 'description'] },
+        "VALIDATION_ERROR",
+        "Missing required fields",
+        { required: ["name", "description"] },
         400
       );
     }
@@ -869,8 +927,8 @@ export const updateCategory = (req, res, next) => {
 
     if (!updatedCategory) {
       throw new NotFoundError(
-        'The requested category does not exist',
-        'CATEGORY_NOT_FOUND',
+        "The requested category does not exist",
+        "CATEGORY_NOT_FOUND",
         { categoryId }
       );
     }
@@ -888,8 +946,8 @@ export const deleteCategory = (req, res, next) => {
 
     if (!deleted) {
       throw new NotFoundError(
-        'The requested category does not exist',
-        'CATEGORY_NOT_FOUND',
+        "The requested category does not exist",
+        "CATEGORY_NOT_FOUND",
         { categoryId }
       );
     }
@@ -904,9 +962,9 @@ export const deleteCategory = (req, res, next) => {
 ### src/controllers/destinationController.js
 
 ```javascript
-import * as DestinationModel from '../models/destinationModel.js';
-import { sendSuccess, sendError } from '../utils/response.js';
-import { NotFoundError } from '../middleware/errorHandler.js';
+import * as DestinationModel from "../models/destinationModel.js";
+import { sendSuccess, sendError } from "../utils/response.js";
+import { NotFoundError } from "../middleware/errorHandler.js";
 
 export const getAllDestinations = (req, res, next) => {
   try {
@@ -924,8 +982,8 @@ export const getDestinationById = (req, res, next) => {
 
     if (!destination) {
       throw new NotFoundError(
-        'The requested destination does not exist',
-        'DESTINATION_NOT_FOUND',
+        "The requested destination does not exist",
+        "DESTINATION_NOT_FOUND",
         { destinationId }
       );
     }
@@ -943,9 +1001,9 @@ export const createDestination = (req, res, next) => {
     if (!destinationData.name || !destinationData.country) {
       return sendError(
         res,
-        'VALIDATION_ERROR',
-        'Missing required fields',
-        { required: ['name', 'country'] },
+        "VALIDATION_ERROR",
+        "Missing required fields",
+        { required: ["name", "country"] },
         400
       );
     }
@@ -962,12 +1020,15 @@ export const updateDestination = (req, res, next) => {
     const { destinationId } = req.params;
     const destinationData = req.body;
 
-    const updatedDestination = DestinationModel.update(destinationId, destinationData);
+    const updatedDestination = DestinationModel.update(
+      destinationId,
+      destinationData
+    );
 
     if (!updatedDestination) {
       throw new NotFoundError(
-        'The requested destination does not exist',
-        'DESTINATION_NOT_FOUND',
+        "The requested destination does not exist",
+        "DESTINATION_NOT_FOUND",
         { destinationId }
       );
     }
@@ -985,8 +1046,8 @@ export const deleteDestination = (req, res, next) => {
 
     if (!deleted) {
       throw new NotFoundError(
-        'The requested destination does not exist',
-        'DESTINATION_NOT_FOUND',
+        "The requested destination does not exist",
+        "DESTINATION_NOT_FOUND",
         { destinationId }
       );
     }
@@ -1005,24 +1066,24 @@ export const deleteDestination = (req, res, next) => {
 ### src/routes/tourRoutes.js
 
 ```javascript
-import express from 'express';
+import express from "express";
 import {
   getAllTours,
   getTourById,
   createTour,
   updateTour,
   patchTour,
-  deleteTour
-} from '../controllers/tourController.js';
+  deleteTour,
+} from "../controllers/tourController.js";
 
 const router = express.Router();
 
-router.get('/', getAllTours);
-router.get('/:tourId', getTourById);
-router.post('/', createTour);
-router.put('/:tourId', updateTour);
-router.patch('/:tourId', patchTour);
-router.delete('/:tourId', deleteTour);
+router.get("/", getAllTours);
+router.get("/:tourId", getTourById);
+router.post("/", createTour);
+router.put("/:tourId", updateTour);
+router.patch("/:tourId", patchTour);
+router.delete("/:tourId", deleteTour);
 
 export default router;
 ```
@@ -1030,22 +1091,22 @@ export default router;
 ### src/routes/categoryRoutes.js
 
 ```javascript
-import express from 'express';
+import express from "express";
 import {
   getAllCategories,
   getCategoryById,
   createCategory,
   updateCategory,
-  deleteCategory
-} from '../controllers/categoryController.js';
+  deleteCategory,
+} from "../controllers/categoryController.js";
 
 const router = express.Router();
 
-router.get('/', getAllCategories);
-router.get('/:categoryId', getCategoryById);
-router.post('/', createCategory);
-router.put('/:categoryId', updateCategory);
-router.delete('/:categoryId', deleteCategory);
+router.get("/", getAllCategories);
+router.get("/:categoryId", getCategoryById);
+router.post("/", createCategory);
+router.put("/:categoryId", updateCategory);
+router.delete("/:categoryId", deleteCategory);
 
 export default router;
 ```
@@ -1053,22 +1114,22 @@ export default router;
 ### src/routes/destinationRoutes.js
 
 ```javascript
-import express from 'express';
+import express from "express";
 import {
   getAllDestinations,
   getDestinationById,
   createDestination,
   updateDestination,
-  deleteDestination
-} from '../controllers/destinationController.js';
+  deleteDestination,
+} from "../controllers/destinationController.js";
 
 const router = express.Router();
 
-router.get('/', getAllDestinations);
-router.get('/:destinationId', getDestinationById);
-router.post('/', createDestination);
-router.put('/:destinationId', updateDestination);
-router.delete('/:destinationId', deleteDestination);
+router.get("/", getAllDestinations);
+router.get("/:destinationId", getDestinationById);
+router.post("/", createDestination);
+router.put("/:destinationId", updateDestination);
+router.delete("/:destinationId", deleteDestination);
 
 export default router;
 ```
@@ -1186,9 +1247,10 @@ curl http://localhost:3001/api/v1/tours-catalog/destinations
 // Dans tourModel.js
 export const search = (keyword, filters = {}) => {
   const lowerKeyword = keyword.toLowerCase();
-  let result = tours.filter(tour =>
-    tour.title.toLowerCase().includes(lowerKeyword) ||
-    tour.description.toLowerCase().includes(lowerKeyword)
+  let result = tours.filter(
+    (tour) =>
+      tour.title.toLowerCase().includes(lowerKeyword) ||
+      tour.description.toLowerCase().includes(lowerKeyword)
   );
 
   // Appliquer pagination...
@@ -1219,24 +1281,27 @@ export const validateTourCreation = (req, res, next) => {
   const errors = [];
   const { title, price, duration, maxGroupSize } = req.body;
 
-  if (!title || typeof title !== 'string' || title.trim() === '') {
-    errors.push({ field: 'title', message: 'Title must be a non-empty string' });
+  if (!title || typeof title !== "string" || title.trim() === "") {
+    errors.push({
+      field: "title",
+      message: "Title must be a non-empty string",
+    });
   }
 
-  if (!price || typeof price !== 'number' || price <= 0) {
-    errors.push({ field: 'price', message: 'Price must be a positive number' });
+  if (!price || typeof price !== "number" || price <= 0) {
+    errors.push({ field: "price", message: "Price must be a positive number" });
   }
 
   // Ajouter d'autres validations...
 
   if (errors.length > 0) {
     return res.status(400).json({
-      status: 'error',
+      status: "error",
       error: {
-        code: 'VALIDATION_ERROR',
-        message: 'Request validation failed',
-        details: { fields: errors }
-      }
+        code: "VALIDATION_ERROR",
+        message: "Request validation failed",
+        details: { fields: errors },
+      },
     });
   }
 
@@ -1272,8 +1337,8 @@ export const addHateoasLinks = (tour) => {
       self: `${baseUrl}/tours/${tour.id}`,
       category: `${baseUrl}/categories/${tour.categoryId}`,
       destination: `${baseUrl}/destinations/${tour.destinationId}`,
-      reviews: `${baseUrl}/tours/${tour.id}/reviews`
-    }
+      reviews: `${baseUrl}/tours/${tour.id}/reviews`,
+    },
   };
 };
 ```

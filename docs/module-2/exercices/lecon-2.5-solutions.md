@@ -643,8 +643,8 @@ curl -X PATCH http://localhost:3002/api/v1/booking-management/bookings/b1o2o3k4-
   -H "Content-Type: application/json" \
   -d '{
     "participants": [
-      { "name": "Diana Prince", "age": 30, "type": "adult" },
-      { "name": "Clark Kent", "age": 35, "type": "adult" }
+      { "name": "Natasha Romanoff", "age": 30, "type": "adult" },
+      { "name": "Clint Barton", "age": 35, "type": "adult" }
     ]
   }'
 ```
@@ -658,8 +658,8 @@ curl -X PATCH http://localhost:3002/api/v1/booking-management/bookings/b1o2o3k4-
     "booking": {
       "id": "b1o2o3k4-i5n6-7g8i-9d0e-1a2b3c4d5e6f",
       "participants": [
-        { "name": "Diana Prince", "age": 30, "type": "adult" },
-        { "name": "Clark Kent", "age": 35, "type": "adult" }
+        { "name": "Natasha Romanoff", "age": 30, "type": "adult" },
+        { "name": "Clint Barton", "age": 35, "type": "adult" }
       ],
       "totalPrice": 179.98
     },

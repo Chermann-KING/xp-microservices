@@ -4,7 +4,27 @@
 
 ---
 
-## Vue d'ensemble
+## Objectifs pédagogiques
+
+- Comprendre les principes fondamentaux de l'architecture microservices
+- Identifier les caractéristiques clés qui distinguent les microservices des monolithes
+- Reconnaître les avantages et les cas d'utilisation appropriés pour les microservices
+- Appliquer les concepts à notre application de réservation touristique
+
+## Prérequis
+
+- [Leçon 1.1 : Introduction à l'étude de cas](lecon-1-introduction-etude-de-cas.md)
+- [Leçon 1.2 : Fondamentaux de React](lecon-2-react-fundamentals.md)
+- [Leçon 1.3 : Configuration de l'environnement](lecon-3-setup-environnement.md)
+- [Leçon 1.4 : Principes de Design d'API RESTful](lecon-4-restful-api-design.md)
+
+## Durée estimée
+
+1 heure 30 minutes
+
+---
+
+## Introduction
 
 Cette leçon présente l'architecture microservices en profondeur, en explorant ses principes clés, ses caractéristiques et les avantages qu'elle offre par rapport aux architectures monolithiques. Nous examinerons des exemples concrets d'entreprises qui utilisent les microservices avec succès et nous décrirons comment notre application de réservation touristique peut bénéficier de cette approche.
 
@@ -159,27 +179,32 @@ Appliquons maintenant les concepts de microservices à notre application de rés
 ### Microservices de notre application
 
 1. **Service de catalogue de visites**
+
    - Gère les données de visites (créer, lire, mettre à jour, supprimer des visites)
    - Fournit des fonctionnalités de recherche et de filtrage
    - Base de données : `tour_catalog_db`
 
 2. **Service de réservation**
+
    - Gère les processus de réservation
    - Vérifie la disponibilité
    - Traite les annulations et modifications
    - Base de données : `booking_db`
 
 3. **Service utilisateur**
+
    - Gère l'authentification des utilisateurs (inscription, connexion)
    - Stocke les profils utilisateurs
    - Base de données : `user_db`
 
 4. **Service de paiement**
+
    - S'intègre avec des passerelles de paiement tierces (par exemple, Stripe)
    - Traite les transactions de paiement
    - Gère les états de paiement
 
 5. **Service de notification** (modules ultérieurs)
+
    - Envoie des emails, SMS et notifications push
    - Traite les confirmations de réservation et les rappels
 
@@ -266,4 +291,14 @@ Dans cette leçon, vous avez découvert les concepts fondamentaux de l'architect
 
 La prochaine leçon approfondira la **comparaison entre architecture monolithique et microservices**, vous aidant à comprendre quand utiliser chaque approche et comment migrer d'un monolithe vers des microservices.
 
-**Prochaine leçon** : [Leçon 1.6 - Architecture monolithique vs microservices : comparaison approfondie](lecon-6-monolithe-vs-microservices.md)
+---
+
+## Navigation
+
+- **⬅️ Précédent** : [Leçon 1.4 - Principes de Design d'API RESTful](lecon-4-restful-api-design.md)
+- **➡️ Suivant** : [Leçon 1.6 - Monolithe vs Microservices](lecon-6-monolithe-vs-microservices.md)
+- **🏠 Retour** : [Sommaire du Module 1](README.md)
+
+---
+
+**Leçon complétée** ✅

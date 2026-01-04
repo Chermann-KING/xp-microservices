@@ -1,10 +1,35 @@
-# Leçon 2 sur 42
+# Leçon 1.2 - Fondamentaux de React : Composants, Props et Gestion d'État
 
-## Fondamentaux de React : Composants, Props et Gestion d'État
+**Module 1** : Fondements du Développement Web Moderne et des Microservices
+
+---
+
+## Objectifs pédagogiques
+
+- Comprendre le concept de composants React et leur rôle dans la construction d'interfaces
+- Maîtriser l'utilisation des props pour la communication entre composants
+- Apprendre à gérer l'état local avec le hook `useState`
+- Différencier les composants fonctionnels des composants de classe (contexte historique)
+
+## Prérequis
+
+- [Leçon 1.1 : Introduction à l'étude de cas](lecon-1-introduction-etude-de-cas.md)
+- Connaissances de base en JavaScript (ES6+)
+- Familiarité avec HTML et CSS
+
+## Durée estimée
+
+1 heure 30 minutes
+
+---
+
+## Introduction
 
 React offre une approche puissante et déclarative pour construire des interfaces utilisateur. Au cœur des applications React se trouvent les composants, qui sont des morceaux d'interface réutilisables et autonomes. Ces composants communiquent et gèrent les données via les props et l'état, concepts fondamentaux pour créer des applications web dynamiques et interactives.
 
-## Composants : Les Blocs de Construction de l'Interface
+---
+
+## Comprendre les composants React
 
 Les composants sont des morceaux de code indépendants et réutilisables qui retournent des éléments React, décrivant ce qui doit apparaître à l'écran. Ils permettent de diviser l'interface en parties indépendantes et réutilisables, et de penser à chaque partie de manière isolée. Les applications React sont essentiellement des arbres de composants.
 
@@ -37,8 +62,16 @@ function App() {
   return (
     <div>
       <MessageBienvenue nom="Voyageur" />
-      <CarteTour nomTour="Visite Historique de la Ville" lieu="Rome" prix={99} />
-      <CarteTour nomTour="Aventure en Montagne" lieu="Alpes Suisses" prix={250} />
+      <CarteTour
+        nomTour="Visite Historique de la Ville"
+        lieu="Rome"
+        prix={99}
+      />
+      <CarteTour
+        nomTour="Aventure en Montagne"
+        lieu="Alpes Suisses"
+        prix={250}
+      />
     </div>
   );
 }
@@ -51,7 +84,7 @@ Dans l'exemple `CarteTour`, le composant reçoit des données spécifiques au to
 Les composants de classe sont des classes JavaScript ES6 qui étendent `React.Component` et ont une méthode `render()` qui retourne des éléments React. Bien qu'ils soient toujours supportés, ils sont moins courants dans le développement React moderne en raison des avantages des composants fonctionnels et des Hooks. Les comprendre fournit un contexte pour les anciennes bases de code.
 
 ```jsx
-import React from 'react';
+import React from "react";
 
 // Composant de classe de base
 class MessageBienvenueClasse extends React.Component {
@@ -84,12 +117,13 @@ Les props sont passées aux composants comme des attributs lorsqu'ils sont rendu
 
 ```jsx
 function ComposantParent() {
-  const nomUtilisateur = "Alice";
+  const nomUtilisateur = "Pepper Potts";
   const idTour = "TOUR_001";
 
   return (
     <div>
-      <MessageBienvenue nom={nomUtilisateur} /> {/* nomUtilisateur passé comme prop 'nom' */}
+      <MessageBienvenue nom={nomUtilisateur} />{" "}
+      {/* nomUtilisateur passé comme prop 'nom' */}
       <BoutonReservation idTour={idTour} /> {/* idTour passé comme prop 'idTour' */}
     </div>
   );
@@ -100,7 +134,11 @@ function MessageBienvenue(props) {
 }
 
 function BoutonReservation(props) {
-  return <button onClick={() => alert(`Réservation du tour ${props.idTour}`)}>Réserver maintenant</button>;
+  return (
+    <button onClick={() => alert(`Réservation du tour ${props.idTour}`)}>
+      Réserver maintenant
+    </button>
+  );
 }
 ```
 
@@ -115,17 +153,21 @@ Ici, `ComposantParent` passe `nomUtilisateur` à `MessageBienvenue` comme prop `
 ```tsx
 // Définition des types avec TypeScript
 interface DetailsTourProps {
-  titre: string;              // 'titre' est obligatoire
-  duree?: number;            // 'duree' est optionnel
-  estDisponible?: boolean;   // 'estDisponible' est optionnel
+  titre: string; // 'titre' est obligatoire
+  duree?: number; // 'duree' est optionnel
+  estDisponible?: boolean; // 'estDisponible' est optionnel
 }
 
-function DetailsTour({ titre, duree = 1, estDisponible = true }: DetailsTourProps) {
+function DetailsTour({
+  titre,
+  duree = 1,
+  estDisponible = true,
+}: DetailsTourProps) {
   return (
     <div>
       <h3>{titre}</h3>
       <p>Durée : {duree} jour(s)</p>
-      <p>Disponible : {estDisponible ? 'Oui' : 'Non'}</p>
+      <p>Disponible : {estDisponible ? "Oui" : "Non"}</p>
     </div>
   );
 }
@@ -134,7 +176,11 @@ function DetailsTour({ titre, duree = 1, estDisponible = true }: DetailsTourProp
 function App() {
   return (
     <div>
-      <DetailsTour titre="Safari dans le Désert" duree={3} estDisponible={false} />
+      <DetailsTour
+        titre="Safari dans le Désert"
+        duree={3}
+        estDisponible={false}
+      />
       <DetailsTour titre="Visite de la Ville à Pied" /> {/* duree sera 1, estDisponible sera true */}
     </div>
   );
@@ -144,14 +190,14 @@ function App() {
 **Approche historique avec prop-types (non recommandée pour les nouveaux projets) :**
 
 ```jsx
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 
 function DetailsTour(props) {
   return (
     <div>
       <h3>{props.titre}</h3>
       <p>Durée : {props.duree} jour(s)</p>
-      <p>Disponible : {props.estDisponible ? 'Oui' : 'Non'}</p>
+      <p>Disponible : {props.estDisponible ? "Oui" : "Non"}</p>
     </div>
   );
 }
@@ -159,14 +205,14 @@ function DetailsTour(props) {
 // Définir les types de props pour le composant DetailsTour
 DetailsTour.propTypes = {
   titre: PropTypes.string.isRequired, // 'titre' doit être une chaîne et est requis
-  duree: PropTypes.number,            // 'duree' est un nombre optionnel
-  estDisponible: PropTypes.bool,      // 'estDisponible' est un booléen optionnel
+  duree: PropTypes.number, // 'duree' est un nombre optionnel
+  estDisponible: PropTypes.bool, // 'estDisponible' est un booléen optionnel
 };
 
 // Définir les props par défaut
 DetailsTour.defaultProps = {
-  duree: 1,              // Durée par défaut de 1 jour
-  estDisponible: true,   // Disponibilité par défaut à true
+  duree: 1, // Durée par défaut de 1 jour
+  estDisponible: true, // Disponibilité par défaut à true
 };
 ```
 
@@ -179,7 +225,7 @@ L'état fait référence aux données gérées au sein d'un composant et qui peu
 Le Hook `useState` est la méthode standard pour ajouter de l'état aux composants fonctionnels. Il retourne une valeur d'état et une fonction pour la mettre à jour.
 
 ```jsx
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
 function Compteur() {
   // Déclarer une variable d'état 'compteur' et sa fonction de mise à jour 'setCompteur'
@@ -206,26 +252,28 @@ Dans ce composant `Compteur`, `useState(0)` initialise `compteur` à 0. `setComp
 Un exemple plus complexe utilisant un objet dans l'état :
 
 ```jsx
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
 function FormulaireReservation() {
   const [detailsReservation, setDetailsReservation] = useState({
-    nomTour: '',
+    nomTour: "",
     voyageurs: 1,
-    dateReservation: ''
+    dateReservation: "",
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setDetailsReservation(detailsPrecedents => ({
+    setDetailsReservation((detailsPrecedents) => ({
       ...detailsPrecedents, // Spread de l'état précédent pour maintenir les autres propriétés
-      [name]: value // Mise à jour de la propriété spécifique qui a changé
+      [name]: value, // Mise à jour de la propriété spécifique qui a changé
     }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    alert(`Réservation soumise pour ${detailsReservation.nomTour} avec ${detailsReservation.voyageurs} voyageur(s) le ${detailsReservation.dateReservation}`);
+    alert(
+      `Réservation soumise pour ${detailsReservation.nomTour} avec ${detailsReservation.voyageurs} voyageur(s) le ${detailsReservation.dateReservation}`
+    );
     // Dans une vraie application, ceci enverrait les données à un backend
   };
 
@@ -280,29 +328,29 @@ Le composant `FormulaireReservation` gère son état `detailsReservation`, qui e
 Dans les composants de classe, l'état est un objet stocké dans `this.state` et mis à jour en utilisant `this.setState()`. La modification directe de `this.state` en dehors de `this.setState()` est un anti-pattern courant.
 
 ```jsx
-import React from 'react';
+import React from "react";
 
 class TourFavori extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       tour: "Aucun Tour Favori Sélectionné",
-      estEnEdition: false
+      estEnEdition: false,
     };
   }
 
   updateTour = () => {
     this.setState({
       tour: "Trek au Camp de Base de l'Everest",
-      estEnEdition: false
+      estEnEdition: false,
     });
-  }
+  };
 
   toggleEdit = () => {
-    this.setState(etatPrecedent => ({
-      estEnEdition: !etatPrecedent.estEnEdition
+    this.setState((etatPrecedent) => ({
+      estEnEdition: !etatPrecedent.estEnEdition,
     }));
-  }
+  };
 
   render() {
     return (
@@ -310,7 +358,9 @@ class TourFavori extends React.Component {
         <h2>Mon Tour Favori : {this.state.tour}</h2>
         <button onClick={this.updateTour}>Définir le Tour Favori</button>
         <button onClick={this.toggleEdit}>
-          {this.state.estEnEdition ? 'Arrêter l\'Édition' : 'Commencer l\'Édition'}
+          {this.state.estEnEdition
+            ? "Arrêter l'Édition"
+            : "Commencer l'Édition"}
         </button>
       </div>
     );
@@ -336,16 +386,25 @@ Construisons un composant simple de Liste de Tours pour notre application de tou
 Cet exemple combine composants, props et état pour créer une liste dynamique de tours.
 
 ```jsx
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
 // Composant CarteTour (composant fonctionnel)
-function CarteTour({ tour, onSelect }) { // Déstructuration des props pour un accès plus propre
+function CarteTour({ tour, onSelect }) {
+  // Déstructuration des props pour un accès plus propre
   const handleClick = () => {
     onSelect(tour.id); // Appeler la fonction onSelect passée via les props
   };
 
   return (
-    <div className="tour-card" style={{ border: '1px solid #ccc', margin: '10px', padding: '10px', borderRadius: '5px' }}>
+    <div
+      className="tour-card"
+      style={{
+        border: "1px solid #ccc",
+        margin: "10px",
+        padding: "10px",
+        borderRadius: "5px",
+      }}
+    >
       <h3>{tour.nom}</h3>
       <p>Lieu : {tour.lieu}</p>
       <p>Prix : {tour.prix} €</p>
@@ -359,23 +418,59 @@ function CarteTour({ tour, onSelect }) { // Déstructuration des props pour un a
 function ListeTours() {
   // Données de tours d'exemple (proviendraient typiquement d'une API)
   const tousTours = [
-    { id: 't1', nom: 'Rome Historique', lieu: 'Rome', prix: 150, duree: 3, type: 'ville' },
-    { id: 't2', nom: 'Randonnée Alpine', lieu: 'Alpes Suisses', prix: 300, duree: 5, type: 'aventure' },
-    { id: 't3', nom: 'Safari dans le Désert', lieu: 'Dubaï', prix: 200, duree: 2, type: 'aventure' },
-    { id: 't4', nom: 'Retraite à la Plage', lieu: 'Maldives', prix: 1200, duree: 7, type: 'plage' },
-    { id: 't5', nom: 'Égypte Antique', lieu: 'Le Caire', prix: 400, duree: 4, type: 'histoire' },
+    {
+      id: "t1",
+      nom: "Rome Historique",
+      lieu: "Rome",
+      prix: 150,
+      duree: 3,
+      type: "ville",
+    },
+    {
+      id: "t2",
+      nom: "Randonnée Alpine",
+      lieu: "Alpes Suisses",
+      prix: 300,
+      duree: 5,
+      type: "aventure",
+    },
+    {
+      id: "t3",
+      nom: "Safari dans le Désert",
+      lieu: "Dubaï",
+      prix: 200,
+      duree: 2,
+      type: "aventure",
+    },
+    {
+      id: "t4",
+      nom: "Retraite à la Plage",
+      lieu: "Maldives",
+      prix: 1200,
+      duree: 7,
+      type: "plage",
+    },
+    {
+      id: "t5",
+      nom: "Égypte Antique",
+      lieu: "Le Caire",
+      prix: 400,
+      duree: 4,
+      type: "histoire",
+    },
   ];
 
   // État pour contenir le texte de filtre actuel
-  const [texteFiltre, setTexteFiltre] = useState('');
+  const [texteFiltre, setTexteFiltre] = useState("");
   // État pour contenir l'ID du tour sélectionné
   const [idTourSelectionne, setIdTourSelectionne] = useState(null);
 
   // Filtrer les tours en fonction de texteFiltre
-  const toursFiltres = tousTours.filter(tour =>
-    tour.nom.toLowerCase().includes(texteFiltre.toLowerCase()) ||
-    tour.lieu.toLowerCase().includes(texteFiltre.toLowerCase()) ||
-    tour.type.toLowerCase().includes(texteFiltre.toLowerCase())
+  const toursFiltres = tousTours.filter(
+    (tour) =>
+      tour.nom.toLowerCase().includes(texteFiltre.toLowerCase()) ||
+      tour.lieu.toLowerCase().includes(texteFiltre.toLowerCase()) ||
+      tour.type.toLowerCase().includes(texteFiltre.toLowerCase())
   );
 
   const handleFilterChange = (event) => {
@@ -395,14 +490,22 @@ function ListeTours() {
         placeholder="Filtrer les tours par nom, lieu ou type..."
         value={texteFiltre}
         onChange={handleFilterChange}
-        style={{ width: '300px', padding: '8px', margin: '10px 0' }}
+        style={{ width: "300px", padding: "8px", margin: "10px 0" }}
       />
-      {idTourSelectionne && <p>Tour actuellement sélectionné : <strong>{idTourSelectionne}</strong></p>}
-      <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+      {idTourSelectionne && (
+        <p>
+          Tour actuellement sélectionné : <strong>{idTourSelectionne}</strong>
+        </p>
+      )}
+      <div style={{ display: "flex", flexWrap: "wrap" }}>
         {toursFiltres.length > 0 ? (
-          toursFiltres.map(tour => (
+          toursFiltres.map((tour) => (
             // Passer l'objet tour complet comme prop, et le gestionnaire de sélection
-            <CarteTour key={tour.id} tour={tour} onSelect={handleTourSelection} />
+            <CarteTour
+              key={tour.id}
+              tour={tour}
+              onSelect={handleTourSelection}
+            />
           ))
         ) : (
           <p>Aucun tour ne correspond à vos critères de recherche.</p>
@@ -433,11 +536,13 @@ Dans cet exemple :
 ## Exercices
 
 1. **Améliorer le composant CarteTour** : Modifiez le composant `CarteTour` dans l'exemple "Construction d'une Liste de Tours Filtrable" pour inclure :
+
    - Une nouvelle prop appelée `symboleDevise` (par exemple, "$", "€") avec une valeur par défaut de "€".
    - Un élément de rendu conditionnel : Si la `duree` du tour est supérieure à 5 jours, affichez un petit badge qui dit "Long Voyage !" à côté de la durée.
    - Un état interne (`estSurvole`) qui change la couleur de fond du `tour-card` en bleu clair lorsque la souris survole, et revient à blanc lorsqu'elle part. Utilisez les gestionnaires d'événements `onMouseEnter` et `onMouseLeave`.
 
 2. **Ajouter une Fonctionnalité de Tri des Tours à ListeTours** : Étendez le composant `ListeTours` pour inclure un menu déroulant pour trier les tours.
+
    - Ajoutez une nouvelle variable d'état, `ordreTri`, initialisée à `'aucun'`.
    - Créez un élément `<select>` avec les options : "Aucun Tri", "Prix : Bas vers Haut", "Prix : Haut vers Bas", "Durée : Court vers Long".
    - Lorsque l'utilisateur sélectionne une option de tri, mettez à jour l'état `ordreTri`.
@@ -454,3 +559,15 @@ Dans cet exemple :
 Les composants, les props et l'état sont les concepts fondamentaux pour construire toute application React. Les composants fournissent la structure, les props permettent un flux de données unidirectionnel du parent vers l'enfant pour la configuration, et l'état permet aux composants de gérer et de réagir aux changements de données dynamiques en interne. Maîtriser ces concepts est crucial pour créer des interfaces utilisateur interactives et maintenables.
 
 À mesure que nous avançons, nous utiliserons ces fondamentaux pour construire les divers micro-frontends de notre application de tourisme, les connecter aux services backend, et appliquer des principes qui garantissent que notre base de code reste robuste et évolutive. Les prochaines leçons se concentreront sur la mise en place d'un environnement de développement fullstack, qui impliquera Node.js, Express et PostgreSQL, fournissant le backend avec lequel nos composants React pourront interagir.
+
+---
+
+## Navigation
+
+- **⬅️ Précédent** : [Leçon 1.1 - Introduction et étude de cas](lecon-1-introduction-etude-de-cas.md)
+- **➡️ Suivant** : [Leçon 1.3 - Configuration de l'environnement](lecon-3-setup-environnement.md)
+- **🏠 Retour** : [Sommaire du Module 1](README.md)
+
+---
+
+**Leçon complétée** ✅
