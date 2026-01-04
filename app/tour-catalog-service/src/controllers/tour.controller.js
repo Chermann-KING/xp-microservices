@@ -1,347 +1,240 @@
 /**
- * Tour Controller - Version Sequelize ORM
- * Tour Catalog Service - Leçon 2.6
+ * Tour Controller (Refactorisé) - Module 3 - SRP
  *
- * Ce contrôleur utilise Sequelize pour la persistance PostgreSQL.
+ * Responsabilité unique : Gérer les requêtes/réponses HTTP
+ * Ce controller ne contient AUCUNE logique métier ni accès aux données.
+ * Il délègue tout au TourService injecté via le container DI.
+ *
+ * Principes SOLID appliqués :
+ * - SRP : Gère uniquement le HTTP (request/response)
+ * - DIP : Dépend du service injecté, pas de l'implémentation
+ *
+ * Comparaison avec l'ancien controller :
+ * - AVANT : 348 lignes avec Sequelize directement dans le controller
+ * - APRÈS : ~150 lignes, délègue au service
  */
 
-import { Tour, Category, Destination } from "../models/index.js";
-import { sendSuccess, sendError, createPagination } from "../utils/response.js";
-import { NotFoundError, ValidationError } from "../middleware/errorHandler.js";
-import { Op } from "sequelize";
+import container from "../config/container.js";
 
 /**
- * Récupère toutes les visites avec filtres et pagination
+ * Factory pour créer les handlers du controller
+ * Permet l'injection de dépendances pour les tests
  */
-export const getAllTours = async (req, res, next) => {
-  try {
-    const {
-      page = 1,
-      limit = 10,
-      category,
-      destination,
-      minPrice,
-      maxPrice,
-      difficulty,
-      sort = "createdAt",
-      order = "DESC",
-      search,
-    } = req.query;
-
-    const pageNum = parseInt(page, 10);
-    const limitNum = parseInt(limit, 10);
-    const offset = (pageNum - 1) * limitNum;
-
-    // Construction des filtres
-    const where = { isActive: true };
-
-    if (category) {
-      where.categoryId = category;
-    }
-
-    if (destination) {
-      where.destinationId = destination;
-    }
-
-    if (minPrice || maxPrice) {
-      where.price = {};
-      if (minPrice) where.price[Op.gte] = parseFloat(minPrice);
-      if (maxPrice) where.price[Op.lte] = parseFloat(maxPrice);
-    }
-
-    if (difficulty) {
-      where.difficulty = difficulty;
-    }
-
-    if (search) {
-      where[Op.or] = [
-        { title: { [Op.iLike]: `%${search}%` } },
-        { description: { [Op.iLike]: `%${search}%` } },
-      ];
-    }
-
-    // Requête avec pagination
-    const { count, rows: tours } = await Tour.findAndCountAll({
-      where,
-      include: [
-        {
-          model: Category,
-          as: "category",
-          attributes: ["id", "name", "slug"],
-        },
-        {
-          model: Destination,
-          as: "destination",
-          attributes: ["id", "name", "slug", "country"],
-        },
-      ],
-      order: [[sort, order.toUpperCase()]],
-      limit: limitNum,
-      offset,
-    });
-
-    const pagination = createPagination(pageNum, limitNum, count);
-
-    sendSuccess(res, {
-      tours: tours.map((t) => (t.toAPIFormat ? t.toAPIFormat() : t.toJSON())),
-      pagination,
-    });
-  } catch (error) {
-    next(error);
+class TourController {
+  constructor(tourService = null) {
+    // Injection de dépendance : utilise le container si non fourni
+    this.tourService = tourService || container.resolve("tourService");
   }
-};
 
-/**
- * Récupère une visite par ID
- */
-export const getTourById = async (req, res, next) => {
-  try {
-    const { tourId } = req.params;
+  /**
+   * GET /api/v1/tours
+   * Liste tous les tours avec filtres et pagination
+   */
+  getAllTours = async (req, res) => {
+    try {
+      const {
+        destination,
+        minPrice,
+        maxPrice,
+        difficulty,
+        categoryId,
+        search,
+        isActive,
+        page,
+        limit,
+        sortBy,
+        sortOrder,
+      } = req.query;
 
-    const tour = await Tour.findByPk(tourId, {
-      include: [
-        {
-          model: Category,
-          as: "category",
-          attributes: ["id", "name", "slug", "description"],
-        },
-        {
-          model: Destination,
-          as: "destination",
-          attributes: [
-            "id",
-            "name",
-            "slug",
-            "country",
-            "region",
-            "coordinates",
-          ],
-        },
-      ],
-    });
+      const filters = {
+        destination,
+        minPrice: minPrice ? parseFloat(minPrice) : undefined,
+        maxPrice: maxPrice ? parseFloat(maxPrice) : undefined,
+        difficulty,
+        categoryId,
+        search,
+        isActive: isActive !== undefined ? isActive === "true" : undefined,
+      };
 
-    if (!tour) {
-      throw new NotFoundError(
-        "The requested tour does not exist",
-        "TOUR_NOT_FOUND",
-        { tourId }
+      const pagination = {
+        page: parseInt(page) || 1,
+        limit: parseInt(limit) || 10,
+        sortBy: sortBy || "createdAt",
+        sortOrder: sortOrder || "DESC",
+      };
+
+      const result = await this.tourService.getAllTours(filters, pagination);
+
+      res.status(200).json(result);
+    } catch (error) {
+      this._handleError(res, error);
+    }
+  };
+
+  /**
+   * GET /api/v1/tours/:id
+   * Récupère un tour par ID
+   */
+  getTourById = async (req, res) => {
+    try {
+      const { id } = req.params;
+      const result = await this.tourService.getTourById(id);
+
+      res.status(200).json(result);
+    } catch (error) {
+      this._handleError(res, error);
+    }
+  };
+
+  /**
+   * GET /api/v1/tours/slug/:slug
+   * Récupère un tour par slug
+   */
+  getTourBySlug = async (req, res) => {
+    try {
+      const { slug } = req.params;
+      const result = await this.tourService.getTourBySlug(slug);
+
+      res.status(200).json(result);
+    } catch (error) {
+      this._handleError(res, error);
+    }
+  };
+
+  /**
+   * POST /api/v1/tours
+   * Crée un nouveau tour
+   */
+  createTour = async (req, res) => {
+    try {
+      const tourData = req.body;
+      const result = await this.tourService.createTour(tourData);
+
+      res.status(201).json(result);
+    } catch (error) {
+      this._handleError(res, error);
+    }
+  };
+
+  /**
+   * PUT /api/v1/tours/:id
+   * Met à jour un tour
+   */
+  updateTour = async (req, res) => {
+    try {
+      const { id } = req.params;
+      const updateData = req.body;
+      const result = await this.tourService.updateTour(id, updateData);
+
+      res.status(200).json(result);
+    } catch (error) {
+      this._handleError(res, error);
+    }
+  };
+
+  /**
+   * DELETE /api/v1/tours/:id
+   * Supprime un tour
+   */
+  deleteTour = async (req, res) => {
+    try {
+      const { id } = req.params;
+      const result = await this.tourService.deleteTour(id);
+
+      res.status(200).json(result);
+    } catch (error) {
+      this._handleError(res, error);
+    }
+  };
+
+  /**
+   * GET /api/v1/tours/popular
+   * Récupère les tours populaires
+   */
+  getPopularTours = async (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit) || 5;
+      const result = await this.tourService.getPopularTours(limit);
+
+      res.status(200).json(result);
+    } catch (error) {
+      this._handleError(res, error);
+    }
+  };
+
+  /**
+   * POST /api/v1/tours/:id/calculate-price
+   * Calcule le prix pour un nombre de participants
+   */
+  calculatePrice = async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { participants, promoCode } = req.body;
+
+      if (!participants || participants < 1) {
+        return res.status(400).json({
+          success: false,
+          error: {
+            code: "INVALID_PARTICIPANTS",
+            message: "Le nombre de participants doit être au moins 1",
+          },
+        });
+      }
+
+      const result = await this.tourService.calculatePrice(
+        id,
+        participants,
+        promoCode
       );
+
+      res.status(200).json(result);
+    } catch (error) {
+      this._handleError(res, error);
     }
+  };
 
-    sendSuccess(res, {
-      tour: tour.toAPIFormat ? tour.toAPIFormat() : tour.toJSON(),
-    });
-  } catch (error) {
-    next(error);
-  }
-};
+  /**
+   * Gestion centralisée des erreurs
+   * @private
+   */
+  _handleError(res, error) {
+    console.error("TourController Error:", error);
 
-/**
- * Récupère une visite par slug
- */
-export const getTourBySlug = async (req, res, next) => {
-  try {
-    const { slug } = req.params;
-
-    const tour = await Tour.findOne({
-      where: { slug, isActive: true },
-      include: [
-        {
-          model: Category,
-          as: "category",
+    // Erreurs métier (TourServiceError)
+    if (error.code && error.statusCode) {
+      return res.status(error.statusCode).json({
+        success: false,
+        error: {
+          code: error.code,
+          message: error.message,
         },
-        {
-          model: Destination,
-          as: "destination",
-        },
-      ],
-    });
-
-    if (!tour) {
-      throw new NotFoundError(
-        "The requested tour does not exist",
-        "TOUR_NOT_FOUND",
-        { slug }
-      );
-    }
-
-    sendSuccess(res, {
-      tour: tour.toAPIFormat ? tour.toAPIFormat() : tour.toJSON(),
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
-/**
- * Crée une nouvelle visite
- */
-export const createTour = async (req, res, next) => {
-  try {
-    const tourData = req.body;
-
-    // Validation basique
-    if (!tourData.title || !tourData.description || !tourData.price) {
-      throw new ValidationError("Missing required fields", "VALIDATION_ERROR", {
-        required: ["title", "description", "price"],
       });
     }
 
-    // Vérifier que la catégorie existe si fournie
-    if (tourData.categoryId) {
-      const category = await Category.findByPk(tourData.categoryId);
-      if (!category) {
-        throw new NotFoundError("Category not found", "CATEGORY_NOT_FOUND", {
-          categoryId: tourData.categoryId,
-        });
-      }
+    // Erreurs Sequelize de validation
+    if (error.name === "SequelizeValidationError") {
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: "VALIDATION_ERROR",
+          message: error.errors.map((e) => e.message).join(", "),
+        },
+      });
     }
 
-    // Vérifier que la destination existe si fournie
-    if (tourData.destinationId) {
-      const destination = await Destination.findByPk(tourData.destinationId);
-      if (!destination) {
-        throw new NotFoundError(
-          "Destination not found",
-          "DESTINATION_NOT_FOUND",
-          { destinationId: tourData.destinationId }
-        );
-      }
-    }
-
-    const newTour = await Tour.create(tourData);
-
-    // Recharger avec les associations
-    const tourWithAssociations = await Tour.findByPk(newTour.id, {
-      include: [
-        { model: Category, as: "category" },
-        { model: Destination, as: "destination" },
-      ],
+    // Erreurs génériques
+    res.status(500).json({
+      success: false,
+      error: {
+        code: "SERVER_ERROR",
+        message: "Une erreur interne est survenue",
+      },
     });
-
-    sendSuccess(res, { tour: tourWithAssociations.toAPIFormat() }, 201);
-  } catch (error) {
-    next(error);
   }
-};
+}
 
-/**
- * Met à jour complètement une visite
- */
-export const updateTour = async (req, res, next) => {
-  try {
-    const { tourId } = req.params;
-    const tourData = req.body;
+// Export d'une instance par défaut
+const tourController = new TourController();
 
-    const tour = await Tour.findByPk(tourId);
-
-    if (!tour) {
-      throw new NotFoundError(
-        "The requested tour does not exist",
-        "TOUR_NOT_FOUND",
-        { tourId }
-      );
-    }
-
-    // Mettre à jour tous les champs
-    await tour.update(tourData);
-
-    // Recharger avec les associations
-    const updatedTour = await Tour.findByPk(tourId, {
-      include: [
-        { model: Category, as: "category" },
-        { model: Destination, as: "destination" },
-      ],
-    });
-
-    sendSuccess(res, { tour: updatedTour.toAPIFormat() });
-  } catch (error) {
-    next(error);
-  }
-};
-
-/**
- * Met à jour partiellement une visite
- */
-export const patchTour = async (req, res, next) => {
-  try {
-    const { tourId } = req.params;
-    const updates = req.body;
-
-    const tour = await Tour.findByPk(tourId);
-
-    if (!tour) {
-      throw new NotFoundError(
-        "The requested tour does not exist",
-        "TOUR_NOT_FOUND",
-        { tourId }
-      );
-    }
-
-    // Mettre à jour uniquement les champs fournis
-    await tour.update(updates);
-
-    // Recharger avec les associations
-    const updatedTour = await Tour.findByPk(tourId, {
-      include: [
-        { model: Category, as: "category" },
-        { model: Destination, as: "destination" },
-      ],
-    });
-
-    sendSuccess(res, { tour: updatedTour.toAPIFormat() });
-  } catch (error) {
-    next(error);
-  }
-};
-
-/**
- * Supprime une visite (soft delete - désactivation)
- */
-export const deleteTour = async (req, res, next) => {
-  try {
-    const { tourId } = req.params;
-
-    const tour = await Tour.findByPk(tourId);
-
-    if (!tour) {
-      throw new NotFoundError(
-        "The requested tour does not exist",
-        "TOUR_NOT_FOUND",
-        { tourId }
-      );
-    }
-
-    // Soft delete : désactiver plutôt que supprimer
-    await tour.update({ isActive: false });
-
-    res.status(204).send();
-  } catch (error) {
-    next(error);
-  }
-};
-
-/**
- * Supprime définitivement une visite (hard delete)
- */
-export const hardDeleteTour = async (req, res, next) => {
-  try {
-    const { tourId } = req.params;
-
-    const tour = await Tour.findByPk(tourId);
-
-    if (!tour) {
-      throw new NotFoundError(
-        "The requested tour does not exist",
-        "TOUR_NOT_FOUND",
-        { tourId }
-      );
-    }
-
-    await tour.destroy();
-
-    res.status(204).send();
-  } catch (error) {
-    next(error);
-  }
-};
+export { TourController };
+export default tourController;
