@@ -75,7 +75,12 @@ xp-microservices/
 │   └── module-2/                   # Microservices (6 leçons)
 │
 ├── app/
-│   ├── frontend/                   # Application React (à venir)
+│   ├── frontend/                   # 🆕 Application React (Module 3)
+│   │   └── src/
+│   │       ├── contexts/           # Context API + useReducer
+│   │       ├── hooks/              # Custom Hooks
+│   │       ├── components/         # Container/Presentational
+│   │       └── pages/              # Pages de l'application
 │   │
 │   ├── backend/                    # API Backend monolithique (Module 1)
 │   │   ├── src/
@@ -85,26 +90,37 @@ xp-microservices/
 │   │   │   └── database/
 │   │   └── package.json
 │   │
-│   ├── tour-catalog-service/       # 🆕 Microservice Catalogue (Port 3001)
+│   ├── tour-catalog-service/       # Microservice Catalogue (Port 3001)
 │   │   ├── server.js
 │   │   └── src/
 │   │       ├── app.js
-│   │       ├── controllers/        # tour, category, destination
-│   │       ├── models/             # In-memory storage
+│   │       ├── config/
+│   │       │   └── container.js    # 🆕 DI Container (Module 3)
+│   │       ├── repositories/       # 🆕 Data Access Layer (Module 3)
+│   │       │   └── TourRepository.js
+│   │       ├── services/           # 🆕 Business Logic (Module 3)
+│   │       │   └── TourService.js
+│   │       ├── controllers/        # HTTP uniquement (refactorisé)
+│   │       ├── models/
 │   │       ├── routes/
 │   │       ├── middleware/
 │   │       └── utils/
 │   │
-│   └── booking-management-service/ # 🆕 Microservice Réservations (Port 3002)
+│   └── booking-management-service/ # Microservice Réservations (Port 3002)
 │       ├── server.js
 │       └── src/
 │           ├── app.js
-│           ├── config/services.js  # URLs des services
-│           ├── controllers/        # booking, availability
+│           ├── config/
+│           │   ├── services.js     # URLs des services
+│           │   └── container.js    # 🆕 DI Container (Module 3)
+│           ├── repositories/       # 🆕 Data Access Layer (Module 3)
+│           │   └── BookingRepository.js
+│           ├── controllers/        # HTTP uniquement (refactorisé)
 │           ├── models/
 │           ├── routes/
-│           ├── services/           # Communication inter-services
-│           │   ├── tourCatalogService.js  ← Axios
+│           ├── services/
+│           │   ├── BookingService.js      # 🆕 Business Logic (Module 3)
+│           │   ├── tourCatalogService.js  # Communication inter-services
 │           │   ├── availabilityService.js
 │           │   └── bookingStateMachine.js
 │           ├── middleware/
@@ -134,10 +150,14 @@ xp-microservices/
 - ✅ Booking Management Microservice - Design + Implementation (Leçons 2.4-2.5)
 - ✅ Database Design et ORM avec PostgreSQL/Sequelize (Leçon 2.6)
 
-### Module 3 : Principes SOLID et React Avancé (6 leçons)
+### Module 3 : Principes SOLID et React Avancé (6 leçons) ✅
 
-- Les 5 principes SOLID (SRP, OCP, LSP, ISP, DIP)
-- Advanced React State Management
+- ✅ Single Responsibility Principle (SRP) - Leçon 3.1
+- ✅ Open/Closed Principle (OCP) - Leçon 3.2
+- ✅ Liskov Substitution Principle (LSP) - Leçon 3.3
+- ✅ Interface Segregation Principle (ISP) - Leçon 3.4
+- ✅ Dependency Inversion Principle (DIP) - Leçon 3.5
+- ✅ Advanced React State Management - Leçon 3.6
 
 ### Module 4 : Paiements et Sécurité (6 leçons)
 
@@ -176,13 +196,13 @@ xp-microservices/
 
 ## Progression actuelle
 
-**12/42 leçons complétées (28.6%)** - Module 2 terminé ✅
+**18/42 leçons complétées (42.9%)** - Module 3 terminé ✅
 
 | Module                   | Statut     | Leçons |
 | ------------------------ | ---------- | ------ |
 | Module 1 - Fondements    | ✅ Terminé | 6/6    |
 | Module 2 - Microservices | ✅ Terminé | 6/6    |
-| Module 3 - SOLID & React | 🔜 À venir | 0/6    |
+| Module 3 - SOLID & React | ✅ Terminé | 6/6    |
 | Module 4 - Paiements     | 🔜 À venir | 0/6    |
 | Module 5 - Event-Driven  | 🔜 À venir | 0/6    |
 | Module 6 - Déploiement   | 🔜 À venir | 0/6    |
@@ -190,7 +210,7 @@ xp-microservices/
 
 Voir [ROADMAP.md](ROADMAP.md) pour plus de détails sur chaque module.
 Voir [CURRICULUM.md](CURRICULUM.md) pour la liste complète des leçons.
-Voir [MODULE-1-COMPLETE.md](MODULE-1-COMPLETE.md) pour le résumé du Module 1.
+
 
 ## Comment utiliser ce projet
 
@@ -299,7 +319,11 @@ Voir [app/backend/README.md](app/backend/README.md) pour la documentation API co
    - ~~Tour Catalog Service (Leçons 2.2-2.3)~~
    - ~~Booking Management Service (Leçons 2.4-2.5)~~
    - ~~PostgreSQL + Sequelize ORM (Leçon 2.6)~~
-3. 🔜 Module 3 : Principes SOLID et React Avancé
+3. ✅ ~~Module 3 terminé~~
+   - ~~Principes SOLID appliqués aux deux microservices~~
+   - ~~Architecture Repository → Service → Controller~~
+   - ~~Frontend React avec Context API, useReducer, Custom Hooks~~
+4. 🔜 Module 4 : Paiements et Sécurité
 
 ---
 
