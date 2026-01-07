@@ -389,7 +389,7 @@ Cette leçon a démontré l'implémentation d'un Microservice d'Authentification
 ## Navigation
 
 - **⬅️ Précédent** : [Leçon 4.4 - Stratégies d'Authentification (JWT, OAuth2)](lecon-4-auth-strategies.md)
-- **➡️ Suivant** : [Leçon 4.6 - Communication Sécurisée entre Microservices](lecon-6-secure-communication.md)
+- **➡️ Suivant** : [Leçon 4.6 - Communication sécurisée entre microservices (passerelle API, HTTPS)](lecon-6-secure-communication.md)
 - **🏠 Sommaire** : [Retour au README](README.md)
 
 ---
