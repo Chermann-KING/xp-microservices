@@ -378,6 +378,38 @@ class BookingService {
       data: bookings,
     };
   }
+
+  /**
+   * Met à jour le statut de paiement d'une réservation
+   * Appelé par le payment-service via webhook
+   * @param {string} id - ID de la réservation
+   * @param {string} paymentStatus - Nouveau statut de paiement
+   */
+  async updatePaymentStatus(id, paymentStatus) {
+    this.logger.info("BookingService.updatePaymentStatus", {
+      id,
+      paymentStatus,
+    });
+
+    const bookingInstance = await this.bookingRepository.findInstanceById(id);
+
+    if (!bookingInstance) {
+      throw new BookingServiceError(
+        `Réservation avec l'ID ${id} introuvable`,
+        "BOOKING_NOT_FOUND",
+        404
+      );
+    }
+
+    // Mettre à jour le statut de paiement via la méthode du modèle
+    await bookingInstance.updatePaymentStatus(paymentStatus);
+
+    return {
+      success: true,
+      message: `Statut de paiement mis à jour: ${paymentStatus}`,
+      data: bookingInstance.toAPIFormat(),
+    };
+  }
 }
 
 export { BookingService, BookingServiceError, BOOKING_STATES };

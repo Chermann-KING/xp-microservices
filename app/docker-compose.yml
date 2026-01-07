@@ -1,0 +1,233 @@
+# Docker Compose pour XP Microservices
+# Module 4 - Intégration et Sécurité du Traitement des Paiements
+
+version: "3.8"
+
+services:
+  # ============================================
+  # Bases de données
+  # ============================================
+  postgres-auth:
+    image: postgres:15-alpine
+    container_name: xp-postgres-auth
+    environment:
+      POSTGRES_DB: auth_service_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-auth-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - xp-network
+
+  postgres-payment:
+    image: postgres:15-alpine
+    container_name: xp-postgres-payment
+    environment:
+      POSTGRES_DB: payment_service_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres-payment-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - xp-network
+
+  postgres-booking:
+    image: postgres:15-alpine
+    container_name: xp-postgres-booking
+    environment:
+      POSTGRES_DB: booking_service_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres-booking-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - xp-network
+
+  postgres-tour:
+    image: postgres:15-alpine
+    container_name: xp-postgres-tour
+    environment:
+      POSTGRES_DB: tour_service_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5435:5432"
+    volumes:
+      - postgres-tour-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - xp-network
+
+  # ============================================
+  # Microservices
+  # ============================================
+  auth-service:
+    build:
+      context: ./auth-service
+      dockerfile: Dockerfile
+    container_name: xp-auth-service
+    environment:
+      NODE_ENV: development
+      PORT: 3005
+      DATABASE_URL: postgres://postgres:postgres@postgres-auth:5432/auth_service_db
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:-your-super-secret-access-key-change-in-production}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-your-super-secret-refresh-key-change-in-production}
+      JWT_ACCESS_EXPIRES_IN: 15m
+      JWT_REFRESH_EXPIRES_IN: 7d
+    ports:
+      - "3005:3005"
+    depends_on:
+      postgres-auth:
+        condition: service_healthy
+    networks:
+      - xp-network
+    restart: unless-stopped
+
+  payment-service:
+    build:
+      context: ./payment-service
+      dockerfile: Dockerfile
+    container_name: xp-payment-service
+    environment:
+      NODE_ENV: development
+      PORT: 3004
+      DATABASE_URL: postgres://postgres:postgres@postgres-payment:5432/payment_service_db
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+      STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
+      BOOKING_SERVICE_URL: http://booking-service:3002
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:-your-super-secret-access-key-change-in-production}
+    ports:
+      - "3004:3004"
+    depends_on:
+      postgres-payment:
+        condition: service_healthy
+    networks:
+      - xp-network
+    restart: unless-stopped
+
+  booking-service:
+    build:
+      context: ./booking-management-service
+      dockerfile: Dockerfile
+    container_name: xp-booking-service
+    environment:
+      NODE_ENV: development
+      PORT: 3002
+      DATABASE_URL: postgres://postgres:postgres@postgres-booking:5432/booking_service_db
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:-your-super-secret-access-key-change-in-production}
+    ports:
+      - "3002:3002"
+    depends_on:
+      postgres-booking:
+        condition: service_healthy
+    networks:
+      - xp-network
+    restart: unless-stopped
+
+  tour-service:
+    build:
+      context: ./tour-catalog-service
+      dockerfile: Dockerfile
+    container_name: xp-tour-service
+    environment:
+      NODE_ENV: development
+      PORT: 3001
+      DATABASE_URL: postgres://postgres:postgres@postgres-tour:5432/tour_service_db
+    ports:
+      - "3001:3001"
+    depends_on:
+      postgres-tour:
+        condition: service_healthy
+    networks:
+      - xp-network
+    restart: unless-stopped
+
+  # ============================================
+  # API Gateway
+  # ============================================
+  api-gateway:
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    container_name: xp-api-gateway
+    environment:
+      NODE_ENV: development
+      PORT: 8080
+      AUTH_SERVICE_URL: http://auth-service:3005
+      TOUR_SERVICE_URL: http://tour-service:3001
+      BOOKING_SERVICE_URL: http://booking-service:3002
+      PAYMENT_SERVICE_URL: http://payment-service:3004
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:-your-super-secret-access-key-change-in-production}
+      RATE_LIMIT_WINDOW_MS: 900000
+      RATE_LIMIT_MAX: 100
+    ports:
+      - "8080:8080"
+    depends_on:
+      - auth-service
+      - payment-service
+      - booking-service
+      - tour-service
+    networks:
+      - xp-network
+    restart: unless-stopped
+
+  # ============================================
+  # Frontend
+  # ============================================
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: http://localhost:8080
+        VITE_STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY}
+    container_name: xp-frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - api-gateway
+    networks:
+      - xp-network
+    restart: unless-stopped
+
+# ============================================
+# Volumes
+# ============================================
+volumes:
+  postgres-auth-data:
+  postgres-payment-data:
+  postgres-booking-data:
+  postgres-tour-data:
+
+# ============================================
+# Networks
+# ============================================
+networks:
+  xp-network:
+    driver: bridge

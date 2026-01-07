@@ -244,6 +244,69 @@ export const updateBookingStatus = async (req, res, next) => {
 };
 
 /**
+ * Met à jour le statut de paiement d'une réservation
+ * @route PATCH /api/v1/bookings/:bookingId/payment-status
+ * @description Appelé par le payment-service via webhook
+ */
+export const updatePaymentStatus = async (req, res, next) => {
+  try {
+    const { bookingService } = getContainer();
+    const { bookingId } = req.params;
+    const { paymentStatus } = req.body;
+
+    if (!paymentStatus) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: "VALIDATION_ERROR",
+          message: "paymentStatus is required",
+        },
+      });
+    }
+
+    const validStatuses = [
+      "pending",
+      "paid",
+      "failed",
+      "refunded",
+      "partially_refunded",
+    ];
+    if (!validStatuses.includes(paymentStatus)) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: "VALIDATION_ERROR",
+          message: `Invalid paymentStatus. Must be one of: ${validStatuses.join(
+            ", "
+          )}`,
+        },
+      });
+    }
+
+    const result = await bookingService.updatePaymentStatus(
+      bookingId,
+      paymentStatus
+    );
+
+    sendSuccess(res, {
+      booking: result.data,
+      message: `Statut de paiement mis à jour: ${paymentStatus}`,
+    });
+  } catch (error) {
+    if (error.statusCode) {
+      return res.status(error.statusCode).json({
+        success: false,
+        error: {
+          code: error.code,
+          message: error.message,
+        },
+      });
+    }
+    next(error);
+  }
+};
+
+/**
  * Annule une réservation
  * @route POST /api/v1/bookings/:bookingId/cancel
  */

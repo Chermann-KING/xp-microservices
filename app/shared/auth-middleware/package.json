@@ -1,0 +1,33 @@
+{
+    "name": "@booking-tourism-app/auth-middleware",
+    "version": "1.0.0",
+    "description": "Middleware d'authentification JWT partagé pour les microservices de l'application de réservation touristique",
+    "type": "module",
+    "main": "index.js",
+    "exports": {
+        ".": "./index.js",
+        "./jwt": "./src/jwt.js",
+        "./middleware": "./src/middleware.js"
+    },
+    "scripts": {
+        "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+        "lint": "eslint src/"
+    },
+    "keywords": [
+        "jwt",
+        "authentication",
+        "middleware",
+        "microservices"
+    ],
+    "author": "Tourism App Team",
+    "license": "MIT",
+    "dependencies": {
+        "jsonwebtoken": "^9.0.2"
+    },
+    "devDependencies": {
+        "jest": "^29.7.0"
+    },
+    "peerDependencies": {
+        "express": "^4.18.0"
+    }
+}
