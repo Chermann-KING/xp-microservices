@@ -3,7 +3,7 @@
     "private": true,
     "version": "1.0.0",
     "type": "module",
-    "description": "Frontend React - Application de réservation touristique - Module 3",
+    "description": "Frontend React - Application de réservation touristique - Module 4",
     "scripts": {
         "dev": "vite",
         "build": "vite build",
@@ -11,6 +11,8 @@
         "preview": "vite preview"
     },
     "dependencies": {
+        "@stripe/react-stripe-js": "^2.4.0",
+        "@stripe/stripe-js": "^2.2.0",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
         "react-router-dom": "^6.20.0",

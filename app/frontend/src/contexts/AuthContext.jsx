@@ -1,13 +1,21 @@
 /**
- * AuthContext - Module 3 - Context API + useReducer
+ * AuthContext - Module 4 - Authentification avec JWT
  *
  * Gère l'état d'authentification global de l'application.
  * Utilise useReducer pour une gestion prévisible des états.
+ * Intègre avec auth-service via API Gateway.
  *
  * Pattern : Context + Reducer + Custom Hook
  */
 
-import { createContext, useContext, useReducer, useEffect } from "react";
+import {
+  createContext,
+  useContext,
+  useReducer,
+  useEffect,
+  useCallback,
+} from "react";
+import { authService } from "../services/authService";
 
 // ===== ACTION TYPES =====
 const AUTH_ACTIONS = {
@@ -17,6 +25,8 @@ const AUTH_ACTIONS = {
   LOGOUT: "LOGOUT",
   RESTORE_SESSION: "RESTORE_SESSION",
   UPDATE_USER: "UPDATE_USER",
+  REFRESH_TOKEN: "REFRESH_TOKEN",
+  CLEAR_ERROR: "CLEAR_ERROR",
 };
 
 // ===== INITIAL STATE =====
@@ -78,6 +88,18 @@ function authReducer(state, action) {
         user: { ...state.user, ...action.payload },
       };
 
+    case AUTH_ACTIONS.REFRESH_TOKEN:
+      return {
+        ...state,
+        // Les tokens sont gérés par authService
+      };
+
+    case AUTH_ACTIONS.CLEAR_ERROR:
+      return {
+        ...state,
+        error: null,
+      };
+
     default:
       return state;
   }
@@ -92,59 +114,104 @@ export function AuthProvider({ children }) {
 
   // Restaurer la session au chargement
   useEffect(() => {
-    const storedUser = localStorage.getItem("auth_user");
-    const storedToken = localStorage.getItem("auth_token");
+    const restoreSession = async () => {
+      const storedUser = localStorage.getItem("auth_user");
+      const accessToken = localStorage.getItem("auth_access_token");
 
-    if (storedUser && storedToken) {
-      try {
-        const user = JSON.parse(storedUser);
-        dispatch({ type: AUTH_ACTIONS.RESTORE_SESSION, payload: user });
-      } catch {
-        localStorage.removeItem("auth_user");
-        localStorage.removeItem("auth_token");
+      if (storedUser && accessToken) {
+        try {
+          // Vérifier que le token est encore valide via le profil
+          const profile = await authService.getProfile();
+          dispatch({ type: AUTH_ACTIONS.RESTORE_SESSION, payload: profile });
+        } catch (error) {
+          // Token expiré - essayer de rafraîchir
+          const refreshToken = localStorage.getItem("auth_refresh_token");
+          if (refreshToken) {
+            try {
+              await authService.refreshTokens();
+              const user = JSON.parse(storedUser);
+              dispatch({ type: AUTH_ACTIONS.RESTORE_SESSION, payload: user });
+            } catch {
+              // Rafraîchissement échoué - déconnecter
+              authService.clearTokens();
+              dispatch({ type: AUTH_ACTIONS.RESTORE_SESSION, payload: null });
+            }
+          } else {
+            authService.clearTokens();
+            dispatch({ type: AUTH_ACTIONS.RESTORE_SESSION, payload: null });
+          }
+        }
+      } else {
         dispatch({ type: AUTH_ACTIONS.RESTORE_SESSION, payload: null });
       }
-    } else {
-      dispatch({ type: AUTH_ACTIONS.RESTORE_SESSION, payload: null });
-    }
+    };
+
+    restoreSession();
   }, []);
 
   // ===== ACTIONS =====
-  const login = async (email, password) => {
+  const login = useCallback(async (email, password) => {
     dispatch({ type: AUTH_ACTIONS.LOGIN_START });
 
     try {
-      // Simulation API call (à remplacer par vrai appel)
-      const response = await fakeLoginAPI(email, password);
-
-      localStorage.setItem("auth_user", JSON.stringify(response.user));
-      localStorage.setItem("auth_token", response.token);
-
-      dispatch({ type: AUTH_ACTIONS.LOGIN_SUCCESS, payload: response.user });
-      return { success: true };
+      const result = await authService.login(email, password);
+      dispatch({ type: AUTH_ACTIONS.LOGIN_SUCCESS, payload: result.user });
+      return { success: true, user: result.user };
     } catch (error) {
-      dispatch({ type: AUTH_ACTIONS.LOGIN_FAILURE, payload: error.message });
-      return { success: false, error: error.message };
+      const errorMessage =
+        error.response?.data?.error || error.message || "Erreur de connexion";
+      dispatch({ type: AUTH_ACTIONS.LOGIN_FAILURE, payload: errorMessage });
+      return { success: false, error: errorMessage };
     }
-  };
+  }, []);
 
-  const logout = () => {
-    localStorage.removeItem("auth_user");
-    localStorage.removeItem("auth_token");
-    dispatch({ type: AUTH_ACTIONS.LOGOUT });
-  };
+  const register = useCallback(async (userData) => {
+    dispatch({ type: AUTH_ACTIONS.LOGIN_START });
 
-  const updateUser = (userData) => {
-    const updatedUser = { ...state.user, ...userData };
-    localStorage.setItem("auth_user", JSON.stringify(updatedUser));
-    dispatch({ type: AUTH_ACTIONS.UPDATE_USER, payload: userData });
-  };
+    try {
+      const result = await authService.register(userData);
+      dispatch({ type: AUTH_ACTIONS.LOGIN_SUCCESS, payload: result.user });
+      return { success: true, user: result.user };
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.error || error.message || "Erreur d'inscription";
+      dispatch({ type: AUTH_ACTIONS.LOGIN_FAILURE, payload: errorMessage });
+      return { success: false, error: errorMessage };
+    }
+  }, []);
+
+  const logout = useCallback(async () => {
+    try {
+      await authService.logout();
+    } catch (error) {
+      // Ignorer les erreurs de logout côté serveur
+      console.warn("Logout error:", error);
+    } finally {
+      authService.clearTokens();
+      dispatch({ type: AUTH_ACTIONS.LOGOUT });
+    }
+  }, []);
+
+  const updateUser = useCallback(
+    (userData) => {
+      const updatedUser = { ...state.user, ...userData };
+      localStorage.setItem("auth_user", JSON.stringify(updatedUser));
+      dispatch({ type: AUTH_ACTIONS.UPDATE_USER, payload: userData });
+    },
+    [state.user]
+  );
+
+  const clearError = useCallback(() => {
+    dispatch({ type: AUTH_ACTIONS.CLEAR_ERROR });
+  }, []);
 
   const value = {
     ...state,
     login,
+    register,
     logout,
     updateUser,
+    clearError,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
@@ -157,26 +224,6 @@ export function useAuth() {
     throw new Error("useAuth doit être utilisé dans un AuthProvider");
   }
   return context;
-}
-
-// ===== FAKE API (à remplacer) =====
-async function fakeLoginAPI(email, password) {
-  await new Promise((resolve) => setTimeout(resolve, 500));
-
-  if (email === "test@example.com" && password === "password") {
-    return {
-      user: {
-        id: "1",
-        email,
-        firstName: "Jean",
-        lastName: "Dupont",
-        role: "user",
-      },
-      token: "fake-jwt-token",
-    };
-  }
-
-  throw new Error("Email ou mot de passe incorrect");
 }
 
 export default AuthContext;

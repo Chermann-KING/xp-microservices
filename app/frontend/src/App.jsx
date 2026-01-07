@@ -6,6 +6,9 @@ import ToursPage from "./pages/ToursPage.jsx";
 import TourDetailPage from "./pages/TourDetailPage.jsx";
 import CartPage from "./pages/CartPage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
+import RegisterPage from "./pages/RegisterPage.jsx";
+import CheckoutPage from "./pages/CheckoutPage.jsx";
+import PaymentSuccessPage from "./pages/PaymentSuccessPage.jsx";
 
 // Components
 import Header from "./components/layout/Header.jsx";
@@ -25,6 +28,9 @@ function App() {
             <Route path="/tours/:id" element={<TourDetailPage />} />
             <Route path="/cart" element={<CartPage />} />
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/checkout" element={<CheckoutPage />} />
+            <Route path="/payment/success" element={<PaymentSuccessPage />} />
           </Routes>
         </main>
         <Footer />
