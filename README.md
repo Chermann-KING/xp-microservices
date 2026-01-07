@@ -90,6 +90,21 @@ xp-microservices/
 │   │   │   └── database/
 │   │   └── package.json
 │   │
+│   ├── shared/                     # 🆕 Shared Libraries (Module 4)
+│   │   └── auth-middleware/        # Package JWT Auth
+│   │
+│   ├── auth-service/               # 🆕 Microservice Auth (Port 3005)
+│   │   ├── server.js
+│   │   └── src/
+│   │
+│   ├── payment-service/            # 🆕 Microservice Paiement (Port 3004)
+│   │   ├── server.js
+│   │   └── src/
+│   │
+│   ├── api-gateway/                # 🆕 API Gateway (Port 8080)
+│   │   ├── server.js
+│   │   └── src/
+│   │
 │   ├── tour-catalog-service/       # Microservice Catalogue (Port 3001)
 │   │   ├── server.js
 │   │   └── src/
@@ -159,13 +174,13 @@ xp-microservices/
 - ✅ Dependency Inversion Principle (DIP) - Leçon 3.5
 - ✅ Advanced React State Management - Leçon 3.6
 
-### Module 4 : Paiements et Sécurité (6 leçons)
+### Module 4 : Paiements et Sécurité (6 leçons) ✅
 
-- Payment Gateway Integration
-- Stripe API
-- Webhooks
-- Authentication (JWT, OAuth2)
-- Secure Communication
+- ✅ Payment Gateway Integration
+- ✅ Stripe API
+- ✅ Webhooks
+- ✅ Authentication (JWT, OAuth2)
+- ✅ Secure Communication
 
 ### Module 5 : Architecture Event-Driven (6 leçons)
 
@@ -196,21 +211,20 @@ xp-microservices/
 
 ## Progression actuelle
 
-**18/42 leçons complétées (42.9%)** - Module 3 terminé ✅
+**24/42 leçons complétées (57.1%)** - Module 4 terminé ✅
 
 | Module                   | Statut     | Leçons |
 | ------------------------ | ---------- | ------ |
 | Module 1 - Fondements    | ✅ Terminé | 6/6    |
 | Module 2 - Microservices | ✅ Terminé | 6/6    |
 | Module 3 - SOLID & React | ✅ Terminé | 6/6    |
-| Module 4 - Paiements     | 🔜 À venir | 0/6    |
+| Module 4 - Paiements     | ✅ Terminé | 6/6    |
 | Module 5 - Event-Driven  | 🔜 À venir | 0/6    |
 | Module 6 - Déploiement   | 🔜 À venir | 0/6    |
 | Module 7 - Testing       | 🔜 À venir | 0/6    |
 
 Voir [ROADMAP.md](ROADMAP.md) pour plus de détails sur chaque module.
 Voir [CURRICULUM.md](CURRICULUM.md) pour la liste complète des leçons.
-
 
 ## Comment utiliser ce projet
 
@@ -323,7 +337,12 @@ Voir [app/backend/README.md](app/backend/README.md) pour la documentation API co
    - ~~Principes SOLID appliqués aux deux microservices~~
    - ~~Architecture Repository → Service → Controller~~
    - ~~Frontend React avec Context API, useReducer, Custom Hooks~~
-4. 🔜 Module 4 : Paiements et Sécurité
+4. ✅ ~~Module 4 terminé~~
+   - ~~Authentication Service (JWT, Refresh Tokens)~~
+   - ~~Payment Service (Stripe Integration)~~
+   - ~~API Gateway (Rate Limiting, Proxy)~~
+   - ~~Securité (Middleware Partagé, Secrets)~~
+5. 🔜 Module 5 : Architecture Event-Driven
 
 ---
 
