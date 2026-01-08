@@ -1,0 +1,32 @@
+{
+    "name": "websocket-server",
+    "version": "1.0.0",
+    "description": "WebSocket Server for Real-Time Tour Availability - Module 5",
+    "main": "server.js",
+    "type": "module",
+    "scripts": {
+        "start": "node server.js",
+        "dev": "nodemon server.js"
+    },
+    "keywords": [
+        "websocket",
+        "real-time",
+        "tour",
+        "availability",
+        "module-5"
+    ],
+    "author": "Tourism App Team",
+    "license": "MIT",
+    "dependencies": {
+        "amqplib": "^0.10.4",
+        "dotenv": "^16.4.7",
+        "uuid": "^11.0.3",
+        "ws": "^8.18.0"
+    },
+    "devDependencies": {
+        "nodemon": "^3.1.9"
+    },
+    "engines": {
+        "node": ">=20.0.0"
+    }
+}
