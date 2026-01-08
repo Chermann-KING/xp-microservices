@@ -1,0 +1,108 @@
+doctype html
+html(lang='fr')
+  head
+    meta(charset='UTF-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1.0')
+    title Confirmation de Réservation
+    style.
+      body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 30px;
+        text-align: center;
+        border-radius: 10px 10px 0 0;
+      }
+      .content {
+        background: #f9f9f9;
+        padding: 30px;
+        border: 1px solid #ddd;
+      }
+      .booking-details {
+        background: white;
+        padding: 20px;
+        margin: 20px 0;
+        border-radius: 8px;
+        border-left: 4px solid #667eea;
+      }
+      .detail-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px solid #eee;
+      }
+      .detail-label {
+        font-weight: bold;
+        color: #555;
+      }
+      .footer {
+        background: #333;
+        color: white;
+        text-align: center;
+        padding: 20px;
+        border-radius: 0 0 10px 10px;
+        font-size: 12px;
+      }
+      .button {
+        display: inline-block;
+        padding: 12px 30px;
+        background: #667eea;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        margin-top: 20px;
+      }
+  body
+    .header
+      h1 ✅ Réservation Confirmée !
+      p Votre aventure commence ici
+    
+    .content
+      p Bonjour #{userName || 'Voyageur'},
+      
+      p Nous sommes ravis de confirmer votre réservation pour <strong>#{tourName}</strong>.
+      
+      .booking-details
+        h3 📋 Détails de votre réservation
+        
+        .detail-row
+          span.detail-label Numéro de réservation :
+          span #{bookingId}
+        
+        .detail-row
+          span.detail-label Tour :
+          span #{tourName}
+        
+        .detail-row
+          span.detail-label Date du tour :
+          span #{new Date(tourDate).toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+        
+        .detail-row
+          span.detail-label Nombre de participants :
+          span #{participants}
+        
+        .detail-row
+          span.detail-label Prix total :
+          span #{totalPrice} #{currency}
+        
+        .detail-row
+          span.detail-label Statut :
+          span ✅ Confirmé
+      
+      p Vous recevrez un email de rappel 24 heures avant le début de votre tour.
+      
+      p Si vous avez des questions, n'hésitez pas à nous contacter.
+      
+      center
+        a.button(href='#') Voir ma réservation
+    
+    .footer
+      p © 2026 Booking Tourism App - Tous droits réservés
+      p Ne répondez pas à cet email. Pour toute question, contactez support@bookingtourismapp.com
