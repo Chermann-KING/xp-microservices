@@ -1,5 +1,6 @@
 /**
  * TourCard - Module 3 - Composant Presentational
+ * Module 5 - Ajout badge disponibilité temps réel
  *
  * Composant de présentation pure (stateless).
  * Reçoit les données via props, aucune logique métier.
@@ -7,6 +8,7 @@
  */
 
 import { useCurrency } from "../../hooks/index.js";
+import TourAvailabilityBadge from "./TourAvailabilityBadge.jsx";
 
 function TourCard({ tour, onAddToCart, onViewDetails }) {
   const { format } = useCurrency();
@@ -38,6 +40,17 @@ function TourCard({ tour, onAddToCart, onViewDetails }) {
         <p className="tour-card__summary">
           {tour.summary || tour.description?.substring(0, 100)}...
         </p>
+
+        {/* Badge disponibilité temps réel - Module 5 */}
+        {tour.availableSeats !== undefined && tour.maxGroupSize && (
+          <div className="tour-card__availability">
+            <TourAvailabilityBadge
+              tourId={tour.id}
+              initialAvailableSeats={tour.availableSeats}
+              maxGroupSize={tour.maxGroupSize}
+            />
+          </div>
+        )}
 
         <div className="tour-card__meta">
           {tour.duration && (
