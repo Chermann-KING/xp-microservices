@@ -255,6 +255,32 @@ class TourRepository {
 
     return tours.map((tour) => tour.toAPIFormat());
   }
+
+  /**
+   * Met à jour un tour avec optimistic locking
+   * Module 5 - Leçon 5.5 : Optimistic Locking
+   *
+   * @param {string} id - UUID du tour
+   * @param {Object} updateData - Données à mettre à jour
+   * @param {number} expectedVersion - Version attendue
+   * @returns {Promise<boolean>} true si mise à jour réussie, false si conflit
+   */
+  async updateWithVersion(id, updateData, expectedVersion) {
+    const [affectedRows] = await this.Tour.update(
+      {
+        ...updateData,
+        optimisticLockVersion: expectedVersion + 1,
+      },
+      {
+        where: {
+          id,
+          optimisticLockVersion: expectedVersion,
+        },
+      }
+    );
+
+    return affectedRows > 0;
+  }
 }
 
 export default TourRepository;
