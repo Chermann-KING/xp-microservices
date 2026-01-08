@@ -1,6 +1,6 @@
 /**
  * Conteneur d'Injection de Dépendances - Module 3 - DIP
- * 
+ *
  * Ce module implémente le principe d'Inversion de Dépendances (DIP).
  * Les dépendances sont injectées plutôt que créées directement,
  * permettant :
@@ -9,29 +9,42 @@
  * - Configuration centralisée
  */
 
-import Booking from '../models/Booking.js';
-import BookingRepository from '../repositories/BookingRepository.js';
-import { BookingService } from '../services/BookingService.js';
-import tourCatalogService from '../services/tourCatalogService.js';
+import Booking from "../models/Booking.js";
+import BookingRepository from "../repositories/BookingRepository.js";
+import { BookingService } from "../services/BookingService.js";
+import tourCatalogService from "../services/tourCatalogService.js";
+import rabbitmqProducer from "../services/rabbitmqProducer.js"; // Module 5
 
 /**
  * Logger simple avec horodatage
  */
 const logger = {
   info: (message, meta = {}) => {
-    console.log(`[${new Date().toISOString()}] INFO: ${message}`, JSON.stringify(meta));
+    console.log(
+      `[${new Date().toISOString()}] INFO: ${message}`,
+      JSON.stringify(meta)
+    );
   },
   error: (message, meta = {}) => {
-    console.error(`[${new Date().toISOString()}] ERROR: ${message}`, JSON.stringify(meta));
+    console.error(
+      `[${new Date().toISOString()}] ERROR: ${message}`,
+      JSON.stringify(meta)
+    );
   },
   warn: (message, meta = {}) => {
-    console.warn(`[${new Date().toISOString()}] WARN: ${message}`, JSON.stringify(meta));
+    console.warn(
+      `[${new Date().toISOString()}] WARN: ${message}`,
+      JSON.stringify(meta)
+    );
   },
   debug: (message, meta = {}) => {
-    if (process.env.DEBUG === 'true') {
-      console.log(`[${new Date().toISOString()}] DEBUG: ${message}`, JSON.stringify(meta));
+    if (process.env.DEBUG === "true") {
+      console.log(
+        `[${new Date().toISOString()}] DEBUG: ${message}`,
+        JSON.stringify(meta)
+      );
     }
-  }
+  },
 };
 
 /**
@@ -42,11 +55,12 @@ function createContainer() {
   // Couche Repository - accès aux données
   const bookingRepository = new BookingRepository(Booking);
 
-  // Couche Service - logique métier
+  // Couche Service - logique métier (avec event publisher - Module 5)
   const bookingService = new BookingService({
     bookingRepository,
     tourCatalogService,
-    logger
+    eventPublisher: rabbitmqProducer, // Module 5: Publication événements RabbitMQ
+    logger,
   });
 
   return {
@@ -54,12 +68,13 @@ function createContainer() {
     bookingRepository,
     bookingService,
     tourCatalogService,
+    eventPublisher: rabbitmqProducer, // Module 5
     logger,
 
     // Modèles (pour cas spéciaux)
     models: {
-      Booking
-    }
+      Booking,
+    },
   };
 }
 
@@ -91,19 +106,26 @@ function resetContainer() {
  */
 function createTestContainer(customDependencies = {}) {
   const defaultContainer = createContainer();
-  
+
   // Fusionner avec les dépendances personnalisées
   const mergedContainer = {
     ...defaultContainer,
-    ...customDependencies
+    ...customDependencies,
   };
 
   // Recréer le service avec les dépendances potentiellement mockées
-  if (customDependencies.bookingRepository || customDependencies.tourCatalogService) {
+  if (
+    customDependencies.bookingRepository ||
+    customDependencies.tourCatalogService
+  ) {
     mergedContainer.bookingService = new BookingService({
-      bookingRepository: customDependencies.bookingRepository || defaultContainer.bookingRepository,
-      tourCatalogService: customDependencies.tourCatalogService || defaultContainer.tourCatalogService,
-      logger: customDependencies.logger || logger
+      bookingRepository:
+        customDependencies.bookingRepository ||
+        defaultContainer.bookingRepository,
+      tourCatalogService:
+        customDependencies.tourCatalogService ||
+        defaultContainer.tourCatalogService,
+      logger: customDependencies.logger || logger,
     });
   }
 
@@ -115,7 +137,7 @@ export {
   getContainer,
   resetContainer,
   createTestContainer,
-  logger
+  logger,
 };
 
 export default getContainer;

@@ -1,11 +1,12 @@
 /**
  * Server Entry Point - Booking Management Service
- * Leçon 2.6 - Intégration PostgreSQL/Sequelize
+ * Module 5 - Event-Driven Architecture avec RabbitMQ
  */
 
 import dotenv from "dotenv";
 import app from "./src/app.js";
 import db from "./src/models/index.js";
+import { getContainer } from "./src/config/container.js"; // Module 5
 
 dotenv.config();
 
@@ -29,8 +30,21 @@ async function startServer() {
       console.log("✅ Modèles synchronisés avec la base de données.");
     }
 
+    // MODULE 5: Connexion RabbitMQ Producer
+    const container = getContainer();
+    if (container.eventPublisher && process.env.RABBITMQ_URL) {
+      try {
+        await container.eventPublisher.connect();
+        console.log("✅ RabbitMQ Producer connecté (Module 5)");
+      } catch (error) {
+        console.warn(
+          "⚠️  RabbitMQ non disponible - mode dégradé (pas d'événements)"
+        );
+      }
+    }
+
     // Démarrer le serveur Express
-    app.listen(PORT, () => {
+    const server = app.listen(PORT, () => {
       console.log(`🚀 Booking Management Service running on port ${PORT}`);
       console.log(`📍 Environment: ${process.env.NODE_ENV}`);
       console.log(
@@ -40,6 +54,8 @@ async function startServer() {
         `🗄️  Database: ${process.env.DB_NAME || "booking_management_dev"}`
       );
     });
+
+    return { server, container };
   } catch (error) {
     console.error("❌ Impossible de démarrer le serveur:", error.message);
 
@@ -54,8 +70,16 @@ async function startServer() {
 }
 
 // Gestion des arrêts propres
+let appContainer;
+
 process.on("SIGINT", async () => {
   console.log("\n🛑 Arrêt du serveur...");
+
+  // MODULE 5: Fermer connexion RabbitMQ
+  if (appContainer?.eventPublisher) {
+    await appContainer.eventPublisher.disconnect();
+  }
+
   await db.sequelize.close();
   console.log("✅ Connexion à la base de données fermée.");
   process.exit(0);
@@ -63,9 +87,17 @@ process.on("SIGINT", async () => {
 
 process.on("SIGTERM", async () => {
   console.log("\n🛑 Signal SIGTERM reçu...");
+
+  // MODULE 5: Fermer connexion RabbitMQ
+  if (appContainer?.eventPublisher) {
+    await appContainer.eventPublisher.disconnect();
+  }
+
   await db.sequelize.close();
   process.exit(0);
 });
 
 // Démarrer le serveur
-startServer();
+startServer().then(({ server, container }) => {
+  appContainer = container;
+});
