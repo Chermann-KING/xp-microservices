@@ -70,15 +70,15 @@ Concevoir une **Choreography-based Saga** pour une réservation de chambre d'hô
 
 **Événements du flux nominal** :
 
-| Étape | Événement                  | Producteur       | Consommateur(s)          | Description                           |
-| ----- | -------------------------- | ---------------- | ------------------------ | ------------------------------------- |
-| 1     | `room.reserve.requested`   | Client API       | Room Service             | Demande de réservation de chambre     |
-| 2     | `room.reserved`            | Room Service     | Payment Service          | Chambre réservée avec succès          |
-| 3     | `payment.initiated`        | Payment Service  | (Audit log)              | Paiement démarré                      |
-| 4     | `payment.succeeded`        | Payment Service  | Room Service, Loyalty    | Paiement réussi                       |
-| 5     | `loyalty.points.added`     | Loyalty Service  | Notification Service     | Points ajoutés au compte client       |
-| 6     | `booking.confirmed`        | Room Service     | Notification Service     | Réservation confirmée                 |
-| 7     | `notification.sent`        | Notification Svc | (Audit log)              | Email de confirmation envoyé          |
+| Étape | Événement                | Producteur       | Consommateur(s)       | Description                       |
+| ----- | ------------------------ | ---------------- | --------------------- | --------------------------------- |
+| 1     | `room.reserve.requested` | Client API       | Room Service          | Demande de réservation de chambre |
+| 2     | `room.reserved`          | Room Service     | Payment Service       | Chambre réservée avec succès      |
+| 3     | `payment.initiated`      | Payment Service  | (Audit log)           | Paiement démarré                  |
+| 4     | `payment.succeeded`      | Payment Service  | Room Service, Loyalty | Paiement réussi                   |
+| 5     | `loyalty.points.added`   | Loyalty Service  | Notification Service  | Points ajoutés au compte client   |
+| 6     | `booking.confirmed`      | Room Service     | Notification Service  | Réservation confirmée             |
+| 7     | `notification.sent`      | Notification Svc | (Audit log)           | Email de confirmation envoyé      |
 
 ---
 
@@ -143,12 +143,12 @@ Concevoir une **Choreography-based Saga** pour une réservation de chambre d'hô
 
 **Tableau de Compensation** :
 
-| Événement d'Échec      | Transaction à Compenser      | Événement de Compensation | Responsable            |
-| ---------------------- | ---------------------------- | ------------------------- | ---------------------- |
-| `payment.failed`       | Réservation de chambre       | `room.release`            | Room Service           |
-| `room.reservation.failed` | Aucune                    | N/A                       | N/A                    |
-| `loyalty.failed`       | (Non critique - Alert Ops)   | `loyalty.retry` ou Skip   | Loyalty Service        |
-| `notification.failed`  | (Non critique - Retry async) | `notification.retry`      | Notification Service   |
+| Événement d'Échec         | Transaction à Compenser      | Événement de Compensation | Responsable          |
+| ------------------------- | ---------------------------- | ------------------------- | -------------------- |
+| `payment.failed`          | Réservation de chambre       | `room.release`            | Room Service         |
+| `room.reservation.failed` | Aucune                       | N/A                       | N/A                  |
+| `loyalty.failed`          | (Non critique - Alert Ops)   | `loyalty.retry` ou Skip   | Loyalty Service      |
+| `notification.failed`     | (Non critique - Retry async) | `notification.retry`      | Notification Service |
 
 ---
 
@@ -316,7 +316,9 @@ async function consumeEvents() {
           console.log(`🔄 [${correlationId}] Retry ${retryCount}/3`);
           channel.nack(msg, false, true); // Requeue
         } else {
-          console.error(`💀 [${correlationId}] Échec après 3 tentatives, envoi en DLQ`);
+          console.error(
+            `💀 [${correlationId}] Échec après 3 tentatives, envoi en DLQ`
+          );
           channel.nack(msg, false, false); // Envoyer en Dead Letter Queue
         }
       }
@@ -329,7 +331,9 @@ async function consumeEvents() {
 async function handlePaymentSucceeded(eventData, correlationId) {
   const { bookingId, roomId, userId } = eventData;
 
-  console.log(`💳 [${correlationId}] Paiement réussi pour bookingId: ${bookingId}`);
+  console.log(
+    `💳 [${correlationId}] Paiement réussi pour bookingId: ${bookingId}`
+  );
 
   // Mettre à jour la réservation en base
   await updateBookingStatus(bookingId, "CONFIRMED");
@@ -355,14 +359,18 @@ async function handlePaymentSucceeded(eventData, correlationId) {
     { persistent: true }
   );
 
-  console.log(`✅ [${correlationId}] Réservation confirmée et événement publié`);
+  console.log(
+    `✅ [${correlationId}] Réservation confirmée et événement publié`
+  );
 }
 
 // Handler : Paiement échoué (COMPENSATION)
 async function handlePaymentFailed(eventData, correlationId) {
   const { bookingId, roomId, userId, reason } = eventData;
 
-  console.log(`❌ [${correlationId}] Paiement échoué pour bookingId: ${bookingId}`);
+  console.log(
+    `❌ [${correlationId}] Paiement échoué pour bookingId: ${bookingId}`
+  );
   console.log(`📝 Raison: ${reason}`);
 
   try {
@@ -578,12 +586,12 @@ Convertir le **système de réservation de tours** en **Orchestration-based Saga
 
 **Flux Nominal** :
 
-| Étape | Commande                    | Service Cible         | Compensation si échec          |
-| ----- | --------------------------- | --------------------- | ------------------------------ |
-| 1     | `ReserveTourSpotsCommand`   | Tour Catalog Service  | `ReleaseTourSpotsCommand`      |
-| 2     | `CreateBookingCommand`      | Booking Service       | `CancelBookingCommand`         |
-| 3     | `ProcessPaymentCommand`     | Payment Service       | `RefundPaymentCommand`         |
-| 4     | `SendNotificationCommand`   | Notification Service  | (Non critique - retry)         |
+| Étape | Commande                  | Service Cible        | Compensation si échec     |
+| ----- | ------------------------- | -------------------- | ------------------------- |
+| 1     | `ReserveTourSpotsCommand` | Tour Catalog Service | `ReleaseTourSpotsCommand` |
+| 2     | `CreateBookingCommand`    | Booking Service      | `CancelBookingCommand`    |
+| 3     | `ProcessPaymentCommand`   | Payment Service      | `RefundPaymentCommand`    |
+| 4     | `SendNotificationCommand` | Notification Service | (Non critique - retry)    |
 
 **État Final** : `COMPLETED` ou `FAILED`
 
@@ -598,10 +606,12 @@ const { v4: uuidv4 } = require("uuid");
 const redis = require("redis");
 
 // URLs des services
-const TOUR_CATALOG_URL = process.env.TOUR_CATALOG_URL || "http://localhost:3001";
+const TOUR_CATALOG_URL =
+  process.env.TOUR_CATALOG_URL || "http://localhost:3001";
 const BOOKING_URL = process.env.BOOKING_URL || "http://localhost:3002";
 const PAYMENT_URL = process.env.PAYMENT_URL || "http://localhost:3003";
-const NOTIFICATION_URL = process.env.NOTIFICATION_URL || "http://localhost:3005";
+const NOTIFICATION_URL =
+  process.env.NOTIFICATION_URL || "http://localhost:3005";
 
 // Redis pour persister l'état
 const redisClient = redis.createClient({ url: process.env.REDIS_URL });
@@ -659,7 +669,10 @@ class TourBookingSaga {
         bookingId: this.createdResources.bookingId,
       };
     } catch (error) {
-      console.error(`❌ [Saga ${this.sagaId}] Échec à l'étape ${this.currentStep}:`, error.message);
+      console.error(
+        `❌ [Saga ${this.sagaId}] Échec à l'étape ${this.currentStep}:`,
+        error.message
+      );
 
       // Démarrer les compensations
       this.state = "COMPENSATING";
@@ -698,9 +711,14 @@ class TourBookingSaga {
       );
 
       this.createdResources.reservationId = response.data.reservationId;
-      console.log(`✅ [Saga ${this.sagaId}] Places réservées - reservationId: ${response.data.reservationId}`);
+      console.log(
+        `✅ [Saga ${this.sagaId}] Places réservées - reservationId: ${response.data.reservationId}`
+      );
     } catch (error) {
-      console.error(`❌ [Saga ${this.sagaId}] Échec de réservation des places:`, error.message);
+      console.error(
+        `❌ [Saga ${this.sagaId}] Échec de réservation des places:`,
+        error.message
+      );
       throw new Error(`TOUR_RESERVATION_FAILED: ${error.message}`);
     }
   }
@@ -729,9 +747,14 @@ class TourBookingSaga {
       );
 
       this.createdResources.bookingId = response.data.bookingId;
-      console.log(`✅ [Saga ${this.sagaId}] Réservation créée - bookingId: ${response.data.bookingId}`);
+      console.log(
+        `✅ [Saga ${this.sagaId}] Réservation créée - bookingId: ${response.data.bookingId}`
+      );
     } catch (error) {
-      console.error(`❌ [Saga ${this.sagaId}] Échec de création de réservation:`, error.message);
+      console.error(
+        `❌ [Saga ${this.sagaId}] Échec de création de réservation:`,
+        error.message
+      );
       throw new Error(`BOOKING_CREATION_FAILED: ${error.message}`);
     }
   }
@@ -760,9 +783,14 @@ class TourBookingSaga {
       );
 
       this.createdResources.paymentId = response.data.paymentId;
-      console.log(`✅ [Saga ${this.sagaId}] Paiement traité - paymentId: ${response.data.paymentId}`);
+      console.log(
+        `✅ [Saga ${this.sagaId}] Paiement traité - paymentId: ${response.data.paymentId}`
+      );
     } catch (error) {
-      console.error(`❌ [Saga ${this.sagaId}] Échec du paiement:`, error.message);
+      console.error(
+        `❌ [Saga ${this.sagaId}] Échec du paiement:`,
+        error.message
+      );
       throw new Error(`PAYMENT_FAILED: ${error.message}`);
     }
   }
@@ -791,7 +819,10 @@ class TourBookingSaga {
       console.log(`✅ [Saga ${this.sagaId}] Notification envoyée`);
     } catch (error) {
       // La notification est non-critique, on log mais ne fait pas échouer la saga
-      console.warn(`⚠️ [Saga ${this.sagaId}] Échec d'envoi de notification (non-critique):`, error.message);
+      console.warn(
+        `⚠️ [Saga ${this.sagaId}] Échec d'envoi de notification (non-critique):`,
+        error.message
+      );
       // Retry asynchrone possible
     }
   }
@@ -805,11 +836,16 @@ class TourBookingSaga {
 
     for (const compensationName of compensations) {
       try {
-        console.log(`🔙 [Saga ${this.sagaId}] Exécution de ${compensationName}...`);
+        console.log(
+          `🔙 [Saga ${this.sagaId}] Exécution de ${compensationName}...`
+        );
         await this[compensationName]();
         console.log(`✅ [Saga ${this.sagaId}] ${compensationName} réussie`);
       } catch (error) {
-        console.error(`🚨 [Saga ${this.sagaId}] Échec de compensation ${compensationName}:`, error.message);
+        console.error(
+          `🚨 [Saga ${this.sagaId}] Échec de compensation ${compensationName}:`,
+          error.message
+        );
 
         // Alerter les Ops
         await this.alertOps(compensationName, error);
@@ -901,7 +937,11 @@ class TourBookingSaga {
       timestamp: new Date().toISOString(),
     };
 
-    await redisClient.setEx(`saga:${this.sagaId}`, 86400, JSON.stringify(stateData));
+    await redisClient.setEx(
+      `saga:${this.sagaId}`,
+      86400,
+      JSON.stringify(stateData)
+    );
   }
 
   // Restaurer l'état d'une saga depuis Redis
@@ -963,7 +1003,11 @@ router.post("/bookings", async (req, res) => {
     };
 
     // Validation
-    if (!bookingData.tourId || !bookingData.userId || !bookingData.numberOfSpots) {
+    if (
+      !bookingData.tourId ||
+      !bookingData.userId ||
+      !bookingData.numberOfSpots
+    ) {
       return res.status(400).json({
         error: "Données manquantes : tourId, userId, numberOfSpots requis",
       });
@@ -1201,9 +1245,14 @@ async function idempotencyMiddleware(req, res, next) {
         timestamp: new Date().toISOString(),
       };
 
-      redisClient.setEx(redisKey, IDEMPOTENCY_TTL, JSON.stringify(responseData)).catch((err) => {
-        console.error("❌ Erreur lors de la mise en cache de la réponse:", err);
-      });
+      redisClient
+        .setEx(redisKey, IDEMPOTENCY_TTL, JSON.stringify(responseData))
+        .catch((err) => {
+          console.error(
+            "❌ Erreur lors de la mise en cache de la réponse:",
+            err
+          );
+        });
 
       // Envoyer la réponse au client
       return originalJson(body);
@@ -1241,7 +1290,9 @@ router.post("/", idempotencyMiddleware, async (req, res) => {
   const { userId, amount, currency, paymentMethod, bookingId } = req.body;
   const idempotencyKey = req.headers["x-idempotency-key"];
 
-  console.log(`💳 Traitement du paiement - Booking: ${bookingId}, Montant: ${amount} ${currency}`);
+  console.log(
+    `💳 Traitement du paiement - Booking: ${bookingId}, Montant: ${amount} ${currency}`
+  );
 
   try {
     // Validation
@@ -1298,7 +1349,9 @@ router.post("/", idempotencyMiddleware, async (req, res) => {
         currency,
       });
     } else if (paymentIntent.status === "requires_payment_method") {
-      console.warn(`⚠️ Paiement nécessite une méthode de paiement - PaymentIntent: ${paymentIntent.id}`);
+      console.warn(
+        `⚠️ Paiement nécessite une méthode de paiement - PaymentIntent: ${paymentIntent.id}`
+      );
 
       return res.status(400).json({
         error: "Méthode de paiement invalide",
@@ -1306,7 +1359,9 @@ router.post("/", idempotencyMiddleware, async (req, res) => {
         status: "requires_payment_method",
       });
     } else {
-      console.error(`❌ Paiement échoué - PaymentIntent: ${paymentIntent.id}, Status: ${paymentIntent.status}`);
+      console.error(
+        `❌ Paiement échoué - PaymentIntent: ${paymentIntent.id}, Status: ${paymentIntent.status}`
+      );
 
       return res.status(500).json({
         error: "Échec du paiement",
@@ -1376,7 +1431,9 @@ router.post("/:paymentId/refund", idempotencyMiddleware, async (req, res) => {
         status: "refunded",
       });
     } else {
-      console.error(`❌ Remboursement échoué - RefundId: ${refund.id}, Status: ${refund.status}`);
+      console.error(
+        `❌ Remboursement échoué - RefundId: ${refund.id}, Status: ${refund.status}`
+      );
 
       return res.status(500).json({
         error: "Échec du remboursement",
@@ -1403,7 +1460,10 @@ async function savePaymentToDatabase(paymentData) {
 
 async function getPaymentFromDatabase(paymentId) {
   // Simulation - Remplacer par requête DB réelle
-  console.log("🔍 Récupération du paiement depuis la base de données:", paymentId);
+  console.log(
+    "🔍 Récupération du paiement depuis la base de données:",
+    paymentId
+  );
   return {
     paymentId,
     stripePaymentIntentId: "pi_test_123",
@@ -1478,7 +1538,10 @@ describe("Idempotence du Payment Service", () => {
     const promises = Array(5)
       .fill()
       .map(() =>
-        request(app).post("/api/payments").set("X-Idempotency-Key", idempotencyKey).send(paymentData)
+        request(app)
+          .post("/api/payments")
+          .set("X-Idempotency-Key", idempotencyKey)
+          .send(paymentData)
       );
 
     const responses = await Promise.all(promises);
@@ -1521,14 +1584,14 @@ describe("Idempotence du Payment Service", () => {
 
 #### 5. Bonnes Pratiques d'Idempotence
 
-| Pratique                                        | Description                                                        |
-| ----------------------------------------------- | ------------------------------------------------------------------ |
-| **Header X-Idempotency-Key obligatoire**        | Requérir systématiquement ce header pour les opérations critiques |
-| **TTL de 24 heures minimum**                    | Stocker les résultats suffisamment longtemps pour couvrir retries |
-| **Retourner le statut HTTP original**           | Même code de statut (201, 400, 500) que la première requête       |
-| **Supporter l'idempotence native des APIs**     | Stripe, PayPal supportent nativement l'idempotence                |
-| **Logs détaillés**                              | Logger chaque requête idempotente détectée pour audit              |
-| **Graceful degradation si Redis indisponible**  | Continuer sans idempotence plutôt que bloquer complètement         |
+| Pratique                                       | Description                                                       |
+| ---------------------------------------------- | ----------------------------------------------------------------- |
+| **Header X-Idempotency-Key obligatoire**       | Requérir systématiquement ce header pour les opérations critiques |
+| **TTL de 24 heures minimum**                   | Stocker les résultats suffisamment longtemps pour couvrir retries |
+| **Retourner le statut HTTP original**          | Même code de statut (201, 400, 500) que la première requête       |
+| **Supporter l'idempotence native des APIs**    | Stripe, PayPal supportent nativement l'idempotence                |
+| **Logs détaillés**                             | Logger chaque requête idempotente détectée pour audit             |
+| **Graceful degradation si Redis indisponible** | Continuer sans idempotence plutôt que bloquer complètement        |
 
 ---
 
@@ -1546,14 +1609,20 @@ async function createPaymentWithRetry(paymentData, maxRetries = 3) {
 
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
-      console.log(`🔄 Tentative ${attempt}/${maxRetries} - Idempotency Key: ${idempotencyKey}`);
+      console.log(
+        `🔄 Tentative ${attempt}/${maxRetries} - Idempotency Key: ${idempotencyKey}`
+      );
 
-      const response = await axios.post("http://localhost:3003/api/payments", paymentData, {
-        headers: {
-          "X-Idempotency-Key": idempotencyKey, // Même clé pour tous les retries
-        },
-        timeout: 5000,
-      });
+      const response = await axios.post(
+        "http://localhost:3003/api/payments",
+        paymentData,
+        {
+          headers: {
+            "X-Idempotency-Key": idempotencyKey, // Même clé pour tous les retries
+          },
+          timeout: 5000,
+        }
+      );
 
       console.log(`✅ Paiement réussi:`, response.data);
       return response.data;
@@ -1603,7 +1672,7 @@ async function createPaymentWithRetry(paymentData, maxRetries = 3) {
 - ✅ Implémentation complète du Room Service consumer avec idempotence Redis
 - ✅ Configuration Dead Letter Queue pour messages en échec
 
-### Exercice 2 : Orchestration-based Saga (Tour Booking)
+### Exercice 2 : Orchestration-based Saga (Booking Tourism App)
 
 - ✅ Architecture d'orchestrator centralisé avec state machine
 - ✅ Implémentation complète de la classe `TourBookingSaga`

@@ -298,7 +298,7 @@ KAFKA_GROUP_ID=tour-services
 
 # Notification Service
 SENDGRID_API_KEY=SG.xxxxx
-SENDGRID_FROM_EMAIL=noreply@tourbooking.com
+SENDGRID_FROM_EMAIL=noreply@bookingtourismapp.com
 TWILIO_ACCOUNT_SID=ACxxxxx
 TWILIO_AUTH_TOKEN=xxxxx
 TWILIO_PHONE_NUMBER=+15551234567
