@@ -1,9 +1,46 @@
 # Docker Compose pour XP Microservices
-# Module 4 - Intégration et Sécurité du Traitement des Paiements
+# Module 5 - Architecture Event-Driven et Communication Asynchrone
 
 version: "3.8"
 
 services:
+  # ============================================
+  # Infrastructure - Message Broker & Cache
+  # ============================================
+  rabbitmq:
+    image: rabbitmq:3.12-management-alpine
+    container_name: xp-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - "5672:5672" # AMQP protocol
+      - "15672:15672" # Management UI
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - xp-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: xp-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - xp-network
+
   # ============================================
   # Bases de données
   # ============================================
@@ -159,10 +196,50 @@ services:
       NODE_ENV: development
       PORT: 3001
       DATABASE_URL: postgres://postgres:postgres@postgres-tour:5432/tour_service_db
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+      RABBITMQ_EXCHANGE: tour_booking_events
+      REDIS_URL: redis://redis:6379
     ports:
       - "3001:3001"
     depends_on:
       postgres-tour:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - xp-network
+    restart: unless-stopped
+
+  # ============================================
+  # Notification Service (Module 5)
+  # ============================================
+  notification-service:
+    build:
+      context: ./notification-service
+      dockerfile: Dockerfile
+    container_name: xp-notification-service
+    environment:
+      NODE_ENV: development
+      PORT: 3006
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+      RABBITMQ_EXCHANGE: tour_booking_events
+      RABBITMQ_QUEUE: notification_queue
+      REDIS_URL: redis://redis:6379
+      REDIS_TTL: 86400
+      SMTP_HOST: ${SMTP_HOST:-smtp.mailtrap.io}
+      SMTP_PORT: ${SMTP_PORT:-2525}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASS: ${SMTP_PASS}
+      SENDER_EMAIL: ${SENDER_EMAIL:-noreply@bookingtourismapp.com}
+      SENDER_NAME: ${SENDER_NAME:-Booking Tourism App}
+    ports:
+      - "3006:3006"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     networks:
       - xp-network
@@ -220,6 +297,8 @@ services:
 # Volumes
 # ============================================
 volumes:
+  rabbitmq-data:
+  redis-data:
   postgres-auth-data:
   postgres-payment-data:
   postgres-booking-data:
