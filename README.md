@@ -44,19 +44,22 @@ Ce projet est une application complète de réservation touristique construite p
 
 **Microservices**
 
-- Tour Catalog Service
-- Booking Management Service
-- User Authentication Service
-- Payment Gateway Service
-- Notification Service
-- API Gateway
+- Tour Catalog Service (Port 3001)
+- Booking Management Service (Port 3002)
+- User Authentication Service (Port 3005)
+- Payment Gateway Service (Port 3004)
+- Notification Service (Port 3006)
+- WebSocket Server (Port 8080)
+- API Gateway (Port 8080)
 
 **Infrastructure**
 
-- Docker & Kubernetes
-- RabbitMQ / Kafka
-- Redis (caching)
-- ELK Stack (monitoring)
+- Docker & Docker Compose
+- RabbitMQ 3.12 (Message Broker)
+- Redis 7 (Caching & Idempotence)
+- PostgreSQL 15+ (Database per service)
+- Kubernetes (Orchestration)
+- ELK Stack (Monitoring)
 
 ### Principes appliqués
 
@@ -71,8 +74,13 @@ Ce projet est une application complète de réservation touristique construite p
 ```
 xp-microservices/
 ├── docs/                           # Documentation et leçons
-│   ├── module-1/                   # Fondements (6 leçons)
-│   └── module-2/                   # Microservices (6 leçons)
+│   ├── module-1/                   # Fondements (6 leçons) ✅
+│   ├── module-2/                   # Microservices (6 leçons) ✅
+│   ├── module-3/                   # SOLID & React (6 leçons) ✅
+│   ├── module-4/                   # Paiements & Sécurité (6 leçons) ✅
+│   ├── module-5/                   # Event-Driven (6 leçons) ✅
+│   ├── module-6/                   # Déploiement (6 leçons)
+│   └── module-7/                   # Testing (6 leçons)
 │
 ├── app/
 │   ├── frontend/                   # 🆕 Application React (Module 3)
@@ -105,45 +113,62 @@ xp-microservices/
 │   │   ├── server.js
 │   │   └── src/
 │   │
+│   ├── notification-service/       # 🆕 Microservice Notifications (Port 3006)
+│   │   ├── server.js
+│   │   └── src/
+│   │       ├── consumers/          # RabbitMQ Consumers
+│   │       ├── channels/           # Email, SMS, Push
+│   │       ├── services/           # Idempotence, Templates
+│   │       └── templates/          # Email Templates (Pug)
+│   │
+│   ├── websocket-server/           # 🆕 Serveur WebSocket (Port 8080)
+│   │   ├── server.js
+│   │   └── README.md
+│   │
 │   ├── tour-catalog-service/       # Microservice Catalogue (Port 3001)
 │   │   ├── server.js
 │   │   └── src/
 │   │       ├── app.js
 │   │       ├── config/
 │   │       │   └── container.js    # 🆕 DI Container (Module 3)
+│   │       ├── consumers/          # 🆕 RabbitMQ Consumers (Module 5)
+│   │       │   └── tourCatalogConsumer.js
 │   │       ├── repositories/       # 🆕 Data Access Layer (Module 3)
 │   │       │   └── TourRepository.js
 │   │       ├── services/           # 🆕 Business Logic (Module 3)
-│   │       │   └── TourService.js
+│   │       │   ├── TourService.js
+│   │       │   └── rabbitmqProducer.js  # 🆕 Event Publisher (Module 5)
 │   │       ├── controllers/        # HTTP uniquement (refactorisé)
-│   │       ├── models/
+│   │       ├── models/             # 🆕 + Optimistic Locking (Module 5)
 │   │       ├── routes/
 │   │       ├── middleware/
 │   │       └── utils/
 │   │
-│   └── booking-management-service/ # Microservice Réservations (Port 3002)
-│       ├── server.js
-│       └── src/
-│           ├── app.js
-│           ├── config/
-│           │   ├── services.js     # URLs des services
-│           │   └── container.js    # 🆕 DI Container (Module 3)
-│           ├── repositories/       # 🆕 Data Access Layer (Module 3)
-│           │   └── BookingRepository.js
-│           ├── controllers/        # HTTP uniquement (refactorisé)
-│           ├── models/
-│           ├── routes/
-│           ├── services/
-│           │   ├── BookingService.js      # 🆕 Business Logic (Module 3)
-│           │   ├── tourCatalogService.js  # Communication inter-services
-│           │   ├── availabilityService.js
-│           │   └── bookingStateMachine.js
-│           ├── middleware/
-│           └── utils/
+│   ├── booking-management-service/ # Microservice Réservations (Port 3002)
+│   │   ├── server.js
+│   │   └── src/
+│   │       ├── app.js
+│   │       ├── config/
+│   │       │   ├── services.js     # URLs des services
+│   │       │   └── container.js    # 🆕 DI Container (Module 3)
+│   │       ├── repositories/       # 🆕 Data Access Layer (Module 3)
+│   │       │   └── BookingRepository.js
+│   │       ├── controllers/        # HTTP uniquement (refactorisé)
+│   │       ├── models/
+│   │       ├── routes/
+│   │       ├── services/
+│   │       │   ├── BookingService.js      # 🆕 Business Logic (Module 3)
+│   │       │   ├── rabbitmqProducer.js    # 🆕 Event Publisher (Module 5)
+│   │       │   ├── tourCatalogService.js  # Communication inter-services
+│   │       │   ├── availabilityService.js
+│   │       │   └── bookingStateMachine.js
+│   │       ├── middleware/
+│   │       └── utils/
+│   │
+│   └── docker-compose.yml          # 🆕 Orchestration infrastructure (Module 5)
 │
 ├── ROADMAP.md                      # Roadmap détaillée des modules
 ├── CURRICULUM.md                   # Liste complète des 42 leçons
-├── MODULE-1-COMPLETE.md            # Résumé Module 1 terminé
 └── README.md                       # Ce fichier
 ```
 
@@ -182,14 +207,14 @@ xp-microservices/
 - ✅ Authentication (JWT, OAuth2)
 - ✅ Secure Communication
 
-### Module 5 : Architecture Event-Driven (6 leçons)
+### Module 5 : Architecture Event-Driven (6 leçons) ✅
 
-- Event-Driven Microservices
-- Message Queues (RabbitMQ, Kafka)
-- Saga Pattern
-- Notification Microservice
-- Concurrency & Idempotency
-- WebSockets temps réel
+- ✅ Event-Driven Microservices - Introduction RabbitMQ
+- ✅ Message Queues - Pattern Publisher/Subscriber
+- ✅ Notification Microservice - Multi-canal (Email, SMS, Push)
+- ✅ Booking Events - Publication événements réservation
+- ✅ Concurrency & Idempotency - Optimistic Locking
+- ✅ WebSockets temps réel - Diffusion disponibilités
 
 ### Module 6 : Déploiement et Monitoring (6 leçons)
 
@@ -211,7 +236,7 @@ xp-microservices/
 
 ## Progression actuelle
 
-**24/42 leçons complétées (57.1%)** - Module 4 terminé ✅
+**30/42 leçons complétées (71.4%)** - Module 5 terminé ✅
 
 | Module                   | Statut     | Leçons |
 | ------------------------ | ---------- | ------ |
@@ -219,7 +244,7 @@ xp-microservices/
 | Module 2 - Microservices | ✅ Terminé | 6/6    |
 | Module 3 - SOLID & React | ✅ Terminé | 6/6    |
 | Module 4 - Paiements     | ✅ Terminé | 6/6    |
-| Module 5 - Event-Driven  | 🔜 À venir | 0/6    |
+| Module 5 - Event-Driven  | ✅ Terminé | 6/6    |
 | Module 6 - Déploiement   | 🔜 À venir | 0/6    |
 | Module 7 - Testing       | 🔜 À venir | 0/6    |
 
@@ -262,7 +287,23 @@ npm run dev
 
 Le serveur démarre sur `http://localhost:3000`
 
-### Installation des Microservices (Module 2)
+### Installation des Microservices (Modules 2-5)
+
+#### Option 1 : Avec Docker Compose (Recommandé pour Module 5)
+
+```bash
+# Démarrer tous les services + infrastructure
+cd app
+docker-compose up -d
+
+# Vérifier les logs
+docker-compose logs -f
+
+# Accès RabbitMQ Management
+# → http://localhost:15672 (guest/guest)
+```
+
+#### Option 2 : Manuellement
 
 ```bash
 # Terminal 1 - Tour Catalog Service
@@ -276,6 +317,18 @@ cd app/booking-management-service
 npm install
 npm run dev
 # → http://localhost:3002
+
+# Terminal 3 - Notification Service (Module 5)
+cd app/notification-service
+npm install
+npm start
+# → http://localhost:3006
+
+# Terminal 4 - WebSocket Server (Module 5)
+cd app/websocket-server
+npm install
+npm start
+# → ws://localhost:8080
 ```
 
 **Endpoints Tour Catalog (Port 3001) :**
@@ -342,7 +395,15 @@ Voir [app/backend/README.md](app/backend/README.md) pour la documentation API co
    - ~~Payment Service (Stripe Integration)~~
    - ~~API Gateway (Rate Limiting, Proxy)~~
    - ~~Securité (Middleware Partagé, Secrets)~~
-5. 🔜 Module 5 : Architecture Event-Driven
+5. ✅ ~~Module 5 terminé~~
+   - ~~RabbitMQ Message Broker avec Exchange Topic~~
+   - ~~Pattern Publisher/Subscriber (Booking → Notification)~~
+   - ~~Notification Service multi-canal (Email, SMS, Push)~~
+   - ~~Events booking.confirmed/cancelled/completed~~
+   - ~~Optimistic Locking pour concurrence~~
+   - ~~WebSocket Server pour mises à jour temps réel~~
+   - ~~Frontend WebSocket + Notifications navigateur~~
+6. 🔜 Module 6 : Déploiement et Monitoring
 
 ---
 
