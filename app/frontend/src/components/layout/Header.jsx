@@ -1,9 +1,11 @@
 /**
  * Header - Layout Component
+ * Module 5 - Ajout indicateur WebSocket
  */
 
 import { Link } from "react-router-dom";
 import { useAuth, useCart, useCurrency } from "../../hooks/index.js";
+import WebSocketStatus from "../ui/WebSocketStatus.jsx";
 
 function Header() {
   const { isAuthenticated, user, logout } = useAuth();
@@ -22,6 +24,9 @@ function Header() {
         </nav>
 
         <div className="header__actions">
+          {/* WebSocket Status - Module 5 */}
+          <WebSocketStatus />
+
           {/* Sélecteur de devise */}
           <select
             className="currency-select"

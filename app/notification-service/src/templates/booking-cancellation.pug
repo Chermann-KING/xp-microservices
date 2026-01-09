@@ -1,0 +1,104 @@
+doctype html
+html(lang='fr')
+  head
+    meta(charset='UTF-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1.0')
+    title Annulation de Réservation
+    style.
+      body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .header {
+        background: #e74c3c;
+        color: white;
+        padding: 30px;
+        text-align: center;
+        border-radius: 10px 10px 0 0;
+      }
+      .content {
+        background: #f9f9f9;
+        padding: 30px;
+        border: 1px solid #ddd;
+      }
+      .cancellation-details {
+        background: white;
+        padding: 20px;
+        margin: 20px 0;
+        border-radius: 8px;
+        border-left: 4px solid #e74c3c;
+      }
+      .detail-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px solid #eee;
+      }
+      .detail-label {
+        font-weight: bold;
+        color: #555;
+      }
+      .refund-info {
+        background: #fff3cd;
+        border-left: 4px solid #ffc107;
+        padding: 15px;
+        margin: 20px 0;
+        border-radius: 5px;
+      }
+      .footer {
+        background: #333;
+        color: white;
+        text-align: center;
+        padding: 20px;
+        border-radius: 0 0 10px 10px;
+        font-size: 12px;
+      }
+  body
+    .header
+      h1 ❌ Réservation Annulée
+      p Votre réservation a été annulée
+    
+    .content
+      p Bonjour #{userName || 'Voyageur'},
+      
+      p Votre réservation pour <strong>#{tourName}</strong> a été annulée avec succès.
+      
+      .cancellation-details
+        h3 📋 Détails de l'annulation
+        
+        .detail-row
+          span.detail-label Numéro de réservation :
+          span #{bookingId}
+        
+        .detail-row
+          span.detail-label Tour :
+          span #{tourName}
+        
+        .detail-row
+          span.detail-label Date du tour :
+          span #{new Date(tourDate).toLocaleDateString('fr-FR')}
+        
+        .detail-row
+          span.detail-label Montant payé :
+          span #{totalPrice} #{currency}
+        
+        .detail-row
+          span.detail-label Date d'annulation :
+          span #{new Date(canceledAt).toLocaleDateString('fr-FR')}
+      
+      if refundAmount
+        .refund-info
+          p <strong>💰 Remboursement</strong>
+          p Un remboursement de <strong>#{refundAmount} #{currency}</strong> sera traité sous 5-7 jours ouvrables.
+          if cancellationFee
+            p Frais d'annulation : #{cancellationFee} #{currency}
+      
+      p Nous espérons vous revoir bientôt pour de nouvelles aventures !
+    
+    .footer
+      p © 2026 Booking Tourism App - Tous droits réservés
+      p Ne répondez pas à cet email. Pour toute question, contactez support@bookingtourismapp.com

@@ -34,6 +34,7 @@ class TourService {
   constructor({ tourRepository, logger = console }) {
     this.tourRepository = tourRepository;
     this.logger = logger;
+    this.maxRetries = 3; // Pour optimistic locking
   }
 
   /**
@@ -346,6 +347,112 @@ class TourService {
         currency: tour.currency,
       },
     };
+  }
+
+  /**
+   * Met à jour les places disponibles avec optimistic locking
+   * Module 5 - Leçon 5.5 : Optimistic Locking
+   *
+   * @param {string} tourId - ID du tour
+   * @param {number} delta - Changement du nombre de places (-X ou +X)
+   * @returns {Promise<Object>}
+   */
+  async updateAvailableSeats(tourId, delta) {
+    this.logger.info("TourService.updateAvailableSeats", { tourId, delta });
+
+    let attempt = 0;
+    let lastError = null;
+
+    while (attempt < this.maxRetries) {
+      try {
+        attempt++;
+        this.logger.info(`Tentative ${attempt}/${this.maxRetries}`);
+
+        // 1. Récupérer le tour avec la version actuelle
+        const tour = await this.tourRepository.findById(tourId);
+
+        if (!tour) {
+          throw new TourServiceError(
+            `Tour avec l'ID ${tourId} introuvable`,
+            "TOUR_NOT_FOUND",
+            404
+          );
+        }
+
+        // 2. Calculer les nouvelles valeurs
+        const newBookedSeats = tour.bookedSeats + delta;
+
+        // 3. Validation métier
+        if (newBookedSeats < 0) {
+          throw new TourServiceError(
+            "Impossible de libérer plus de places que réservées",
+            "INVALID_OPERATION",
+            400
+          );
+        }
+
+        if (newBookedSeats > tour.maxGroupSize) {
+          throw new TourServiceError(
+            `Capacité maximale atteinte (${tour.maxGroupSize} places)`,
+            "MAX_CAPACITY_REACHED",
+            400
+          );
+        }
+
+        // 4. Mise à jour avec optimistic locking
+        const success = await this.tourRepository.updateWithVersion(
+          tourId,
+          { bookedSeats: newBookedSeats },
+          tour.optimisticLockVersion
+        );
+
+        if (!success) {
+          // Conflit de version - retry
+          const waitTime = Math.pow(2, attempt) * 100; // Backoff exponentiel
+          this.logger.warn(
+            `⚠️  Conflit version - attente ${waitTime}ms avant retry`
+          );
+          lastError = new Error("Version conflict");
+          await new Promise((resolve) => setTimeout(resolve, waitTime));
+          continue;
+        }
+
+        // 5. Succès - récupérer le tour mis à jour
+        const updatedTour = await this.tourRepository.findById(tourId);
+
+        this.logger.info(
+          `✅ Places mises à jour: ${tour.bookedSeats} → ${newBookedSeats}`
+        );
+
+        return {
+          success: true,
+          data: updatedTour,
+        };
+      } catch (error) {
+        // Erreurs métier non retryables
+        if (error instanceof TourServiceError) {
+          throw error;
+        }
+
+        lastError = error;
+        this.logger.error(`❌ Erreur tentative ${attempt}:`, error.message);
+
+        if (attempt >= this.maxRetries) {
+          break;
+        }
+
+        // Attendre avant retry
+        const waitTime = Math.pow(2, attempt) * 100;
+        await new Promise((resolve) => setTimeout(resolve, waitTime));
+      }
+    }
+
+    // Échec après tous les retries
+    throw new TourServiceError(
+      `Échec mise à jour après ${this.maxRetries} tentatives: ${lastError?.message}`,
+      "UPDATE_FAILED",
+      500
+    );
   }
 }
 

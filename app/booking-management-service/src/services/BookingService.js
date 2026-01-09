@@ -48,11 +48,18 @@ class BookingService {
    * @param {Object} dependencies - Dépendances injectées (DIP)
    * @param {BookingRepository} dependencies.bookingRepository
    * @param {Object} dependencies.tourCatalogService - Service de communication avec Tour Catalog
+   * @param {Object} dependencies.eventPublisher - Publisher RabbitMQ (Module 5)
    * @param {Object} dependencies.logger
    */
-  constructor({ bookingRepository, tourCatalogService, logger = console }) {
+  constructor({
+    bookingRepository,
+    tourCatalogService,
+    eventPublisher = null,
+    logger = console,
+  }) {
     this.bookingRepository = bookingRepository;
     this.tourCatalogService = tourCatalogService;
+    this.eventPublisher = eventPublisher;
     this.logger = logger;
   }
 
@@ -292,6 +299,9 @@ class BookingService {
       await bookingInstance.update({ cancellationReason: reason });
     }
 
+    // MODULE 5: Publier événement RabbitMQ
+    await this._publishBookingEvent(bookingInstance, newStatus, reason);
+
     return {
       success: true,
       message: `Réservation ${
@@ -305,6 +315,75 @@ class BookingService {
       }`,
       data: bookingInstance.toAPIFormat(),
     };
+  }
+
+  /**
+   * MODULE 5: Publie un événement RabbitMQ pour un changement de statut
+   * @private
+   */
+  async _publishBookingEvent(bookingInstance, newStatus, reason) {
+    if (!this.eventPublisher) {
+      this.logger.warn(
+        "⚠️  Event publisher non configuré - événement non publié"
+      );
+      return;
+    }
+
+    const { v4: uuidv4 } = await import("uuid");
+
+    let routingKey;
+    let eventType;
+
+    if (newStatus === BOOKING_STATES.CONFIRMED) {
+      routingKey = "booking.confirmed";
+      eventType = "booking.confirmed";
+    } else if (newStatus === BOOKING_STATES.CANCELLED) {
+      routingKey = "booking.cancelled";
+      eventType = "booking.cancelled";
+    } else if (newStatus === BOOKING_STATES.COMPLETED) {
+      routingKey = "booking.completed";
+      eventType = "booking.completed";
+    } else {
+      return; // Pas d'événement pour les autres transitions
+    }
+
+    const eventData = {
+      eventId: uuidv4(),
+      eventType,
+      eventVersion: "1.0",
+      timestamp: new Date().toISOString(),
+      data: {
+        bookingId: bookingInstance.id,
+        tourId: bookingInstance.tourId,
+        userId: bookingInstance.customerId,
+        userName: bookingInstance.customerName,
+        userEmail: bookingInstance.customerEmail,
+        tourName: bookingInstance.tourName || "Tour",
+        tourDate: bookingInstance.tourDate,
+        participants: bookingInstance.numberOfParticipants,
+        totalPrice: parseFloat(bookingInstance.totalAmount),
+        currency: bookingInstance.currency,
+        status: newStatus,
+        canceledAt:
+          newStatus === BOOKING_STATES.CANCELLED
+            ? new Date().toISOString()
+            : null,
+        cancellationReason: reason || null,
+      },
+    };
+
+    try {
+      await this.eventPublisher.publishEvent(routingKey, eventData);
+      this.logger.info(
+        `✅ Événement [${routingKey}] publié pour booking ${bookingInstance.id}`
+      );
+    } catch (error) {
+      this.logger.error(
+        `❌ Échec publication événement [${routingKey}]:`,
+        error
+      );
+      // Ne pas bloquer la transaction - l'événement peut être republié
+    }
   }
 
   /**

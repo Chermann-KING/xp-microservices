@@ -1,20 +1,22 @@
 /**
  * Dependency Injection Container - Module 3 - DIP
- * 
+ *
  * Ce container centralise la création et l'injection des dépendances.
- * Il implémente le principe DIP (Dependency Inversion Principle) en 
+ * Il implémente le principe DIP (Dependency Inversion Principle) en
  * permettant aux modules de haut niveau de dépendre d'abstractions.
- * 
+ *
  * Principes SOLID appliqués :
  * - DIP : Les dépendances sont injectées, pas instanciées directement
  * - SRP : Ce fichier ne fait QUE la gestion des dépendances
- * 
+ *
  * Pattern utilisé : Service Locator / Simple DI Container
  */
 
-import { Tour, Category, Destination, sequelize } from '../models/index.js';
-import TourRepository from '../repositories/TourRepository.js';
-import TourService from '../services/TourService.js';
+import { Tour, Category, Destination, sequelize } from "../models/index.js";
+import TourRepository from "../repositories/TourRepository.js";
+import TourService from "../services/TourService.js";
+import rabbitmqProducer from "../services/rabbitmqProducer.js";
+import TourCatalogConsumer from "../consumers/tourCatalogConsumer.js";
 
 /**
  * Container simple pour l'injection de dépendances
@@ -102,38 +104,60 @@ function createContainer() {
   const container = new Container();
 
   // ===== INFRASTRUCTURE =====
-  
+
   // Modèles Sequelize (singletons)
-  container.registerInstance('models', { Tour, Category, Destination });
-  container.registerInstance('sequelize', sequelize);
+  container.registerInstance("models", { Tour, Category, Destination });
+  container.registerInstance("sequelize", sequelize);
 
   // Logger (peut être remplacé par Winston, Pino, etc.)
-  container.registerInstance('logger', {
-    info: (message, meta) => console.log(`[INFO] ${message}`, meta || ''),
-    warn: (message, meta) => console.warn(`[WARN] ${message}`, meta || ''),
-    error: (message, meta) => console.error(`[ERROR] ${message}`, meta || ''),
-    debug: (message, meta) => console.debug(`[DEBUG] ${message}`, meta || '')
+  container.registerInstance("logger", {
+    info: (message, meta) => console.log(`[INFO] ${message}`, meta || ""),
+    warn: (message, meta) => console.warn(`[WARN] ${message}`, meta || ""),
+    error: (message, meta) => console.error(`[ERROR] ${message}`, meta || ""),
+    debug: (message, meta) => console.debug(`[DEBUG] ${message}`, meta || ""),
   });
 
   // ===== REPOSITORIES (Data Access Layer) =====
-  
-  container.register('tourRepository', (c) => {
-    const models = c.resolve('models');
-    return new TourRepository({
-      Tour: models.Tour,
-      Category: models.Category,
-      Destination: models.Destination
-    });
-  }, { singleton: true });
+
+  container.register(
+    "tourRepository",
+    (c) => {
+      const models = c.resolve("models");
+      return new TourRepository({
+        Tour: models.Tour,
+        Category: models.Category,
+        Destination: models.Destination,
+      });
+    },
+    { singleton: true }
+  );
 
   // ===== SERVICES (Business Logic Layer) =====
-  
-  container.register('tourService', (c) => {
-    return new TourService({
-      tourRepository: c.resolve('tourRepository'),
-      logger: c.resolve('logger')
-    });
-  }, { singleton: true });
+
+  container.register(
+    "tourService",
+    (c) => {
+      return new TourService({
+        tourRepository: c.resolve("tourRepository"),
+        logger: c.resolve("logger"),
+      });
+    },
+    { singleton: true }
+  );
+
+  // ===== MODULE 5 - EVENT-DRIVEN ARCHITECTURE =====
+
+  // RabbitMQ Producer (singleton)
+  container.registerInstance("rabbitmqProducer", rabbitmqProducer);
+
+  // Consumer RabbitMQ
+  container.register(
+    "tourCatalogConsumer",
+    (c) => {
+      return new TourCatalogConsumer(c.resolve("tourService"));
+    },
+    { singleton: true }
+  );
 
   return container;
 }

@@ -1,0 +1,34 @@
+{
+    "name": "notification-service",
+    "version": "1.0.0",
+    "description": "Notification Microservice - Module 5 Event-Driven Architecture",
+    "main": "src/server.js",
+    "scripts": {
+        "start": "node src/server.js",
+        "dev": "nodemon src/server.js",
+        "test": "jest --coverage"
+    },
+    "keywords": [
+        "notifications",
+        "email",
+        "sms",
+        "rabbitmq",
+        "microservices",
+        "event-driven"
+    ],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "amqplib": "^0.10.4",
+        "dotenv": "^16.4.5",
+        "express": "^4.19.2",
+        "ioredis": "^5.4.1",
+        "nodemailer": "^6.9.14",
+        "pug": "^3.0.3",
+        "uuid": "^10.0.0"
+    },
+    "devDependencies": {
+        "nodemon": "^3.1.4",
+        "jest": "^29.7.0"
+    }
+}

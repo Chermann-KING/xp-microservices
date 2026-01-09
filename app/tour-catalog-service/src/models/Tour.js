@@ -34,6 +34,8 @@ export default (sequelize) => {
         durationUnit: this.durationUnit,
         difficulty: this.difficulty,
         maxGroupSize: this.maxGroupSize,
+        bookedSeats: this.bookedSeats,
+        availableSeats: this.maxGroupSize - this.bookedSeats,
         ratingsAverage: this.ratingsAverage,
         ratingsQuantity: this.ratingsQuantity,
         imageCover: this.imageCover,
@@ -42,6 +44,7 @@ export default (sequelize) => {
         isActive: this.isActive,
         categoryId: this.categoryId,
         destinationId: this.destinationId,
+        optimisticLockVersion: this.optimisticLockVersion,
         createdAt: this.createdAt,
         updatedAt: this.updatedAt,
       };
@@ -184,6 +187,19 @@ export default (sequelize) => {
           model: "destinations",
           key: "id",
         },
+      },
+      bookedSeats: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0,
+        comment: "Nombre de places réservées (Module 5)",
+      },
+      optimisticLockVersion: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0,
+        field: "optimistic_lock_version",
+        comment: "Version pour optimistic locking (Module 5)",
       },
     },
     {

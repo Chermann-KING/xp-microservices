@@ -14,13 +14,17 @@ import PaymentSuccessPage from "./pages/PaymentSuccessPage.jsx";
 import Header from "./components/layout/Header.jsx";
 import Footer from "./components/layout/Footer.jsx";
 import NotificationContainer from "./components/ui/NotificationContainer.jsx";
+import NotificationPermissionBanner from "./components/ui/NotificationPermissionBanner.jsx";
+import TourAvailabilityAlert from "./components/tours/TourAvailabilityAlert.jsx";
 
 function App() {
   return (
     <BrowserRouter>
       <div className="app">
+        <NotificationPermissionBanner />
         <Header />
         <NotificationContainer />
+        <TourAvailabilityAlert />
         <main className="main-content">
           <Routes>
             <Route path="/" element={<HomePage />} />
