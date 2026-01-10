@@ -528,7 +528,7 @@ Nous introduirons également les fondamentaux de **Kubernetes**, une plateforme 
 ## Navigation
 
 - **⬅️ Précédent** : [Module 5 - Leçon 5.6 : Création de Fonctionnalités Temps Réel avec WebSockets pour la Disponibilité des Tours](../../module-5/lecon-6-websockets-realtime.md)
-- **➡️ Suivant** : [Leçon 6.1 - Orchestration avec Docker Compose et principes fondamentaux de Kubernetes](lecon-2-dockercompose-kubernetes.md)
+- **➡️ Suivant** : [Leçon 6.2 - Orchestration avec Docker Compose et principes fondamentaux de Kubernetes](lecon-2-orchestration-compose-kubernetes.md)
 - **🏠 Sommaire** : [Retour au README](README.md)
 
 ---
