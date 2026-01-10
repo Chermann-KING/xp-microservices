@@ -792,7 +792,7 @@ Nous commencerons également à intégrer d'autres composants essentiels comme l
 ## Navigation
 
 - **⬅️ Précédent** : [Leçon 6.1 : Containerisation avec Docker pour les Microservices](lecon-1-docker-containerization.md)
-- **➡️ Suivant** : [Leçon 6.3 - Déploiement de microservices sur des plateformes cloud (par exemple, AWS, Azure, GCP)](lecon-3-deloyement-cloud.md)
+- **➡️ Suivant** : [Leçon 6.3 - Déploiement de microservices sur des plateformes cloud (par exemple, AWS, Azure, GCP)](lecon-3-deployment-cloud.md)
 - **🏠 Sommaire** : [Retour au README](README.md)
 
 ---
