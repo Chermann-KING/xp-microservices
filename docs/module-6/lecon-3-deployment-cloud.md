@@ -72,25 +72,25 @@ Les plateformes cloud offrent divers modèles de déploiement adaptés aux micro
 Une petite startup construisant un MVP pour une application microservices pourrait choisir IaaS initialement pour avoir le contrôle complet sur leur environnement :
 
 ```
-┌─────────────────────────────────────────────────┐
-│           Amazon EC2 / Azure VM / GCE           │
-│                                                  │
-│  ┌──────────────┐  ┌──────────────┐            │
-│  │  VM 1        │  │  VM 2        │            │
-│  │  Tour        │  │  Booking     │            │
-│  │  Catalog     │  │  Service     │            │
-│  │  + Node.js   │  │  + Node.js   │            │
-│  │  + PostgreSQL│  │  + PostgreSQL│            │
-│  └──────────────┘  └──────────────┘            │
-│                                                  │
-│  ┌──────────────┐  ┌──────────────┐            │
-│  │  VM 3        │  │  VM 4        │            │
-│  │  Payment     │  │  Notification│            │
-│  │  Service     │  │  + RabbitMQ  │            │
-│  └──────────────┘  └──────────────┘            │
-│                                                  │
-│  Configuration manuelle, patching, scaling      │
-└─────────────────────────────────────────────────┘
+┌───────────────────────────────────────────────┐
+│         Amazon EC2 / Azure VM / GCE           │
+│                                               │
+│  ┌──────────────┐  ┌──────────────┐           │
+│  │  VM 1        │  │  VM 2        │           │
+│  │  Tour        │  │  Booking     │           │
+│  │  Catalog     │  │  Service     │           │
+│  │  + Node.js   │  │  + Node.js   │           │
+│  │  + PostgreSQL│  │  + PostgreSQL│           │
+│  └──────────────┘  └──────────────┘           │
+│                                               │
+│  ┌──────────────┐  ┌──────────────┐           │
+│  │  VM 3        │  │  VM 4        │           │
+│  │  Payment     │  │  Notification│           │
+│  │  Service     │  │  + RabbitMQ  │           │
+│  └──────────────┘  └──────────────┘           │
+│                                               │
+│  Configuration manuelle, patching, scaling    │
+└───────────────────────────────────────────────┘
 ```
 
 **Avantages** :
@@ -135,26 +135,26 @@ Une petite startup construisant un MVP pour une application microservices pourra
 Une entreprise de taille moyenne avec plusieurs équipes de développement souhaite accélérer les cycles de déploiement :
 
 ```
-┌─────────────────────────────────────────────────┐
-│     AWS Elastic Beanstalk / Azure App Service   │
-│                                                  │
+┌────────────────────────────────────────────────┐
+│    AWS Elastic Beanstalk / Azure App Service   │
+│                                                │
 │  ┌──────────────────────────────────────────┐  │
 │  │  App 1: Tour Catalog Service             │  │
 │  │  ├─ Auto-scaling (2-10 instances)        │  │
 │  │  ├─ Load Balancer                        │  │
 │  │  └─ Health monitoring                    │  │
 │  └──────────────────────────────────────────┘  │
-│                                                  │
+│                                                │
 │  ┌──────────────────────────────────────────┐  │
 │  │  App 2: Booking Management Service       │  │
 │  │  ├─ Auto-scaling (3-15 instances)        │  │
 │  │  ├─ Load Balancer                        │  │
 │  │  └─ Health monitoring                    │  │
 │  └──────────────────────────────────────────┘  │
-│                                                  │
-│  Déploiement : git push ou CLI                  │
-│  Infrastructure gérée automatiquement            │
-└─────────────────────────────────────────────────┘
+│                                                │
+│  Déploiement : git push ou CLI                 │
+│  Infrastructure gérée automatiquement          │
+└────────────────────────────────────────────────┘
 ```
 
 **Avantages** :
@@ -206,30 +206,30 @@ Une entreprise de taille moyenne avec plusieurs équipes de développement souha
 Une entreprise établie avec une suite croissante de microservices fait face à des défis de scaling et gestion :
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│         GKE / AKS / EKS (Managed Kubernetes)            │
-│                                                          │
-│  ┌────────────────────────────────────────────────┐    │
-│  │  Namespace: tourism-app                        │    │
-│  │                                                 │    │
+┌───────────────────────────────────────────────────────┐
+│         GKE / AKS / EKS (Managed Kubernetes)          │
+│                                                       │
+│  ┌───────────────────────────────────────────────┐    │
+│  │  Namespace: tourism-app                       │    │
+│  │                                               │    │
 │  │  ┌───────────────┐  ┌───────────────┐         │    │
 │  │  │ Deployment    │  │ Deployment    │         │    │
 │  │  │ tour-catalog  │  │ booking       │         │    │
 │  │  │ (5 Pods)      │  │ (8 Pods)      │         │    │
 │  │  └───────────────┘  └───────────────┘         │    │
-│  │                                                 │    │
+│  │                                               │    │
 │  │  ┌───────────────┐  ┌───────────────┐         │    │
 │  │  │ Deployment    │  │ StatefulSet   │         │    │
 │  │  │ payment       │  │ rabbitmq      │         │    │
 │  │  │ (3 Pods)      │  │ (3 Pods)      │         │    │
 │  │  └───────────────┘  └───────────────┘         │    │
-│  │                                                 │    │
+│  │                                               │    │
 │  │  Service Mesh (Istio/Linkerd) pour comms      │    │
-│  │  Auto-scaling policies (HPA, VPA)              │    │
-│  └────────────────────────────────────────────────┘    │
-│                                                          │
-│  Control Plane managé par le cloud provider             │
-└─────────────────────────────────────────────────────────┘
+│  │  Auto-scaling policies (HPA, VPA)             │    │
+│  └───────────────────────────────────────────────┘    │
+│                                                       │
+│  Control Plane managé par le cloud provider           │
+└───────────────────────────────────────────────────────┘
 ```
 
 **Avantages** :
@@ -263,17 +263,17 @@ Environnements réseau isolés dans le cloud fournissant un contrôle sur les pl
 **Architecture type pour notre Tourism App** :
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│                   VPC / VNet                             │
-│  CIDR: 10.0.0.0/16                                      │
-│                                                          │
+┌────────────────────────────────────────────────────────┐
+│                   VPC / VNet                           │
+│  CIDR: 10.0.0.0/16                                     │
+│                                                        │
 │  ┌────────────────────────────────────────────────┐    │
 │  │  Public Subnet (10.0.1.0/24)                   │    │
 │  │  ├─ Internet Gateway                           │    │
 │  │  ├─ Load Balancer (ALB/NLB)                    │    │
 │  │  └─ NAT Gateway                                │    │
 │  └────────────────────────────────────────────────┘    │
-│                                                          │
+│                                                        │
 │  ┌────────────────────────────────────────────────┐    │
 │  │  Private Subnet - App Tier (10.0.2.0/24)       │    │
 │  │  ├─ Tour Catalog Service                       │    │
@@ -281,7 +281,7 @@ Environnements réseau isolés dans le cloud fournissant un contrôle sur les pl
 │  │  ├─ Payment Service                            │    │
 │  │  └─ Notification Service                       │    │
 │  └────────────────────────────────────────────────┘    │
-│                                                          │
+│                                                        │
 │  ┌────────────────────────────────────────────────┐    │
 │  │  Private Subnet - Data Tier (10.0.3.0/24)      │    │
 │  │  ├─ RDS PostgreSQL (Tour Catalog DB)           │    │
@@ -289,9 +289,9 @@ Environnements réseau isolés dans le cloud fournissant un contrôle sur les pl
 │  │  ├─ RabbitMQ Cluster                           │    │
 │  │  └─ ElastiCache Redis                          │    │
 │  └────────────────────────────────────────────────┘    │
-│                                                          │
-│  Route Tables, NACLs, Security Groups                   │
-└─────────────────────────────────────────────────────────┘
+│                                                        │
+│  Route Tables, NACLs, Security Groups                  │
+└────────────────────────────────────────────────────────┘
 ```
 
 **Principes clés** :
@@ -458,20 +458,20 @@ Agrège les logs de tous les microservices dans un système central.
 **Architecture de logging** :
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│             Microservices (Containers/VMs)              │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐            │
-│  │Tour      │  │Booking   │  │Payment   │            │
-│  │Catalog   │  │Service   │  │Service   │            │
-│  └────┬─────┘  └────┬─────┘  └────┬─────┘            │
-│       │             │              │                   │
-│       │ stdout/     │ stdout/      │ stdout/          │
-│       │ stderr      │ stderr       │ stderr           │
-│       ▼             ▼              ▼                   │
-│  ┌──────────────────────────────────────┐             │
-│  │  Log Agent (Fluentd/CloudWatch Agent)│             │
-│  └───────────────────┬──────────────────┘             │
-└────────────────────────┼──────────────────────────────┘
+┌────────────────────────────────────────────────┐
+│          Microservices (Containers/VMs)        │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐      │
+│  │Tour      │  │Booking   │  │Payment   │      │
+│  │Catalog   │  │Service   │  │Service   │      │
+│  └────┬─────┘  └────┬─────┘  └────┬─────┘      │
+│       │             │              │           │
+│       │ stdout/     │ stdout/      │ stdout/   │
+│       │ stderr      │ stderr       │ stderr    │
+│       ▼             ▼              ▼           │
+│  ┌──────────────────────────────────────┐      │
+│  │  Log Agent (Fluentd/CloudWatch Agent)│      │
+│  └───────────────────┬──────────────────┘      │
+└────────────────────────┼───────────────────────┘
                          │
                          ▼
          ┌───────────────────────────────┐
