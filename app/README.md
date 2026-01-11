@@ -69,20 +69,20 @@ Frontend (React) ──HTTP──▶ API Gateway (8080)
 
 Exchange : `tour_booking_events` (type: **topic**)
 
-| Routing Key             | Producer             | Consumers                      | Description                          |
-| ----------------------- | -------------------- | ------------------------------ | ------------------------------------ |
-| `booking.confirmed`     | booking-service      | tour-catalog, notification     | Réservation confirmée                |
-| `booking.cancelled`     | booking-service      | tour-catalog, notification     | Réservation annulée                  |
-| `booking.completed`     | booking-service      | notification                   | Réservation terminée                 |
-| `payment.succeeded`     | payment-service      | notification                   | Paiement réussi                      |
-| `payment.failed`        | payment-service      | notification                   | Paiement échoué                      |
-| `tour.availability.low` | tour-catalog-service | notification, websocket-server | Disponibilité faible (seuil atteint) |
+| Routing Key             | Producer                   | Consumers                      | Description                          |
+| ----------------------- | -------------------------- | ------------------------------ | ------------------------------------ |
+| `booking.confirmed`     | booking-management-service | tour-catalog, notification     | Réservation confirmée                |
+| `booking.cancelled`     | booking-management-service | tour-catalog, notification     | Réservation annulée                  |
+| `booking.completed`     | booking-management-service | notification                   | Réservation terminée                 |
+| `payment.succeeded`     | payment-service            | notification                   | Paiement réussi                      |
+| `payment.failed`        | payment-service            | notification                   | Paiement échoué                      |
+| `tour.availability.low` | tour-catalog-service       | notification, websocket-server | Disponibilité faible (seuil atteint) |
 
 ### Flux Event-Driven
 
 ```
 1. Client crée réservation → POST /api/bookings
-2. booking-service confirme → Publish "booking.confirmed" to RabbitMQ
+2. booking-management-service confirme → Publish "booking.confirmed" to RabbitMQ
 3. tour-catalog-service consomme → Décrémente places (optimistic locking)
 4. notification-service consomme → Envoie email confirmation
 5. Si places < 20% max → tour-catalog publie "tour.availability.low"
@@ -293,7 +293,7 @@ Les paiements sont gérés par Stripe via le `payment-service` :
 1. POST /api/payments/create-intent  → {clientSecret, paymentIntentId}
 2. Frontend confirme avec Stripe.js
 3. Stripe envoie webhook → POST /api/webhooks/stripe
-4. payment-service notifie booking-service → PATCH /api/bookings/:id/payment-status
+4. payment-service notifie booking-management-service → PATCH /api/bookings/:id/payment-status
 ```
 
 ### Configuration Stripe
