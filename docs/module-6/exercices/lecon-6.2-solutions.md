@@ -7,17 +7,17 @@
 Mettez à jour le fichier `docker-compose.yml` fourni dans la leçon pour inclure les services suivants pour notre application de réservation touristique :
 
 - `booking-db` (PostgreSQL)
-- `booking-service` (Application Node.js, dépend de `booking-db` et `tour-catalog-service`)
+- `booking-management-service` (Application Node.js, dépend de `booking-db` et `tour-catalog-service`)
 - `payment-service` (Application Node.js, assume qu'il n'a pas de base de données dédiée pour cet exercice, mais se connecte à une API externe)
 - `rabbitmq` (Utilisation de l'image officielle RabbitMQ, comme vu au Module 5)
 - `notification-service` (Application Node.js, dépend de `rabbitmq`)
-- `react-frontend` (Nginx servant des fichiers statiques, dépend de `tour-catalog-service` et `booking-service` pour les appels API)
+- `frontend` (Nginx servant des fichiers statiques, dépend de `tour-catalog-service` et `booking-management-service` pour les appels API)
 
 **Exigences** :
 
 - Tous les services doivent être sur le réseau `booking-tourism-app-network`
 - Configurer les variables d'environnement appropriées pour les connexions aux bases de données (`DATABASE_URL`) et les URLs de communication inter-services
-- Mapper les ports hôte pour `booking-service`, `payment-service`, `notification-service` et `react-frontend` pour éviter les conflits
+- Mapper les ports hôte pour `booking-management-service`, `payment-service`, `notification-service` et `frontend` pour éviter les conflits
 - Ajouter des volumes pour `booking-db` pour la persistance des données
 - Construire et exécuter l'application complète avec `docker-compose up -d`
 - Vérifier que tous les conteneurs fonctionnent avec `docker ps`
@@ -143,11 +143,11 @@ services:
     command: npm run dev # Hot-reload en développement
 
   # Booking Management Service
-  booking-service:
+  booking-management-service:
     build:
       context: ./booking-management-service
       dockerfile: Dockerfile
-    container_name: booking-api
+    container_name: xp-booking-management-service
     restart: unless-stopped
     environment:
       DATABASE_URL: postgresql://booking_user:booking_password_dev@booking-db:5432/booking_db
@@ -187,7 +187,7 @@ services:
       STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-sk_test_51xxx...} # Depuis .env ou défaut
       STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-whsec_xxx...}
       # URLs des autres services
-      BOOKING_SERVICE_URL: http://booking-service:3002
+      BOOKING_SERVICE_URL: http://booking-management-service:3002
       RABBITMQ_URL: amqp://rabbitmq_user:rabbitmq_password_dev@rabbitmq:5672
       CORS_ORIGIN: http://localhost:3000
     ports:
@@ -210,13 +210,13 @@ services:
     restart: unless-stopped
     environment:
       NODE_ENV: development
-      PORT: 3005
+      PORT: 3006
       RABBITMQ_URL: amqp://rabbitmq_user:rabbitmq_password_dev@rabbitmq:5672
       # Configuration email (exemple avec SendGrid)
       SENDGRID_API_KEY: ${SENDGRID_API_KEY:-SG.xxx...}
       EMAIL_FROM: noreply@booking-tourism-app.com
     ports:
-      - "3005:3005"
+      - "3006:3006"
     depends_on:
       rabbitmq:
         condition: service_healthy
@@ -248,7 +248,7 @@ services:
       - "3000:80" # Nginx écoute sur le port 80 interne
     depends_on:
       - tour-catalog-service
-      - booking-service
+      - booking-management-service
       - payment-service
     networks:
       - booking-tourism-app-network
@@ -267,13 +267,13 @@ services:
   #     NODE_ENV: development
   #     PORT: 3000
   #     TOUR_CATALOG_SERVICE_URL: http://tour-catalog-service:3001
-  #     BOOKING_SERVICE_URL: http://booking-service:3002
+  #     BOOKING_SERVICE_URL: http://booking-management-service:3002
   #     PAYMENT_SERVICE_URL: http://payment-service:3004
   #   ports:
   #     - "3000:3000"
   #   depends_on:
   #     - tour-catalog-service
-  #     - booking-service
+  #     - booking-management-service
   #     - payment-service
   #   networks:
   #     - booking-tourism-app-network
@@ -342,21 +342,21 @@ docker-compose ps
 
 # Sortie attendue :
 #
-# NAME                      IMAGE                              STATUS         PORTS
-# booking-api               app_booking-service                Up             0.0.0.0:3002->3002/tcp
-# booking-postgres          postgres:15-alpine                 Up (healthy)   0.0.0.0:5433->5432/tcp
-# notification-api          app_notification-service           Up             0.0.0.0:3005->3005/tcp
-# payment-api               app_payment-service                Up             0.0.0.0:3004->3004/tcp
-# rabbitmq-broker           rabbitmq:3.12-management-alpine    Up (healthy)   0.0.0.0:5672->5672/tcp, 0.0.0.0:15672->15672/tcp
-# react-frontend-web        app_react-frontend                 Up             0.0.0.0:3000->80/tcp
-# tour-catalog-api          app_tour-catalog-service           Up             0.0.0.0:3001->3001/tcp
-# tour-catalog-postgres     postgres:15-alpine                 Up (healthy)   0.0.0.0:5432->5432/tcp
+# NAME                           IMAGE                              STATUS         PORTS
+# xp-booking-management-service  app_booking-management-service     Up             0.0.0.0:3002->3002/tcp
+# booking-postgres               postgres:15-alpine                 Up (healthy)   0.0.0.0:5433->5432/tcp
+# notification-api               app_notification-service           Up             0.0.0.0:3006->3006/tcp
+# payment-api                    app_payment-service                Up             0.0.0.0:3004->3004/tcp
+# rabbitmq-broker                rabbitmq:3.12-management-alpine    Up (healthy)   0.0.0.0:5672->5672/tcp, 0.0.0.0:15672->15672/tcp
+# frontend-web                   app_frontend                       Up             0.0.0.0:3000->80/tcp
+# tour-catalog-api               app_tour-catalog-service           Up             0.0.0.0:3001->3001/tcp
+# tour-catalog-postgres          postgres:15-alpine                 Up (healthy)   0.0.0.0:5432->5432/tcp
 
 # 6. Voir les logs de tous les services
 docker-compose logs -f
 
 # Voir les logs d'un service spécifique
-docker-compose logs -f booking-service
+docker-compose logs -f booking-management-service
 
 # 7. Tester les services
 # Tour Catalog API
@@ -434,7 +434,7 @@ test_service() {
 test_service "Tour Catalog Service" "http://localhost:3001/api/health"
 test_service "Booking Service" "http://localhost:3002/api/health"
 test_service "Payment Service" "http://localhost:3004/api/health"
-test_service "Notification Service" "http://localhost:3005/api/health"
+test_service "Notification Service" "http://localhost:3006/api/health"
 test_service "React Frontend" "http://localhost:3000"
 
 # Test RabbitMQ
@@ -479,17 +479,17 @@ chmod +x app/test-services.sh
 
 **1. Ports Mappés**
 
-| Service                | Port Interne | Port Hôte | Raison                              |
-| ---------------------- | ------------ | --------- | ----------------------------------- |
-| tour-catalog-db        | 5432         | 5432      | PostgreSQL standard                 |
-| booking-db             | 5432         | 5433      | Éviter conflit avec tour-catalog-db |
-| rabbitmq (AMQP)        | 5672         | 5672      | Port AMQP standard                  |
-| rabbitmq (Management)  | 15672        | 15672     | Interface web                       |
-| tour-catalog-service   | 3001         | 3001      | API REST                            |
-| booking-service        | 3002         | 3002      | API REST                            |
-| payment-service        | 3004         | 3004      | API REST                            |
-| notification-service   | 3005         | 3005      | API REST                            |
-| react-frontend (Nginx) | 80           | 3000      | Interface utilisateur               |
+| Service                    | Port Interne | Port Hôte | Raison                              |
+| -------------------------- | ------------ | --------- | ----------------------------------- |
+| tour-catalog-db            | 5432         | 5432      | PostgreSQL standard                 |
+| booking-db                 | 5432         | 5433      | Éviter conflit avec tour-catalog-db |
+| rabbitmq (AMQP)            | 5672         | 5672      | Port AMQP standard                  |
+| rabbitmq (Management)      | 15672        | 15672     | Interface web                       |
+| tour-catalog-service       | 3001         | 3001      | API REST                            |
+| booking-management-service | 3002         | 3002      | API REST                            |
+| payment-service            | 3004         | 3004      | API REST                            |
+| notification-service       | 3006         | 3006      | API REST                            |
+| frontend (Nginx)           | 80           | 5173      | Interface utilisateur               |
 
 **2. Health Checks**
 
@@ -701,7 +701,7 @@ spec:
 **Accès depuis un autre service** :
 
 ```javascript
-// Dans booking-service, on peut appeler :
+// Dans booking-management-service, on peut appeler :
 const response = await fetch("http://tour-catalog-service:3001/api/tours");
 
 // Ou avec FQDN complet :
@@ -1334,7 +1334,7 @@ ports:
 **Flux de trafic** :
 
 ```
-booking-service Pod
+booking-management-service Pod
     ↓ (appelle http://tour-catalog-service:3001)
 tour-catalog-service (10.96.0.10:3001)
     ↓ (load balancing)
@@ -1423,8 +1423,8 @@ commonLabels:
 resources:
   - tour-catalog-deployment.yaml
   - tour-catalog-service.yaml
-  - booking-deployment.yaml
-  - booking-service.yaml
+  - booking-management-deployment.yaml
+  - booking-management-service.yaml
   - payment-deployment.yaml
   - payment-service.yaml
 

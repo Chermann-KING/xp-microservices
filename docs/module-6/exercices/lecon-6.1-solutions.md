@@ -313,7 +313,7 @@ docker ps
 ```
 CONTAINER ID   IMAGE                          COMMAND                  CREATED          STATUS                    PORTS                    NAMES
 9f8a7b6c5d4e   payment-gateway-service:1.0    "dumb-init -- node s…"   10 seconds ago   Up 8 seconds (healthy)    0.0.0.0:3004->3004/tcp   payment-gateway
-8e7a6b5c4d3f   booking-service:1.0            "dumb-init -- node s…"   2 minutes ago    Up 2 minutes (healthy)    0.0.0.0:3002->3002/tcp   booking-service
+8e7a6b5c4d3f   booking-management-service:1.0 "dumb-init -- node s…"   2 minutes ago    Up 2 minutes (healthy)    0.0.0.0:3002->3002/tcp   booking-management-service
 7d6a5b4c3e2f   tour-catalog-service:1.0       "dumb-init -- node s…"   5 minutes ago    Up 5 minutes (healthy)    0.0.0.0:3001->3001/tcp   tour-catalog
 ```
 
@@ -327,16 +327,16 @@ docker logs payment-gateway
 curl http://localhost:3004/health
 
 # Vérifier l'utilisation des ressources
-docker stats --no-stream payment-gateway booking-service tour-catalog
+docker stats --no-stream payment-gateway booking-management-service tour-catalog
 ```
 
 **Sortie de docker stats** :
 
 ```
-CONTAINER ID   NAME              CPU %     MEM USAGE / LIMIT     MEM %     NET I/O           BLOCK I/O   PIDS
-9f8a7b6c5d4e   payment-gateway   0.15%     45.23MiB / 1.952GiB   2.26%     1.2kB / 850B      0B / 0B     11
-8e7a6b5c4d3f   booking-service   0.12%     42.18MiB / 1.952GiB   2.11%     950B / 720B       0B / 0B     11
-7d6a5b4c3e2f   tour-catalog      0.10%     38.45MiB / 1.952GiB   1.92%     820B / 650B       0B / 0B     11
+CONTAINER ID   NAME                        CPU %     MEM USAGE / LIMIT     MEM %     NET I/O           BLOCK I/O   PIDS
+9f8a7b6c5d4e   payment-gateway             0.15%     45.23MiB / 1.952GiB   2.26%     1.2kB / 850B      0B / 0B     11
+8e7a6b5c4d3f   booking-management-service  0.12%     42.18MiB / 1.952GiB   2.11%     950B / 720B       0B / 0B     11
+7d6a5b4c3e2f   tour-catalog                0.10%     38.45MiB / 1.952GiB   1.92%     820B / 650B       0B / 0B     11
 ```
 
 **Tests d'intégration entre services** :
@@ -638,7 +638,7 @@ docker ps -a
 ```
 CONTAINER ID   IMAGE                          STATUS                      NAMES
 9f8a7b6c5d4e   payment-gateway-service:1.0    Up 30 minutes              payment-gateway
-8e7a6b5c4d3f   booking-service:1.0            Up 32 minutes              booking-service
+8e7a6b5c4d3f   booking-management-service:1.0 Up 32 minutes              booking-management-service
 7d6a5b4c3e2f   tour-catalog-service:1.0       Up 35 minutes              tour-catalog
 6c5b4a3d2e1f   tour-catalog-service:2.0       Exited (0) 10 minutes ago  tour-catalog-test
 5b4a3c2d1e0f   tour-catalog-service:2.1       Exited (0) 5 minutes ago   tour-catalog-cache-test
@@ -653,10 +653,10 @@ docker images
 **Sortie exemple** :
 
 ```
-REPOSITORY                  TAG       IMAGE ID       CREATED          SIZE
-payment-gateway-service     1.0       abc123def456   35 minutes ago   145MB
-booking-service             1.0       bcd234efg567   40 minutes ago   142MB
-tour-catalog-service        2.2       cde345fgh678   2 minutes ago    138MB
+REPOSITORY                   TAG       IMAGE ID       CREATED          SIZE
+payment-gateway-service      1.0       abc123def456   35 minutes ago   145MB
+booking-management-service   1.0       bcd234efg567   40 minutes ago   142MB
+tour-catalog-service         2.2       cde345fgh678   2 minutes ago    138MB
 tour-catalog-service        2.1       def456ghi789   10 minutes ago   138MB
 tour-catalog-service        2.0       efg567hij890   20 minutes ago   138MB
 tour-catalog-service        1.0       fgh678ijk901   45 minutes ago   138MB
@@ -762,7 +762,7 @@ CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
 ```bash
 # Supprimer les images des microservices
 docker rmi payment-gateway-service:1.0
-docker rmi booking-service:1.0
+docker rmi booking-management-service:1.0
 docker rmi tour-catalog-service:1.0
 docker rmi tour-catalog-service:2.0
 docker rmi tour-catalog-service:2.1
@@ -857,7 +857,7 @@ Deleted Containers:
 Deleted Images:
 untagged: payment-gateway-service:1.0
 deleted: sha256:abc123...
-untagged: booking-service:1.0
+untagged: booking-management-service:1.0
 deleted: sha256:bcd234...
 untagged: tour-catalog-service:1.0
 deleted: sha256:cde345...

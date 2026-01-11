@@ -400,18 +400,18 @@ CMD ["node", "src/server.js"]
 1. Naviguez vers `booking-management-service/`
 2. Construisez l'image :
    ```bash
-   docker build -t booking-service:1.0 .
+   docker build -t booking-management-service:1.0 .
    ```
 3. Exécutez le conteneur :
    ```bash
-   docker run -d -p 3002:3002 --name booking-service booking-service:1.0
+   docker run -d -p 3002:3002 --name booking-management-service booking-management-service:1.0
    ```
 4. Vérifiez qu'il s'exécute :
    ```bash
    docker ps
    ```
 
-Vous devriez voir les deux conteneurs `tour-catalog` et `booking-service` en cours d'exécution.
+Vous devriez voir les deux conteneurs `tour-catalog-service` et `booking-management-service` en cours d'exécution.
 
 ---
 
@@ -458,7 +458,7 @@ Utilisez des outils comme `docker scan` ou Trivy pour scanner les images à la r
 3. Créez un fichier `.dockerignore` approprié.
 4. Construisez l'image Docker avec un tag comme `payment-gateway-service:1.0`.
 5. Exécutez un conteneur à partir de cette image, en mappant le port 3004 de l'hôte au conteneur.
-6. Vérifiez que les trois conteneurs de microservices (`tour-catalog`, `booking-service`, `payment-gateway-service`) sont en cours d'exécution avec `docker ps`.
+6. Vérifiez que les trois conteneurs de microservices (`tour-catalog-service`, `booking-management-service`, `payment-service`) sont en cours d'exécution avec `docker ps`.
 
 ### Exercice 2 - Expérimenter avec le Cache du Dockerfile
 

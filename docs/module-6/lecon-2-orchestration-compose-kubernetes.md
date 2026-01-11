@@ -94,19 +94,19 @@ Imaginons le lancement d'une campagne marketing qui devrait augmenter significat
 Chaque service dans un fichier Compose représente un conteneur qui exécute une partie spécifique de votre application. Pour notre app, nous aurions :
 
 - `tour-catalog-service`
-- `booking-service`
+- `booking-management-service`
 - `payment-service`
 - `notification-service`
-- `react-frontend`
-- `tour-catalog-db`
-- `booking-db`
+- `frontend`
+- `postgres-tour`
+- `postgres-booking`
 - `rabbitmq`
 
 #### **Réseaux**
 
 Compose crée un réseau par défaut pour votre application, permettant à tous les services de communiquer entre eux en utilisant leurs noms de service comme noms d'hôte. Cela simplifie considérablement la communication inter-services.
 
-**Exemple** : Le service `booking-service` peut appeler `http://tour-catalog-service:3001` au lieu d'utiliser une IP.
+**Exemple** : Le service `booking-management-service` peut appeler `http://tour-catalog-service:3001` au lieu d'utiliser une IP.
 
 #### **Volumes**
 
@@ -139,18 +139,18 @@ services:
     container_name: tour-catalog-postgres
     restart: unless-stopped # Redémarrage automatique sauf si arrêté manuellement
     environment:
-      POSTGRES_DB: tour_catalog_db
-      POSTGRES_USER: catalog_user
-      POSTGRES_PASSWORD: catalog_password_dev
+      POSTGRES_DB: tour_service_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
       # En production, utiliser des secrets Docker ou des fichiers .env sécurisés
     ports:
-      - "5432:5432" # Exposer pour accès externe (pgAdmin, DBeaver, etc.)
+      - "5435:5432" # Port 5435 sur l'hôte pour éviter conflit avec autres BDD
     volumes:
       - tour-catalog-data:/var/lib/postgresql/data # Persistance des données
     networks:
-      - booking-tourism-app-network
+      - xp-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U catalog_user -d tour_catalog_db"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d tour_service_db"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -162,22 +162,23 @@ services:
     build:
       context: ./tour-catalog-service # Chemin vers le Dockerfile
       dockerfile: Dockerfile
-    container_name: tour-catalog-api
+    container_name: xp-tour-catalog-service
     restart: unless-stopped
     environment:
       # Connexion à la base de données (utilisation du nom de service)
-      DATABASE_URL: postgresql://catalog_user:catalog_password_dev@tour-catalog-db:5432/tour_catalog_db
+      DATABASE_URL: postgres://postgres:postgres@tour-catalog-db:5432/tour_service_db
       NODE_ENV: development
       PORT: 3001
       # Variables pour RabbitMQ (Module 5)
-      RABBITMQ_URL: amqp://rabbitmq:5672
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+      RABBITMQ_EXCHANGE: tour_booking_events
     ports:
       - "3001:3001" # Port exposé sur l'hôte
     depends_on:
       tour-catalog-db:
         condition: service_healthy # Attend que la BDD soit prête
     networks:
-      - booking-tourism-app-network
+      - xp-network
     volumes:
       # Mount du code source pour hot-reload en développement
       - ./tour-catalog-service/src:/app/src:ro
@@ -187,7 +188,7 @@ services:
 # RÉSEAUX
 # ============================================
 networks:
-  booking-tourism-app-network:
+  xp-network:
     driver: bridge # Driver par défaut pour la communication locale
 
 # ============================================
@@ -217,9 +218,9 @@ restart: unless-stopped
 
 ```yaml
 environment:
-  POSTGRES_DB: tour_catalog_db
-  POSTGRES_USER: catalog_user
-  POSTGRES_PASSWORD: catalog_password_dev
+  POSTGRES_DB: tour_service_db
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: postgres
 ```
 
 - Configure les credentials de la base de données
@@ -227,10 +228,10 @@ environment:
 
 ```yaml
 ports:
-  - "5432:5432"
+  - "5435:5432"
 ```
 
-- Expose PostgreSQL sur le port 5432 de l'hôte
+- Expose PostgreSQL sur le port 5435 de l'hôte (5432 interne)
 - Permet la connexion avec des outils externes (pgAdmin, DBeaver)
 
 ```yaml
@@ -243,7 +244,7 @@ volumes:
 
 ```yaml
 healthcheck:
-  test: ["CMD-SHELL", "pg_isready -U catalog_user -d tour_catalog_db"]
+  test: ["CMD-SHELL", "pg_isready -U postgres -d tour_service_db"]
   interval: 10s
   timeout: 5s
   retries: 5
@@ -394,11 +395,11 @@ docker-compose exec tour-catalog-service npm install
   # ============================================
   # MICROSERVICE - Booking Management
   # ============================================
-  booking-service:
+  booking-management-service:
     build:
       context: ./booking-management-service
       dockerfile: Dockerfile
-    container_name: booking-api
+    container_name: xp-booking-management-service
     restart: unless-stopped
     environment:
       DATABASE_URL: postgresql://booking_user:booking_password_dev@booking-db:5432/booking_db
@@ -575,7 +576,7 @@ Une manière abstraite d'exposer une application s'exécutant sur un ensemble de
 - Expose le Service sur une IP interne du cluster
 - Accessible uniquement depuis l'intérieur du cluster
 - Idéal pour la communication inter-microservices
-- Exemple : `booking-service` appelant `tour-catalog-service`
+- Exemple : `booking-management-service` appelant `tour-catalog-service`
 
 **NodePort** :
 
@@ -680,7 +681,7 @@ Kubernetes a besoin de savoir comment exécuter cette image. Une définition de 
 Pour garantir plusieurs instances et gérer les mises à jour, nous définissons un Deployment pour `tour-catalog-service`, spécifiant par exemple 3 répliques. Le Deployment garantira que 3 Pods exécutant notre service sont toujours disponibles.
 
 **Étape 4 : Définition du Service**
-Pour permettre aux autres microservices (comme `booking-service`) d'atteindre `tour-catalog-service` de manière cohérente, nous définissons un Service ClusterIP. Ce Service obtient une IP interne stable et un nom DNS (`tour-catalog-service.default.svc.cluster.local`).
+Pour permettre aux autres microservices (comme `booking-management-service`) d'atteindre `tour-catalog-service` de manière cohérente, nous définissons un Service ClusterIP. Ce Service obtient une IP interne stable et un nom DNS (`tour-catalog-service.default.svc.cluster.local`).
 
 **Étape 5 : Base de Données**
 Pour la base de données (`tour-catalog-db`), nous déploierions un StatefulSet (un contrôleur pour applications avec état, garantissant des identifiants réseau stables et un scaling ordonné) combiné avec des PersistentVolumes et PersistentVolumeClaims pour garantir la persistance des données.
