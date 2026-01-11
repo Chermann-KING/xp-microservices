@@ -271,15 +271,17 @@ npm install ioredis uuid
 
 Avant de passer au Module 6, vérifiez que vous avez :
 
-- [ ] Lu et compris les 6 leçons
-- [ ] Configuré RabbitMQ et/ou Kafka en local
-- [ ] Implémenté un producer et un consumer fonctionnels
-- [ ] Créé un Saga Pattern pour un workflow complet
-- [ ] Implémenté un service de notifications avec emails
-- [ ] Testé l'idempotence d'au moins une opération
-- [ ] Créé une communication temps réel avec WebSockets
-- [ ] Compris la différence entre Choreography et Orchestration
-- [ ] Complété les exercices d'au moins 4 leçons sur 6
+- [x] Lu et compris les 6 leçons ✅
+- [x] Configuré RabbitMQ et/ou Kafka en local ✅
+- [x] Implémenté un producer et un consumer fonctionnels ✅
+- [x] Créé un Saga Pattern pour un workflow complet ✅
+- [x] Implémenté un service de notifications avec emails ✅
+- [x] Testé l'idempotence d'au moins une opération ✅
+- [x] Créé une communication temps réel avec WebSockets ✅
+- [x] Compris la différence entre Choreography et Orchestration ✅
+- [x] Complété toutes les 6 leçons avec leurs exercices et solutions ✅
+
+**Statut : Module 5 complet - 6/6 leçons terminées** 🎉
 
 ---
 
