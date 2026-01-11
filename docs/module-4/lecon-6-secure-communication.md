@@ -89,9 +89,9 @@ const app = express();
 
 // URLs des microservices internes
 const TOUR_CATALOG_URL =
-  process.env.TOUR_CATALOG_URL || "http://tour-catalog-service:3002";
+  process.env.TOUR_CATALOG_URL || "http://tour-catalog-service:3001";
 const BOOKING_SERVICE_URL =
-  process.env.BOOKING_SERVICE_URL || "http://booking-service:3003";
+  process.env.BOOKING_SERVICE_URL || "http://booking-management-service:3002";
 
 const JWT_SECRET = process.env.JWT_SECRET;
 

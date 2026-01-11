@@ -279,10 +279,10 @@ JWT_REFRESH_EXPIRES_IN=7d
 DATABASE_URL=postgresql://user:pass@localhost:5432/auth_db
 
 # Services
-AUTH_SERVICE_URL=http://localhost:3001
+AUTH_SERVICE_URL=http://localhost:3005
 PAYMENT_SERVICE_URL=http://localhost:3004
-TOUR_SERVICE_URL=http://localhost:3002
-BOOKING_SERVICE_URL=http://localhost:3003
+TOUR_CATALOG_SERVICE_URL=http://localhost:3001
+BOOKING_SERVICE_URL=http://localhost:3002
 ```
 
 ---

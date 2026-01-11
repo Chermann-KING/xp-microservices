@@ -20,7 +20,7 @@ info:
     email: dev@tourismapp.com
 
 servers:
-  - url: http://localhost:3003/api/v1/payment-gateway
+  - url: http://localhost:3004/api/v1/payments
     description: Serveur de développement
   - url: https://api.tourismapp.com/payment-gateway
     description: Serveur de production
