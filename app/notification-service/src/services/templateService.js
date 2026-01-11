@@ -1,5 +1,9 @@
-const pug = require("pug");
-const path = require("path");
+import pug from "pug";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 class TemplateService {
   constructor() {
@@ -72,4 +76,4 @@ class TemplateService {
   }
 }
 
-module.exports = new TemplateService();
+export default new TemplateService();

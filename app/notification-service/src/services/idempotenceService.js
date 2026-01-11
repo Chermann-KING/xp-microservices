@@ -1,5 +1,5 @@
-const Redis = require("ioredis");
-const config = require("../config");
+import Redis from "ioredis";
+import config from "../config/index.js";
 
 class IdempotenceService {
   constructor() {
@@ -48,4 +48,4 @@ class IdempotenceService {
   }
 }
 
-module.exports = new IdempotenceService();
+export default new IdempotenceService();

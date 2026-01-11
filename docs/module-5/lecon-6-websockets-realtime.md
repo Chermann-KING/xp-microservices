@@ -289,7 +289,7 @@ async function startRabbitMQConsumer() {
     const connection = await amqp.connect("amqp://localhost");
     const channel = await connection.createChannel();
 
-    const exchange = "tour_events";
+    const exchange = "tour_booking_events";
     const queue = "websocket_availability_updates";
     const routingKey = "tour.availability.updated";
 
@@ -343,7 +343,7 @@ class AvailabilityPublisher {
     this.connection = await amqp.connect("amqp://localhost");
     this.channel = await this.connection.createChannel();
 
-    const exchange = "tour_events";
+    const exchange = "tour_booking_events";
     await this.channel.assertExchange(exchange, "topic", { durable: true });
   }
 
@@ -357,7 +357,7 @@ class AvailabilityPublisher {
     };
 
     this.channel.publish(
-      "tour_events",
+      "tour_booking_events",
       "tour.availability.updated",
       Buffer.from(JSON.stringify(event)),
       { persistent: true }
@@ -638,7 +638,7 @@ async function startRabbitMQConsumer() {
     const connection = await amqp.connect("amqp://localhost");
     const channel = await connection.createChannel();
 
-    const exchange = "tour_events";
+    const exchange = "tour_booking_events";
     const queue = "websocket_availability_updates";
     const routingKey = "tour.availability.updated";
 
@@ -916,7 +916,7 @@ async function publishTestEvent() {
   const connection = await amqp.connect("amqp://localhost");
   const channel = await connection.createChannel();
 
-  const exchange = "tour_events";
+  const exchange = "tour_booking_events";
   await channel.assertExchange(exchange, "topic", { durable: true });
 
   const event = {

@@ -2,7 +2,7 @@
  * Interface abstraite pour les canaux de notification
  * Pattern Strategy - Leçon 5.4
  */
-class NotificationChannel {
+export default class NotificationChannel {
   /**
    * Envoie une notification
    * @param {Object} recipient - Destinataire
@@ -21,5 +21,3 @@ class NotificationChannel {
     return true;
   }
 }
-
-module.exports = NotificationChannel;

@@ -103,22 +103,22 @@ Ce module explore l'**architecture événementielle** (Event-Driven Architecture
 
 ## 🛠️ Stack Technique
 
-| Technologie  | Version | Usage                          |
-| ------------ | ------- | ------------------------------ |
-| RabbitMQ     | 3.12+   | Message Broker (AMQP)          |
-| Apache Kafka | 3.6+    | Event Streaming Platform       |
-| amqplib      | 0.10.x  | Client RabbitMQ pour Node.js   |
-| kafkajs      | 2.x     | Client Kafka pour Node.js      |
-| Socket.io    | 4.x     | Communication temps réel       |
-| SendGrid     | 7.x     | Service Email                  |
-| Twilio       | 4.x     | Service SMS                    |
-| ioredis      | 5.x     | Redis pour idempotence/locking |
+| Technologie | Version | Usage                          |
+| ----------- | ------- | ------------------------------ |
+| RabbitMQ    | 3.12+   | Message Broker (AMQP)          |
+| amqplib     | 0.10.x  | Client RabbitMQ pour Node.js   |
+| ws          | 8.x     | WebSocket natif pour Node.js   |
+| nodemailer  | 6.x     | Envoi d'emails (SMTP)          |
+| pug         | 3.x     | Templates email HTML           |
+| ioredis     | 5.x     | Redis pour idempotence/locking |
+
+> **Note** : Apache Kafka et Twilio SMS sont mentionnés dans les leçons comme alternatives mais ne sont pas implémentés dans le code de l'application.
 
 ---
 
 ## 🏗️ Services Construits
 
-### Notification Service (Port 3005)
+### Notification Service (Port 3006)
 
 **Fonctionnalités :**
 

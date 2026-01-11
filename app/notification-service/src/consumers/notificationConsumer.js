@@ -1,8 +1,8 @@
-const amqplib = require("amqplib");
-const config = require("../config");
-const idempotenceService = require("../services/idempotenceService");
-const templateService = require("../services/templateService");
-const channelFactory = require("../channels/channelFactory");
+import amqplib from "amqplib";
+import config from "../config/index.js";
+import idempotenceService from "../services/idempotenceService.js";
+import templateService from "../services/templateService.js";
+import channelFactory from "../channels/channelFactory.js";
 
 class NotificationConsumer {
   constructor() {
@@ -238,4 +238,4 @@ class NotificationConsumer {
   }
 }
 
-module.exports = NotificationConsumer;
+export default NotificationConsumer;

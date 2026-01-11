@@ -120,7 +120,7 @@ Un **producteur d'événements** (ou publisher) est un service qui détecte un c
 Le **Booking Management Microservice**, après avoir créé une nouvelle réservation avec succès, agit comme producteur d'événements. Il publie un événement `"Booking Confirmed"`.
 
 ```javascript
-// booking-service/controllers/bookingController.js
+// booking-management-service/controllers/bookingController.js
 async function createBooking(req, res) {
   const { tourId, userId, date, participants } = req.body;
 
@@ -458,7 +458,7 @@ Les événements fournissent un **journal d'audit naturel** des changements d'é
   bookingId: "bkg_456",
   userId: "user_101",
   metadata: {
-    service: "booking-service",
+    service: "booking-management-service",
     version: "1.2.3",
     correlationId: "req_abc123"
   }

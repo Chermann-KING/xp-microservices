@@ -21,9 +21,9 @@
    - Afficher un message de notification réaliste : `"Email envoyé à user@example.com pour le tour 'Paris City Tour' d'un montant de 199.99 USD"`
 
 3. **Bonus** : Expérimenter avec différentes routing keys :
-   - `tour.booked.premium`
-   - `tour.booked.standard`
-   - Modifier le consumer pour s'abonner à tous les événements de réservation : `tour.booked.*`
+   - `booking.confirmed.premium`
+   - `booking.confirmed.standard`
+   - Modifier le consumer pour s'abonner à tous les événements de réservation : `booking.confirmed.*`
 
 ---
 
@@ -32,12 +32,12 @@
 #### Partie 1 : Producer Enrichi (Booking Service)
 
 ```javascript
-// booking-service/src/rabbitmqProducer.js
+// booking-management-service/src/rabbitmqProducer.js
 const amqp = require("amqplib");
 
 const RABBITMQ_URL =
   process.env.RABBITMQ_URL || "amqp://guest:guest@localhost:5672";
-const EXCHANGE_NAME = "tour_events";
+const EXCHANGE_NAME = "tour_booking_events";
 
 let channel;
 
@@ -72,7 +72,7 @@ async function publishTourBookedEvent(bookingDetails) {
 
   // Déterminer la routing key selon le type de tour
   const tourType = bookingDetails.tourType || "standard"; // 'premium' ou 'standard'
-  const routingKey = `tour.booked.${tourType}`;
+  const routingKey = `booking.confirmed.${tourType}`;
 
   // Payload enrichi avec toutes les informations nécessaires
   const enrichedPayload = {
@@ -120,7 +120,7 @@ module.exports = {
 #### Partie 2 : Route de Réservation Enrichie
 
 ```javascript
-// booking-service/src/routes/bookingRoutes.js
+// booking-management-service/src/routes/bookingRoutes.js
 const express = require("express");
 const router = express.Router();
 const { bookTour } = require("../controllers/bookingController");
@@ -184,11 +184,11 @@ const amqp = require("amqplib");
 
 const RABBITMQ_URL =
   process.env.RABBITMQ_URL || "amqp://guest:guest@localhost:5672";
-const EXCHANGE_NAME = "tour_events";
+const EXCHANGE_NAME = "tour_booking_events";
 const QUEUE_NAME = "notification_queue";
 
 // Pattern pour s'abonner à tous les événements de réservation
-const ROUTING_KEY_PATTERN = "tour.booked.*"; // Wildcard pour premium ET standard
+const ROUTING_KEY_PATTERN = "booking.confirmed.*"; // Wildcard pour premium ET standard
 
 /**
  * Formater le message de notification
@@ -282,14 +282,14 @@ async function startConsuming() {
 
           try {
             // Déterminer le type de notification selon la routing key
-            if (routingKey === "tour.booked.premium") {
+            if (routingKey === "booking.confirmed.premium") {
               console.log(
                 "🌟 Réservation Premium détectée - Envoi notifications prioritaires"
               );
               // Pour les premium, envoyer email ET SMS
               await sendEmailNotification(eventData);
               await sendSmsNotification(eventData);
-            } else if (routingKey === "tour.booked.standard") {
+            } else if (routingKey === "booking.confirmed.standard") {
               console.log("📧 Réservation Standard détectée - Envoi email");
               // Pour les standard, envoyer uniquement email
               await sendEmailNotification(eventData);
@@ -321,7 +321,7 @@ startConsuming();
 #### Partie 4 : Services Mock (pour les données enrichies)
 
 ```javascript
-// booking-service/src/services/tourService.js
+// booking-management-service/src/services/tourService.js
 
 /**
  * Récupérer les détails d'un tour par ID
@@ -367,7 +367,7 @@ module.exports = { getTourById };
 ```
 
 ```javascript
-// booking-service/src/services/userService.js
+// booking-management-service/src/services/userService.js
 
 /**
  * Récupérer les détails d'un utilisateur par ID
@@ -414,9 +414,9 @@ module.exports = { getUserById };
 Quand une réservation premium est créée :
 
 ```
-📨 Message publié 'tour.booked.premium': {"bookingId":"bkg_123",...}
+📨 Message publié 'booking.confirmed.premium': {"bookingId":"bkg_123",...}
 
-📨 Événement reçu: 'tour.booked.premium'
+📨 Événement reçu: 'booking.confirmed.premium'
 🌟 Réservation Premium détectée - Envoi notifications prioritaires
 
 📬 Envoi d'email de confirmation...
@@ -465,12 +465,12 @@ Quand une réservation premium est créée :
 #### Partie 1 : Kafka Producer avec Retry et Correlation ID
 
 ```javascript
-// booking-service/src/kafkaProducer.js
+// booking-management-service/src/kafkaProducer.js
 const { Kafka, logLevel } = require("kafkajs");
 const { v4: uuidv4 } = require("uuid");
 
 const KAFKA_BROKERS = [process.env.KAFKA_BROKER || "localhost:9092"];
-const TOPIC_NAME = "tour_events";
+const TOPIC_NAME = "tour_booking_events";
 
 const kafka = new Kafka({
   clientId: "booking-management-service",
@@ -570,10 +570,10 @@ async function publishTourBookedEventKafka(
               key: bookingDetails.bookingId.toString(),
               value: message,
               headers: {
-                eventType: "tour.booked",
+                eventType: "booking.confirmed",
                 correlationId: corrId,
                 timestamp: Date.now().toString(),
-                source: "booking-service",
+                source: "booking-management-service",
                 version: "1.0",
               },
             },
@@ -631,7 +631,7 @@ const redis = require("redis");
 const { promisify } = require("util");
 
 const KAFKA_BROKERS = [process.env.KAFKA_BROKER || "localhost:9092"];
-const TOPIC_NAME = "tour_events";
+const TOPIC_NAME = "tour_booking_events";
 const GROUP_ID = "notification_service_group";
 
 // Configuration Redis pour l'idempotence
@@ -778,7 +778,7 @@ async function startConsumingKafka() {
         );
         console.log(`   Type d'événement: ${eventType}`);
 
-        if (eventType === "tour.booked") {
+        if (eventType === "booking.confirmed") {
           try {
             const eventData = JSON.parse(message.value.toString());
             const { bookingId } = eventData;
@@ -912,8 +912,8 @@ npm install kafkajs redis
 📤 [a1b2c3d4-e5f6-7890] Tentative d'envoi du message vers Kafka...
 ✅ [a1b2c3d4-e5f6-7890] Message publié vers Kafka avec succès
 
-📨 [a1b2c3d4-e5f6-7890] Message reçu du topic tour_events, partition 0, offset 42
-   Type d'événement: tour.booked
+📨 [a1b2c3d4-e5f6-7890] Message reçu du topic tour_booking_events, partition 0, offset 42
+   Type d'événement: booking.confirmed
 
 📧 [a1b2c3d4-e5f6-7890] Traitement de la notification...
    Réservation: bkg_123
@@ -927,8 +927,8 @@ npm install kafkajs redis
 **Message dupliqué** :
 
 ```
-📨 [a1b2c3d4-e5f6-7890] Message reçu du topic tour_events, partition 0, offset 43
-   Type d'événement: tour.booked
+📨 [a1b2c3d4-e5f6-7890] Message reçu du topic tour_booking_events, partition 0, offset 43
+   Type d'événement: booking.confirmed
 ⚠️ [a1b2c3d4-e5f6-7890] Message déjà traité: bkg_123
 ⏭️ [a1b2c3d4-e5f6-7890] Message ignoré (déjà traité)
 ```

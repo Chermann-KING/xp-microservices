@@ -462,8 +462,8 @@ async function processEvent(event, dispatcher, notificationRepository) {
 
   try {
     switch (eventType) {
-      case "tour.booked":
-        await handleTourBooked(event, dispatcher, notificationRepository);
+      case "booking.confirmed":
+        await handleBookingConfirmed(event, dispatcher, notificationRepository);
         break;
 
       case "payment.received":
@@ -1754,7 +1754,7 @@ async function handleTourBooked(event, dispatcher, notificationRepository) {
     const savedNotification = await notificationRepository.save({
       eventId,
       userId,
-      eventType: "tour.booked",
+      eventType: "booking.confirmed",
       channels: notification.channels,
       status: result.success ? "sent" : "failed",
       sentAt: new Date(),
@@ -1798,7 +1798,7 @@ async function handleTourBooked(event, dispatcher, notificationRepository) {
     await notificationRepository.save({
       eventId,
       userId,
-      eventType: "tour.booked",
+      eventType: "booking.confirmed",
       channels: notification.channels,
       status: "failed",
       sentAt: new Date(),
@@ -1812,7 +1812,7 @@ async function handleTourBooked(event, dispatcher, notificationRepository) {
   }
 }
 
-module.exports = { handleTourBooked };
+module.exports = { handleBookingConfirmed };
 ```
 
 #### 7. Tests et Intégration
@@ -1865,10 +1865,10 @@ CREATE TABLE IF NOT EXISTS user_notification_preferences (
 
   -- Préférences par type d'événement (JSONB pour flexibilité)
   event_preferences JSONB DEFAULT '{
-    "tour.booked": {"enabled": true, "channels": ["email"]},
+    "booking.confirmed": {"enabled": true, "channels": ["email"]},
     "tour.reminder": {"enabled": true, "channels": ["email", "sms"]},
     "payment.received": {"enabled": true, "channels": ["email"]},
-    "tour.cancelled": {"enabled": true, "channels": ["email", "sms"]},
+    "booking.cancelled": {"enabled": true, "channels": ["email", "sms"]},
     "newsletter": {"enabled": false, "channels": []}
   }'::jsonb,
 
@@ -1902,13 +1902,13 @@ EXECUTE FUNCTION update_updated_at_column();
 INSERT INTO user_notification_preferences (user_id, enabled_channels, event_preferences)
 VALUES
   ('user123', ARRAY['email', 'sms'], '{
-    "tour.booked": {"enabled": true, "channels": ["email", "sms"]},
+    "booking.confirmed": {"enabled": true, "channels": ["email", "sms"]},
     "tour.reminder": {"enabled": true, "channels": ["sms"]},
     "payment.received": {"enabled": true, "channels": ["email"]},
     "newsletter": {"enabled": false, "channels": []}
   }'::jsonb),
   ('user456', ARRAY['email'], '{
-    "tour.booked": {"enabled": true, "channels": ["email"]},
+    "booking.confirmed": {"enabled": true, "channels": ["email"]},
     "tour.reminder": {"enabled": false, "channels": []},
     "payment.received": {"enabled": true, "channels": ["email"]},
     "newsletter": {"enabled": true, "channels": ["email"]}
@@ -2038,7 +2038,7 @@ class NotificationFilter {
 
   isUrgentNotification(eventType) {
     const urgentTypes = [
-      "tour.cancelled",
+      "booking.cancelled",
       "tour.reminder",
       "payment.refunded",
       "account.security",
@@ -2250,7 +2250,7 @@ app.listen(PORT, () => {
 
 ```bash
 # 1. Créer des préférences
-curl -X PATCH http://localhost:3005/preferences/user123 \
+curl -X PATCH http://localhost:3006/preferences/user123 \
   -H "Content-Type: application/json" \
   -d '{
     "enabledChannels": ["email", "sms"],
@@ -2260,10 +2260,10 @@ curl -X PATCH http://localhost:3005/preferences/user123 \
   }'
 
 # 2. Récupérer les préférences
-curl http://localhost:3005/preferences/user123
+curl http://localhost:3006/preferences/user123
 
 # 3. Désactiver le canal SMS
-curl -X DELETE http://localhost:3005/preferences/user123/channels/sms
+curl -X DELETE http://localhost:3006/preferences/user123/channels/sms
 
 # Résultat : Les notifications SMS seront bloquées pour user123
 ```
@@ -2283,10 +2283,10 @@ Vous avez maintenant un système complet de gestion des préférences qui :
 **Exemple d'utilisation :**
 
 ```
-Utilisateur user123 : email + SMS pour tour.booked
+Utilisateur user123 : email + SMS pour booking.confirmed
 → ✅ Email envoyé, ✅ SMS envoyé
 
-Utilisateur user456 : email uniquement pour tour.booked
+Utilisateur user456 : email uniquement pour booking.confirmed
 → ✅ Email envoyé, 🚫 SMS bloqué
 ```
 
