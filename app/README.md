@@ -23,14 +23,6 @@ Architecture microservices pour une plateforme de réservation de tours guidés 
 | **Redis**      | 6379        | Cache et idempotence pour les événements            |
 | **PostgreSQL** | 5432        | Bases de données (une par service)                  |
 
-### Infrastructure (Module 5)
-
-| Service        | Port(s)     | Description                                         |
-| -------------- | ----------- | --------------------------------------------------- |
-| **RabbitMQ**   | 5672, 15672 | Message broker (AMQP) + Management UI (guest/guest) |
-| **Redis**      | 6379        | Cache et idempotence pour les événements            |
-| **PostgreSQL** | 5432        | Bases de données (une par service)                  |
-
 ## 🏗️ Architecture Event-Driven (Module 5)
 
 ### Diagramme Simplifié
@@ -172,8 +164,6 @@ Services disponibles après `docker-compose up` :
 - ✅ Tour Catalog Service : `localhost:3001`
 - ✅ Notification Service : `localhost:3006`
 - ✅ WebSocket Server : `ws://localhost:8080`
-
-### Option 2 : Installation manuelle (Développement local)
 
 ### Option 2 : Installation manuelle (Développement local)
 
@@ -524,16 +514,26 @@ cd websocket-server && npm run dev
 
 ## 🎯 Progression Actuelle
 
-✅ **Modules 1-5 complétés** (30/42 leçons = **71.4%**)  
-⏳ **Modules 6-7 à venir** (12 leçons restantes)
+✅ **Modules 1-5 complétés** (30/42 leçons = **71.4%**)
+📚 **Module 6 documenté** (théorie complète, implémentation à venir)
+⏳ **Module 7 à venir** (6 leçons restantes)
 
-### Détail des modules complétés
+### Détail des modules
 
-- ✅ **Module 1** : Fondamentaux React & Architecture (6 leçons)
-- ✅ **Module 2** : Conception & Implémentation Services (6 leçons)
-- ✅ **Module 3** : SOLID Principles & State Management (6 leçons)
-- ✅ **Module 4** : Paiements & Sécurité (6 leçons)
-- ✅ **Module 5** : Architecture Event-Driven (6 leçons) - **NOUVEAU**
+- ✅ **Module 1** : Fondamentaux React & Architecture (6 leçons) - Implémenté
+- ✅ **Module 2** : Conception & Implémentation Services (6 leçons) - Implémenté
+- ✅ **Module 3** : SOLID Principles & State Management (6 leçons) - Implémenté
+- ✅ **Module 4** : Paiements & Sécurité (6 leçons) - Implémenté
+- ✅ **Module 5** : Architecture Event-Driven (6 leçons) - Implémenté
+- 📚 **Module 6** : Déploiement & Monitoring (6 leçons) - Documentation complète, implémentation partielle
+  - ✅ Leçon 6.1 : Docker Containerization - Documenté
+  - ✅ Leçon 6.2 : Orchestration Kubernetes - Documenté
+  - ✅ Leçon 6.3 : Cloud Deployment - Documenté
+  - ✅ Leçon 6.4 : API Gateway avancé - Documenté
+  - ✅ Leçon 6.5 : ELK Stack - Documenté
+  - ✅ Leçon 6.6 : Scaling Strategies - Documenté
+  - ⏳ Implémentation pratique : À venir
+- ⏳ **Module 7** : Testing & Sujets Avancés (6 leçons) - À venir
 
 ### Module 5 - Checklist d'implémentation
 
