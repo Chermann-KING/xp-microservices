@@ -80,7 +80,7 @@ export default router;
 
 ```bash
 # Simuler un événement payment_intent.succeeded
-curl -X POST http://localhost:3003/api/v1/payment-gateway/webhooks/test \
+curl -X POST http://localhost:3004/api/v1/payments/webhooks/test \
   -H "Content-Type: application/json" \
   -d '{
     "id": "evt_test_123456789",
@@ -99,7 +99,7 @@ curl -X POST http://localhost:3003/api/v1/payment-gateway/webhooks/test \
   }'
 
 # Simuler un événement payment_intent.payment_failed
-curl -X POST http://localhost:3003/api/v1/payment-gateway/webhooks/test \
+curl -X POST http://localhost:3004/api/v1/payments/webhooks/test \
   -H "Content-Type: application/json" \
   -d '{
     "id": "evt_test_failed_123",
@@ -119,7 +119,7 @@ curl -X POST http://localhost:3003/api/v1/payment-gateway/webhooks/test \
   }'
 
 # Simuler un remboursement
-curl -X POST http://localhost:3003/api/v1/payment-gateway/webhooks/test \
+curl -X POST http://localhost:3004/api/v1/payments/webhooks/test \
   -H "Content-Type: application/json" \
   -d '{
     "id": "evt_test_refund_789",
@@ -140,7 +140,7 @@ curl -X POST http://localhost:3003/api/v1/payment-gateway/webhooks/test \
 
 1. **Créer une nouvelle requête POST**
 
-   - URL: `http://localhost:3003/api/v1/payment-gateway/webhooks/test`
+   - URL: `http://localhost:3004/api/v1/payments/webhooks/test`
 
 2. **Headers**
 
@@ -468,7 +468,7 @@ export default app;
 npm run dev
 
 # Terminal 2: Lancer Stripe CLI pour forwarder les webhooks
-stripe listen --forward-to localhost:3003/api/v1/payment-gateway/webhooks/stripe
+stripe listen --forward-to localhost:3004/api/v1/payments/webhooks/stripe
 
 # Output:
 # > Ready! Your webhook signing secret is whsec_xxxxxxxx (^C to quit)
@@ -485,7 +485,7 @@ stripe trigger charge.refunded
 
 ```bash
 # Envoyer un webhook sans signature
-curl -X POST http://localhost:3003/api/v1/payment-gateway/webhooks/stripe \
+curl -X POST http://localhost:3004/api/v1/payments/webhooks/stripe \
   -H "Content-Type: application/json" \
   -d '{"type":"payment_intent.succeeded"}'
 
@@ -493,7 +493,7 @@ curl -X POST http://localhost:3003/api/v1/payment-gateway/webhooks/stripe \
 # { "error": "Missing signature", "message": "stripe-signature header is required" }
 
 # Envoyer avec une signature invalide
-curl -X POST http://localhost:3003/api/v1/payment-gateway/webhooks/stripe \
+curl -X POST http://localhost:3004/api/v1/payments/webhooks/stripe \
   -H "Content-Type: application/json" \
   -H "stripe-signature: t=123,v1=invalid" \
   -d '{"type":"payment_intent.succeeded"}'
@@ -903,11 +903,11 @@ export default WebhookService;
 # Terminal 1: Démarrer le Mock Booking Service
 node mock-booking-service/server.js
 
-# Terminal 2: Démarrer le Payment Gateway Service
+# Terminal 2: Démarrer le Payment Service
 npm run dev
 
 # Terminal 3: Lancer Stripe CLI
-stripe listen --forward-to localhost:3003/api/v1/payment-gateway/webhooks/stripe
+stripe listen --forward-to localhost:3004/api/v1/payments/webhooks/stripe
 
 # Terminal 4: Déclencher un paiement réussi avec metadata
 stripe trigger payment_intent.succeeded \

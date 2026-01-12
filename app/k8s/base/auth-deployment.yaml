@@ -1,0 +1,93 @@
+# Auth Service Deployment
+# Module 6 - Leçon 6.2 : Orchestration Kubernetes
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-service
+  namespace: booking-tourism-app
+  labels:
+    app: auth-service
+    tier: backend
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: auth-service
+  template:
+    metadata:
+      labels:
+        app: auth-service
+        tier: backend
+    spec:
+      containers:
+        - name: auth-service
+          image: your-docker-username/auth-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3003
+              name: http
+          env:
+            - name: PORT
+              value: "3003"
+            - name: DATABASE_URL
+              value: "postgresql://postgres:postgres@postgres-auth-service:5432/auth_service_db"
+            - name: NODE_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: NODE_ENV
+            - name: REDIS_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: REDIS_URL
+            - name: CORS_ORIGIN
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: CORS_ORIGIN
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: database-secrets
+                  key: POSTGRES_PASSWORD
+            - name: JWT_ACCESS_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secrets
+                  key: JWT_ACCESS_SECRET
+            - name: JWT_REFRESH_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secrets
+                  key: JWT_REFRESH_SECRET
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3003
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3003
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"

@@ -1,0 +1,116 @@
+# RabbitMQ Deployment + Service - Message Broker
+# Module 6 - Leçon 6.2 : Orchestration Kubernetes
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rabbitmq
+  namespace: booking-tourism-app
+  labels:
+    app: rabbitmq
+    tier: messaging
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rabbitmq
+  template:
+    metadata:
+      labels:
+        app: rabbitmq
+        tier: messaging
+    spec:
+      containers:
+        - name: rabbitmq
+          image: rabbitmq:3.12-management-alpine
+          ports:
+            - containerPort: 5672
+              name: amqp
+            - containerPort: 15672
+              name: management
+          env:
+            - name: RABBITMQ_DEFAULT_USER
+              valueFrom:
+                secretKeyRef:
+                  name: rabbitmq-secrets
+                  key: RABBITMQ_DEFAULT_USER
+            - name: RABBITMQ_DEFAULT_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: rabbitmq-secrets
+                  key: RABBITMQ_DEFAULT_PASS
+            - name: RABBITMQ_DEFAULT_VHOST
+              value: "/"
+          volumeMounts:
+            - name: rabbitmq-storage
+              mountPath: /var/lib/rabbitmq
+          livenessProbe:
+            exec:
+              command:
+                - rabbitmq-diagnostics
+                - -q
+                - ping
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
+            exec:
+              command:
+                - rabbitmq-diagnostics
+                - -q
+                - check_running
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+      volumes:
+        - name: rabbitmq-storage
+          emptyDir: {}
+
+---
+# RabbitMQ Service - AMQP
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq-service
+  namespace: booking-tourism-app
+  labels:
+    app: rabbitmq
+spec:
+  type: ClusterIP
+  selector:
+    app: rabbitmq
+  ports:
+    - name: amqp
+      protocol: TCP
+      port: 5672
+      targetPort: 5672
+
+---
+# RabbitMQ Management Service - Web UI
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq-management-service
+  namespace: booking-tourism-app
+  labels:
+    app: rabbitmq
+spec:
+  type: NodePort
+  selector:
+    app: rabbitmq
+  ports:
+    - name: management
+      protocol: TCP
+      port: 15672
+      targetPort: 15672
+      nodePort: 30672

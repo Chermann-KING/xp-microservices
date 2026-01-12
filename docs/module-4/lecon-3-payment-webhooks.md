@@ -1259,7 +1259,7 @@ import axios from "axios";
 class BookingClient {
   constructor({ logger }) {
     this.logger = logger;
-    this.baseUrl = process.env.BOOKING_SERVICE_URL || "http://localhost:3001";
+    this.baseUrl = process.env.BOOKING_SERVICE_URL || "http://localhost:3002";
     this.timeout = 5000; // 5 secondes
 
     // Token interne pour communication inter-services
@@ -1346,7 +1346,7 @@ export default BookingClient;
 ### 6.2 Endpoint Côté Service de Réservation
 
 ```javascript
-// booking-service/src/controllers/booking.controller.js
+// booking-management-service/src/controllers/booking.controller.js
 
 /**
  * Met à jour le statut de paiement d'une réservation

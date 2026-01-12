@@ -122,7 +122,7 @@ API_BASE_PATH=/api
 
 # URL des autres microservices
 TOUR_CATALOG_SERVICE_URL=http://localhost:3001
-PAYMENT_GATEWAY_SERVICE_URL=http://localhost:3003
+PAYMENT_SERVICE_URL=http://localhost:3004
 ```
 
 ### Fichier .gitignore
@@ -147,9 +147,9 @@ export const servicesConfig = {
     apiPath: "/api/v1/tours-catalog",
     timeout: 5000,
   },
-  paymentGateway: {
-    baseURL: process.env.PAYMENT_GATEWAY_SERVICE_URL || "http://localhost:3003",
-    apiPath: "/api/v1/payment-gateway",
+  paymentService: {
+    baseURL: process.env.PAYMENT_SERVICE_URL || "http://localhost:3004",
+    apiPath: "/api/v1/payments",
     timeout: 5000,
   },
 };

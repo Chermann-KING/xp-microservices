@@ -106,9 +106,9 @@ Le Notification Service s'abonne à plusieurs types d'événements :
 ┌─────────────────────────┐
 │  Booking Events         │
 ├─────────────────────────┤
-│ tour.booked             │ → Email de confirmation
-│ tour.cancelled          │ → Email d'annulation
-│ tour.reminder           │ → SMS de rappel (24h avant)
+│ booking.confirmed       │ → Email de confirmation
+│ booking.cancelled       │ → Email d'annulation
+│ booking.reminder        │ → SMS de rappel (24h avant)
 └─────────────────────────┘
 
 ┌─────────────────────────┐
@@ -134,7 +134,7 @@ Le Notification Service s'abonne à plusieurs types d'événements :
 ```json
 {
   "eventId": "evt_1234567890",
-  "eventType": "tour.booked",
+  "eventType": "booking.confirmed",
   "correlationId": "corr_abc123",
   "timestamp": "2025-01-08T14:30:00Z",
   "data": {
@@ -167,7 +167,7 @@ Le Notification Service s'abonne à plusieurs types d'événements :
                                         │ Créer réservation en DB
                                         │
                                         v
-2. Booking Service ───> Publier "tour.booked" ───> RabbitMQ Queue
+2. Booking Service ───> Publier "booking.confirmed" ───> RabbitMQ Queue
                                                         │
                                                         │
 3. Notification Service <──── Consume event ───────────┘
@@ -391,7 +391,7 @@ CREATE TABLE notification_templates (
 INSERT INTO notification_templates (name, event_type, channel, subject_template, body_template)
 VALUES (
     'booking_confirmation_email',
-    'tour.booked',
+    'booking.confirmed',
     'email',
     'Confirmation de votre réservation pour {{tourName}}',
     '...' -- Contenu du template Pug
@@ -674,9 +674,9 @@ function compileTemplate(templateName, data) {
 }
 
 /**
- * Traiter l'événement tour.booked
+ * Traiter l'événement booking.confirmed
  */
-async function handleTourBooked(event) {
+async function handleBookingConfirmed(event) {
   const { eventId, data } = event;
   const {
     userId,
@@ -691,7 +691,7 @@ async function handleTourBooked(event) {
   } = data;
 
   console.log(
-    `📩 Traitement de l'événement tour.booked - bookingId: ${bookingId}`
+    `📩 Traitement de l'événement booking.confirmed - bookingId: ${bookingId}`
   );
 
   if (!userEmail) {
@@ -732,7 +732,7 @@ async function handleTourBooked(event) {
     const notification = await notificationRepository.create({
       eventId,
       userId,
-      eventType: "tour.booked",
+      eventType: "booking.confirmed",
       channel: "email",
       recipient: userEmail,
       subject: emailSubject,
@@ -767,7 +767,7 @@ async function handleTourBooked(event) {
       );
     }
   } catch (error) {
-    console.error("❌ Erreur lors du traitement de tour.booked:", error);
+    console.error("❌ Erreur lors du traitement de booking.confirmed:", error);
     throw error;
   }
 }
@@ -856,16 +856,16 @@ async function processEvent(event) {
   const { eventType } = event;
 
   switch (eventType) {
-    case "tour.booked":
-      await handleTourBooked(event);
+    case "booking.confirmed":
+      await handleBookingConfirmed(event);
       break;
 
     case "payment.succeeded":
       await handlePaymentSucceeded(event);
       break;
 
-    case "tour.cancelled":
-      console.log("📩 Traitement de tour.cancelled:", event.data);
+    case "booking.cancelled":
+      console.log("📩 Traitement de booking.cancelled:", event.data);
       // Implémenter le handler pour annulation
       break;
 
@@ -1397,13 +1397,13 @@ CREATE TABLE user_notification_preferences (
    - `PATCH /api/notifications/preferences/:userId` : Mettre à jour les préférences
 
 4. **Catégories de Notifications** :
-   - Transactionnelles (toujours envoyées) : `tour.booked`, `payment.succeeded`
+   - Transactionnelles (toujours envoyées) : `booking.confirmed`, `payment.succeeded`
    - Marketing (respect des préférences) : `tour.promotion`, `seasonal.offer`
 
 **Test** :
 
 - Créer un utilisateur avec `email_enabled = FALSE`
-- Publier un événement `tour.booked` pour cet utilisateur
+- Publier un événement `booking.confirmed` pour cet utilisateur
 - Vérifier que l'email n'est PAS envoyé
 
 ---

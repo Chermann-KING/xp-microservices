@@ -1,6 +1,6 @@
-const express = require("express");
-const config = require("./config");
-const NotificationConsumer = require("./consumers/notificationConsumer");
+import express from "express";
+import config from "./config/index.js";
+import NotificationConsumer from "./consumers/notificationConsumer.js";
 
 const app = express();
 app.use(express.json());

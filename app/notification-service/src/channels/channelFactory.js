@@ -1,4 +1,4 @@
-const EmailChannel = require("./emailChannel");
+import EmailChannel from "./emailChannel.js";
 
 /**
  * Factory pour créer des canaux de notification
@@ -35,4 +35,4 @@ class ChannelFactory {
   }
 }
 
-module.exports = new ChannelFactory();
+export default new ChannelFactory();

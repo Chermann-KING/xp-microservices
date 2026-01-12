@@ -52,14 +52,16 @@ Ce projet est une application complète de réservation touristique construite p
 - WebSocket Server (Port 8080)
 - API Gateway (Port 8080)
 
-**Infrastructure**
+**Infrastructure & DevOps**
 
 - Docker & Docker Compose
+- Kubernetes (Orchestration, HPA, Network Policies)
 - RabbitMQ 3.12 (Message Broker)
 - Redis 7 (Caching & Idempotence)
 - PostgreSQL 15+ (Database per service)
-- Kubernetes (Orchestration)
-- ELK Stack (Monitoring)
+- ELK Stack (Elasticsearch + Logstash + Kibana)
+- NGINX Ingress Controller
+- Cert-Manager (TLS/SSL automatique)
 
 ### Principes appliqués
 
@@ -79,7 +81,7 @@ xp-microservices/
 │   ├── module-3/                   # SOLID & React (6 leçons) ✅
 │   ├── module-4/                   # Paiements & Sécurité (6 leçons) ✅
 │   ├── module-5/                   # Event-Driven (6 leçons) ✅
-│   ├── module-6/                   # Déploiement (6 leçons)
+│   ├── module-6/                   # Déploiement & Monitoring (6 leçons) ✅
 │   └── module-7/                   # Testing (6 leçons)
 │
 ├── app/
@@ -163,9 +165,31 @@ xp-microservices/
 │   │       │   ├── availabilityService.js
 │   │       │   └── bookingStateMachine.js
 │   │       ├── middleware/
+│   │       │   ├── circuitBreaker.js     # 🆕 Circuit Breaker (Module 6)
+│   │       │   └── resilientProxy.js     # 🆕 Proxy résilient (Module 6)
 │   │       └── utils/
 │   │
-│   └── docker-compose.yml          # 🆕 Orchestration infrastructure (Module 5)
+│   ├── k8s/                         # 🆕 Kubernetes Manifests (Module 6)
+│   │   ├── base/                    # Manifests de base
+│   │   │   ├── namespace.yaml
+│   │   │   ├── configmap.yaml
+│   │   │   ├── secrets.yaml
+│   │   │   ├── *-deployment.yaml   # 18 fichiers de déploiement
+│   │   │   ├── services-app.yaml
+│   │   │   ├── ingress.yaml
+│   │   │   ├── hpa.yaml
+│   │   │   ├── network-policies.yaml  # 🆕 Isolation réseau
+│   │   │   └── kustomization.yaml
+│   │   ├── deploy.sh                # Script de déploiement automatique
+│   │   └── cleanup.sh               # Script de nettoyage
+│   │
+│   ├── logstash/                    # 🆕 Configuration ELK (Module 6)
+│   │   ├── config/
+│   │   │   └── logstash.yml
+│   │   └── pipeline/
+│   │       └── logstash.conf        # Pipeline de logs
+│   │
+│   └── docker-compose.yml           # Orchestration (Modules 5+6: +ELK)
 │
 ├── ROADMAP.md                      # Roadmap détaillée des modules
 ├── CURRICULUM.md                   # Liste complète des 42 leçons
@@ -216,14 +240,14 @@ xp-microservices/
 - ✅ Concurrency & Idempotency - Optimistic Locking
 - ✅ WebSockets temps réel - Diffusion disponibilités
 
-### Module 6 : Déploiement et Monitoring (6 leçons)
+### Module 6 : Déploiement et Monitoring (6 leçons) ✅
 
-- Docker Containerization
-- Kubernetes
-- Cloud Deployment
-- API Gateway
-- ELK Stack
-- Scaling Strategies
+- ✅ Docker Containerization - Dockerfiles multi-stage
+- ✅ Kubernetes Orchestration - 18 manifests + Network Policies
+- ✅ Cloud Deployment - Documentation IaaS/PaaS/CaaS
+- ✅ API Gateway Avancé - Circuit Breaker + Rate Limiting
+- ✅ ELK Stack - Elasticsearch, Logstash, Kibana
+- ✅ Scaling Strategies - HPA, métriques, auto-scaling
 
 ### Module 7 : Testing et Sujets Avancés (6 leçons)
 
@@ -236,7 +260,7 @@ xp-microservices/
 
 ## Progression actuelle
 
-**30/42 leçons complétées (71.4%)** - Module 5 terminé ✅
+**36/42 leçons complétées (85.7%)** - Module 6 terminé ✅
 
 | Module                   | Statut     | Leçons |
 | ------------------------ | ---------- | ------ |
@@ -245,7 +269,7 @@ xp-microservices/
 | Module 3 - SOLID & React | ✅ Terminé | 6/6    |
 | Module 4 - Paiements     | ✅ Terminé | 6/6    |
 | Module 5 - Event-Driven  | ✅ Terminé | 6/6    |
-| Module 6 - Déploiement   | 🔜 À venir | 0/6    |
+| Module 6 - Déploiement   | ✅ Terminé | 6/6    |
 | Module 7 - Testing       | 🔜 À venir | 0/6    |
 
 Voir [ROADMAP.md](ROADMAP.md) pour plus de détails sur chaque module.
@@ -403,7 +427,19 @@ Voir [app/backend/README.md](app/backend/README.md) pour la documentation API co
    - ~~Optimistic Locking pour concurrence~~
    - ~~WebSocket Server pour mises à jour temps réel~~
    - ~~Frontend WebSocket + Notifications navigateur~~
-6. 🔜 Module 6 : Déploiement et Monitoring
+6. ✅ ~~Module 6 terminé~~
+   - ~~Docker Containerization (Dockerfiles multi-stage)~~
+   - ~~Kubernetes (18 manifests + Network Policies + HPA)~~
+   - ~~Circuit Breaker dans API Gateway (opossum)~~
+   - ~~ELK Stack (Elasticsearch + Logstash + Kibana)~~
+   - ~~Scripts de déploiement (deploy.sh, cleanup.sh)~~
+   - ~~Auto-scaling horizontal (HPA sur 7 services)~~
+7. 🔜 Module 7 : Testing et Sujets Avancés
+   - Unit Testing (Jest, Mocha)
+   - Integration & E2E Testing (Supertest, Cypress)
+   - API Documentation (Swagger/OpenAPI)
+   - CI/CD Pipelines (GitHub Actions, GitLab CI)
+   - Performance & Caching avancé
 
 ---
 

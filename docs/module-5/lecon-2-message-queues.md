@@ -166,7 +166,7 @@ Quand un utilisateur réserve un tour avec succès, le **Booking Management Micr
 Booking Management Service
          │
          │ 1. Crée réservation en DB
-         │ 2. Publie "tour.booked" event
+         │ 2. Publie "booking.confirmed" event
          │
          v
    Message Queue (RabbitMQ)
@@ -273,12 +273,12 @@ npm install amqplib
 ### 7.2 Implémentation du Producer
 
 ```javascript
-// booking-service/src/rabbitmqProducer.js
+// booking-management-service/src/rabbitmqProducer.js
 const amqp = require("amqplib");
 
 const RABBITMQ_URL =
   process.env.RABBITMQ_URL || "amqp://guest:guest@localhost:5672";
-const EXCHANGE_NAME = "tour_events";
+const EXCHANGE_NAME = "tour_booking_events";
 
 let channel;
 
@@ -306,13 +306,13 @@ async function connectRabbitMQ() {
  * @param {Object} bookingDetails - Détails de la réservation
  * @returns {boolean} - Succès de la publication
  */
-async function publishTourBookedEvent(bookingDetails) {
+async function publishBookingConfirmedEvent(bookingDetails) {
   if (!channel) {
     console.error("❌ Canal RabbitMQ non établi.");
     return false;
   }
 
-  const routingKey = "tour.booked"; // Clé de routage spécifique
+  const routingKey = "booking.confirmed"; // Clé de routage spécifique
   const message = JSON.stringify(bookingDetails);
 
   try {
@@ -341,7 +341,7 @@ module.exports = {
 ### 7.3 Intégration dans le Route de Réservation
 
 ```javascript
-// booking-service/src/routes/bookingRoutes.js
+// booking-management-service/src/routes/bookingRoutes.js
 const express = require("express");
 const router = express.Router();
 const { bookTour } = require("../controllers/bookingController");
@@ -388,7 +388,7 @@ module.exports = router;
 ### 7.4 Démarrage du Service
 
 ```javascript
-// booking-service/src/index.js
+// booking-management-service/src/index.js
 const express = require("express");
 const { connectRabbitMQ } = require("./rabbitmqProducer");
 const bookingRoutes = require("./routes/bookingRoutes");
@@ -397,7 +397,7 @@ const app = express();
 app.use(express.json());
 app.use("/api", bookingRoutes);
 
-const PORT = process.env.PORT || 3003;
+const PORT = process.env.PORT || 3002;
 
 async function startServer() {
   // Connexion à RabbitMQ au démarrage
@@ -429,9 +429,9 @@ const amqp = require("amqplib");
 
 const RABBITMQ_URL =
   process.env.RABBITMQ_URL || "amqp://guest:guest@localhost:5672";
-const EXCHANGE_NAME = "tour_events";
+const EXCHANGE_NAME = "tour_booking_events";
 const QUEUE_NAME = "notification_queue";
-const ROUTING_KEY_PATTERN = "tour.booked"; // Pattern pour s'abonner
+const ROUTING_KEY_PATTERN = "booking.confirmed"; // Pattern pour s'abonner
 
 /**
  * Démarrer la consommation de messages
@@ -559,7 +559,7 @@ channel.publish(exchange, routingKey, Buffer.from(message), {
 
 Producer Service A ──┐
                      │
-Producer Service B ──┼──> Topic: tour_events
+Producer Service B ──┼──> Topic: tour_booking_events
                      │     ├─ Partition 0 (offset: 0, 1, 2, ...)
                      │     ├─ Partition 1 (offset: 0, 1, 2, ...)
 Producer Service C ──┘     └─ Partition 2 (offset: 0, 1, 2, ...)
@@ -641,11 +641,11 @@ npm install kafkajs
 ### 12.2 Implémentation du Producer
 
 ```javascript
-// booking-service/src/kafkaProducer.js
+// booking-management-service/src/kafkaProducer.js
 const { Kafka } = require("kafkajs");
 
 const KAFKA_BROKERS = [process.env.KAFKA_BROKER || "localhost:9092"];
-const TOPIC_NAME = "tour_events";
+const TOPIC_NAME = "tour_booking_events";
 
 const kafka = new Kafka({
   clientId: "booking-management-service",
@@ -689,13 +689,13 @@ async function publishTourBookedEventKafka(bookingDetails) {
           key: bookingDetails.bookingId.toString(),
           value: message,
           headers: {
-            eventType: "tour.booked", // Header personnalisé
+            eventType: "booking.confirmed", // Header personnalisé
           },
         },
       ],
     });
 
-    console.log(`📨 Kafka - Message 'tour.booked' publié: ${message}`);
+    console.log(`📨 Kafka - Message 'booking.confirmed' publié: ${message}`);
     return true;
   } catch (error) {
     console.error("❌ Échec de publication Kafka:", error);
@@ -724,7 +724,7 @@ module.exports = {
 ### 12.3 Intégration dans le Route
 
 ```javascript
-// booking-service/src/routes/bookingRoutes.js (version Kafka)
+// booking-management-service/src/routes/bookingRoutes.js (version Kafka)
 const express = require("express");
 const router = express.Router();
 const { bookTour } = require("../controllers/bookingController");
@@ -774,7 +774,7 @@ module.exports = router;
 const { Kafka } = require("kafkajs");
 
 const KAFKA_BROKERS = [process.env.KAFKA_BROKER || "localhost:9092"];
-const TOPIC_NAME = "tour_events";
+const TOPIC_NAME = "tour_booking_events";
 const GROUP_ID = "notification_service_group"; // ID unique du consumer group
 
 const kafka = new Kafka({
@@ -803,7 +803,7 @@ async function startConsumingKafka() {
             ? message.headers.eventType.toString()
             : "unknown";
 
-        if (eventType === "tour.booked") {
+        if (eventType === "booking.confirmed") {
           const eventData = JSON.parse(message.value.toString());
 
           console.log(
@@ -913,9 +913,9 @@ startConsumingKafka();
    - Afficher un message de notification réaliste : `"Email envoyé à user@example.com pour le tour 'Paris City Tour' d'un montant de 199.99 USD"`
 
 3. **Bonus** : Expérimenter avec différentes routing keys :
-   - `tour.booked.premium`
-   - `tour.booked.standard`
-   - Modifier le consumer pour s'abonner à tous les événements de réservation : `tour.booked.*`
+   - `booking.confirmed.premium`
+   - `booking.confirmed.standard`
+   - Modifier le consumer pour s'abonner à tous les événements de réservation : `booking.confirmed.*`
 
 ---
 

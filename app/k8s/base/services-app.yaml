@@ -1,0 +1,215 @@
+# Services Kubernetes - Application Microservices
+# Module 6 - Leçon 6.2 : Orchestration Kubernetes
+
+---
+# Auth Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-service
+  namespace: booking-tourism-app
+  labels:
+    app: auth-service
+spec:
+  type: ClusterIP
+  selector:
+    app: auth-service
+  ports:
+    - name: http
+      protocol: TCP
+      port: 3003
+      targetPort: 3003
+
+---
+# Tour Catalog Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: tour-service
+  namespace: booking-tourism-app
+  labels:
+    app: tour-service
+spec:
+  type: ClusterIP
+  selector:
+    app: tour-service
+  ports:
+    - name: http
+      protocol: TCP
+      port: 3001
+      targetPort: 3001
+
+---
+# Booking Management Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: booking-service
+  namespace: booking-tourism-app
+  labels:
+    app: booking-service
+spec:
+  type: ClusterIP
+  selector:
+    app: booking-service
+  ports:
+    - name: http
+      protocol: TCP
+      port: 3002
+      targetPort: 3002
+
+---
+# Payment Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: payment-service
+  namespace: booking-tourism-app
+  labels:
+    app: payment-service
+spec:
+  type: ClusterIP
+  selector:
+    app: payment-service
+  ports:
+    - name: http
+      protocol: TCP
+      port: 3004
+      targetPort: 3004
+
+---
+# Notification Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: notification-service
+  namespace: booking-tourism-app
+  labels:
+    app: notification-service
+spec:
+  type: ClusterIP
+  selector:
+    app: notification-service
+  ports:
+    - name: http
+      protocol: TCP
+      port: 3006
+      targetPort: 3006
+
+---
+# WebSocket Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: websocket-service
+  namespace: booking-tourism-app
+  labels:
+    app: websocket-service
+spec:
+  type: ClusterIP
+  selector:
+    app: websocket-service
+  ports:
+    - name: http
+      protocol: TCP
+      port: 3007
+      targetPort: 3007
+
+---
+# API Gateway Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-gateway
+  namespace: booking-tourism-app
+  labels:
+    app: api-gateway
+spec:
+  type: ClusterIP
+  selector:
+    app: api-gateway
+  ports:
+    - name: http
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
+
+---
+# PostgreSQL Auth Database Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-auth-service
+  namespace: booking-tourism-app
+  labels:
+    app: postgres-auth
+spec:
+  type: ClusterIP
+  clusterIP: None
+  selector:
+    app: postgres-auth
+  ports:
+    - name: postgres
+      protocol: TCP
+      port: 5432
+      targetPort: 5432
+
+---
+# PostgreSQL Tour Database Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-tour-service
+  namespace: booking-tourism-app
+  labels:
+    app: postgres-tour
+spec:
+  type: ClusterIP
+  clusterIP: None
+  selector:
+    app: postgres-tour
+  ports:
+    - name: postgres
+      protocol: TCP
+      port: 5432
+      targetPort: 5432
+
+---
+# PostgreSQL Booking Database Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-booking-service
+  namespace: booking-tourism-app
+  labels:
+    app: postgres-booking
+spec:
+  type: ClusterIP
+  clusterIP: None
+  selector:
+    app: postgres-booking
+  ports:
+    - name: postgres
+      protocol: TCP
+      port: 5432
+      targetPort: 5432
+
+---
+# PostgreSQL Payment Database Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-payment-service
+  namespace: booking-tourism-app
+  labels:
+    app: postgres-payment
+spec:
+  type: ClusterIP
+  clusterIP: None
+  selector:
+    app: postgres-payment
+  ports:
+    - name: postgres
+      protocol: TCP
+      port: 5432
+      targetPort: 5432

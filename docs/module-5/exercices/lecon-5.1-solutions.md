@@ -31,7 +31,7 @@ Le **Booking Management Microservice** serait le producteur principal de l'évé
 **Implémentation exemple** :
 
 ```javascript
-// booking-service/controllers/bookingController.js
+// booking-management-service/controllers/bookingController.js
 
 async function cancelBooking(req, res) {
   const { bookingId } = req.params;

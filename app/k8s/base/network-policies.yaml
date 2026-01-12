@@ -1,0 +1,565 @@
+# Network Policies - Isolation réseau entre services
+# Module 6 - Leçon 6.2 : Orchestration Kubernetes (Sécurité)
+#
+# Les Network Policies permettent de contrôler le trafic réseau entre les pods
+# au niveau Layer 3/4 (IP/Port)
+
+---
+# Policy par défaut : Deny All Ingress
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-ingress
+  namespace: booking-tourism-app
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+
+---
+# API Gateway : Accepte le trafic externe (Ingress) et vers tous les services backend
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: api-gateway-policy
+  namespace: booking-tourism-app
+spec:
+  podSelector:
+    matchLabels:
+      app: api-gateway
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # Accepter le trafic depuis l'Ingress Controller
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: ingress-nginx
+      ports:
+        - protocol: TCP
+          port: 8080
+  egress:
+    # Vers Auth Service
+    - to:
+        - podSelector:
+            matchLabels:
+              app: auth-service
+      ports:
+        - protocol: TCP
+          port: 3005
+    # Vers Tour Service
+    - to:
+        - podSelector:
+            matchLabels:
+              app: tour-catalog-service
+      ports:
+        - protocol: TCP
+          port: 3001
+    # Vers Booking Service
+    - to:
+        - podSelector:
+            matchLabels:
+              app: booking-management-service
+      ports:
+        - protocol: TCP
+          port: 3002
+    # Vers Payment Service
+    - to:
+        - podSelector:
+            matchLabels:
+              app: payment-service
+      ports:
+        - protocol: TCP
+          port: 3004
+    # DNS
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: UDP
+          port: 53
+
+---
+# Auth Service : Accepte uniquement depuis API Gateway
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: auth-service-policy
+  namespace: booking-tourism-app
+spec:
+  podSelector:
+    matchLabels:
+      app: auth-service
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: api-gateway
+      ports:
+        - protocol: TCP
+          port: 3005
+  egress:
+    # Vers PostgreSQL Auth
+    - to:
+        - podSelector:
+            matchLabels:
+              app: postgres-auth
+      ports:
+        - protocol: TCP
+          port: 5432
+    # DNS
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: UDP
+          port: 53
+
+---
+# Tour Catalog Service : Accepte depuis API Gateway, communique avec RabbitMQ et Redis
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: tour-catalog-policy
+  namespace: booking-tourism-app
+spec:
+  podSelector:
+    matchLabels:
+      app: tour-catalog-service
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: api-gateway
+      ports:
+        - protocol: TCP
+          port: 3001
+  egress:
+    # Vers PostgreSQL Tour
+    - to:
+        - podSelector:
+            matchLabels:
+              app: postgres-tour
+      ports:
+        - protocol: TCP
+          port: 5432
+    # Vers RabbitMQ
+    - to:
+        - podSelector:
+            matchLabels:
+              app: rabbitmq
+      ports:
+        - protocol: TCP
+          port: 5672
+    # Vers Redis
+    - to:
+        - podSelector:
+            matchLabels:
+              app: redis
+      ports:
+        - protocol: TCP
+          port: 6379
+    # DNS
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: UDP
+          port: 53
+
+---
+# Booking Management Service : Accepte depuis API Gateway, communique avec RabbitMQ
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: booking-service-policy
+  namespace: booking-tourism-app
+spec:
+  podSelector:
+    matchLabels:
+      app: booking-management-service
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: api-gateway
+      ports:
+        - protocol: TCP
+          port: 3002
+    # Accepte depuis Payment Service (callback payment status)
+    - from:
+        - podSelector:
+            matchLabels:
+              app: payment-service
+      ports:
+        - protocol: TCP
+          port: 3002
+  egress:
+    # Vers PostgreSQL Booking
+    - to:
+        - podSelector:
+            matchLabels:
+              app: postgres-booking
+      ports:
+        - protocol: TCP
+          port: 5432
+    # Vers RabbitMQ
+    - to:
+        - podSelector:
+            matchLabels:
+              app: rabbitmq
+      ports:
+        - protocol: TCP
+          port: 5672
+    # Vers Tour Service (vérification disponibilité)
+    - to:
+        - podSelector:
+            matchLabels:
+              app: tour-catalog-service
+      ports:
+        - protocol: TCP
+          port: 3001
+    # DNS
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: UDP
+          port: 53
+
+---
+# Payment Service : Accepte depuis API Gateway et webhooks Stripe
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: payment-service-policy
+  namespace: booking-tourism-app
+spec:
+  podSelector:
+    matchLabels:
+      app: payment-service
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: api-gateway
+      ports:
+        - protocol: TCP
+          port: 3004
+    # Webhooks Stripe (depuis l'extérieur via Ingress)
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: ingress-nginx
+      ports:
+        - protocol: TCP
+          port: 3004
+  egress:
+    # Vers PostgreSQL Payment
+    - to:
+        - podSelector:
+            matchLabels:
+              app: postgres-payment
+      ports:
+        - protocol: TCP
+          port: 5432
+    # Vers Booking Service (callback)
+    - to:
+        - podSelector:
+            matchLabels:
+              app: booking-management-service
+      ports:
+        - protocol: TCP
+          port: 3002
+    # Vers Internet (API Stripe)
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: 443
+    # DNS
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: UDP
+          port: 53
+
+---
+# Notification Service : Consommateur RabbitMQ uniquement
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: notification-service-policy
+  namespace: booking-tourism-app
+spec:
+  podSelector:
+    matchLabels:
+      app: notification-service
+  policyTypes:
+    - Egress
+  egress:
+    # Vers RabbitMQ
+    - to:
+        - podSelector:
+            matchLabels:
+              app: rabbitmq
+      ports:
+        - protocol: TCP
+          port: 5672
+    # Vers Redis (idempotence)
+    - to:
+        - podSelector:
+            matchLabels:
+              app: redis
+      ports:
+        - protocol: TCP
+          port: 6379
+    # Vers serveur SMTP externe
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: 587
+        - protocol: TCP
+          port: 2525
+    # DNS
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: UDP
+          port: 53
+
+---
+# WebSocket Server : Accepte connexions WebSocket externes, consomme RabbitMQ
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: websocket-server-policy
+  namespace: booking-tourism-app
+spec:
+  podSelector:
+    matchLabels:
+      app: websocket-server
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # Accepter les connexions WebSocket depuis l'Ingress
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: ingress-nginx
+      ports:
+        - protocol: TCP
+          port: 8081
+  egress:
+    # Vers RabbitMQ
+    - to:
+        - podSelector:
+            matchLabels:
+              app: rabbitmq
+      ports:
+        - protocol: TCP
+          port: 5672
+    # Vers Redis
+    - to:
+        - podSelector:
+            matchLabels:
+              app: redis
+      ports:
+        - protocol: TCP
+          port: 6379
+    # DNS
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: UDP
+          port: 53
+
+---
+# RabbitMQ : Accepte depuis services autorisés uniquement
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: rabbitmq-policy
+  namespace: booking-tourism-app
+spec:
+  podSelector:
+    matchLabels:
+      app: rabbitmq
+  policyTypes:
+    - Ingress
+  ingress:
+    # Depuis Booking Service (producer)
+    - from:
+        - podSelector:
+            matchLabels:
+              app: booking-management-service
+      ports:
+        - protocol: TCP
+          port: 5672
+    # Depuis Tour Service (consumer + producer)
+    - from:
+        - podSelector:
+            matchLabels:
+              app: tour-catalog-service
+      ports:
+        - protocol: TCP
+          port: 5672
+    # Depuis Notification Service (consumer)
+    - from:
+        - podSelector:
+            matchLabels:
+              app: notification-service
+      ports:
+        - protocol: TCP
+          port: 5672
+    # Depuis WebSocket Server (consumer)
+    - from:
+        - podSelector:
+            matchLabels:
+              app: websocket-server
+      ports:
+        - protocol: TCP
+          port: 5672
+    # Management UI depuis Ingress (admin)
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: ingress-nginx
+      ports:
+        - protocol: TCP
+          port: 15672
+
+---
+# Redis : Accepte depuis services autorisés uniquement
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: redis-policy
+  namespace: booking-tourism-app
+spec:
+  podSelector:
+    matchLabels:
+      app: redis
+  policyTypes:
+    - Ingress
+  ingress:
+    # Depuis Tour Service (cache)
+    - from:
+        - podSelector:
+            matchLabels:
+              app: tour-catalog-service
+      ports:
+        - protocol: TCP
+          port: 6379
+    # Depuis Notification Service (idempotence)
+    - from:
+        - podSelector:
+            matchLabels:
+              app: notification-service
+      ports:
+        - protocol: TCP
+          port: 6379
+    # Depuis WebSocket Server
+    - from:
+        - podSelector:
+            matchLabels:
+              app: websocket-server
+      ports:
+        - protocol: TCP
+          port: 6379
+
+---
+# PostgreSQL : Accepte uniquement depuis son service correspondant
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: postgres-auth-policy
+  namespace: booking-tourism-app
+spec:
+  podSelector:
+    matchLabels:
+      app: postgres-auth
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: auth-service
+      ports:
+        - protocol: TCP
+          port: 5432
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: postgres-payment-policy
+  namespace: booking-tourism-app
+spec:
+  podSelector:
+    matchLabels:
+      app: postgres-payment
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: payment-service
+      ports:
+        - protocol: TCP
+          port: 5432
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: postgres-booking-policy
+  namespace: booking-tourism-app
+spec:
+  podSelector:
+    matchLabels:
+      app: postgres-booking
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: booking-management-service
+      ports:
+        - protocol: TCP
+          port: 5432
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: postgres-tour-policy
+  namespace: booking-tourism-app
+spec:
+  podSelector:
+    matchLabels:
+      app: postgres-tour
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: tour-catalog-service
+      ports:
+        - protocol: TCP
+          port: 5432

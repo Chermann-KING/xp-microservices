@@ -2,6 +2,7 @@
     "name": "notification-service",
     "version": "1.0.0",
     "description": "Notification Microservice - Module 5 Event-Driven Architecture",
+    "type": "module",
     "main": "src/server.js",
     "scripts": {
         "start": "node src/server.js",

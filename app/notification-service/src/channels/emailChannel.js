@@ -1,6 +1,6 @@
-const nodemailer = require("nodemailer");
-const NotificationChannel = require("./notificationChannel");
-const config = require("../config");
+import nodemailer from "nodemailer";
+import NotificationChannel from "./notificationChannel.js";
+import config from "../config/index.js";
 
 class EmailChannel extends NotificationChannel {
   constructor() {
@@ -69,4 +69,4 @@ class EmailChannel extends NotificationChannel {
   }
 }
 
-module.exports = EmailChannel;
+export default EmailChannel;

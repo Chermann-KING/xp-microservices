@@ -949,7 +949,7 @@ Après un paiement réussi, implémentez un appel API pour mettre à jour le sta
 #### Endpoint dans le Booking Service
 
 ```javascript
-// booking-service/src/controllers/booking.controller.js
+// booking-management-service/src/controllers/booking.controller.js
 
 /**
  * @desc    Confirmer le paiement d'une réservation
@@ -1037,7 +1037,7 @@ export const confirmBookingPayment = async (req, res, next) => {
 #### Route
 
 ```javascript
-// booking-service/src/routes/booking.routes.js
+// booking-management-service/src/routes/booking.routes.js
 
 import express from "express";
 import { protect } from "../middleware/auth.middleware.js";

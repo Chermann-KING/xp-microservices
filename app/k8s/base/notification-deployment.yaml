@@ -1,0 +1,101 @@
+# Notification Service Deployment
+# Module 6 - Leçon 6.2 : Orchestration Kubernetes
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notification-service
+  namespace: booking-tourism-app
+  labels:
+    app: notification-service
+    tier: backend
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: notification-service
+  template:
+    metadata:
+      labels:
+        app: notification-service
+        tier: backend
+    spec:
+      containers:
+        - name: notification-service
+          image: your-docker-username/notification-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3006
+              name: http
+          env:
+            - name: PORT
+              value: "3006"
+            - name: NODE_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: NODE_ENV
+            - name: RABBITMQ_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: RABBITMQ_URL
+            - name: SMTP_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: SMTP_HOST
+            - name: SMTP_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: SMTP_PORT
+            - name: SENDER_EMAIL
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: SENDER_EMAIL
+            - name: SENDER_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: SENDER_NAME
+            - name: SMTP_USER
+              valueFrom:
+                secretKeyRef:
+                  name: smtp-secrets
+                  key: SMTP_USER
+            - name: SMTP_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: smtp-secrets
+                  key: SMTP_PASS
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3006
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3006
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "200m"

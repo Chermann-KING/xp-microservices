@@ -609,9 +609,9 @@ const redis = require("redis");
 const TOUR_CATALOG_URL =
   process.env.TOUR_CATALOG_URL || "http://localhost:3001";
 const BOOKING_URL = process.env.BOOKING_URL || "http://localhost:3002";
-const PAYMENT_URL = process.env.PAYMENT_URL || "http://localhost:3003";
+const PAYMENT_URL = process.env.PAYMENT_URL || "http://localhost:3004";
 const NOTIFICATION_URL =
-  process.env.NOTIFICATION_URL || "http://localhost:3005";
+  process.env.NOTIFICATION_URL || "http://localhost:3006";
 
 // Redis pour persister l'état
 const redisClient = redis.createClient({ url: process.env.REDIS_URL });
@@ -1096,14 +1096,14 @@ services:
   orchestrator:
     build: .
     ports:
-      - "3006:3006"
+      - "3007:3007"
     environment:
-      - PORT=3006
+      - PORT=3007
       - REDIS_URL=redis://redis:6379
-      - TOUR_CATALOG_URL=http://tour-catalog:3001
-      - BOOKING_URL=http://booking:3002
-      - PAYMENT_URL=http://payment:3003
-      - NOTIFICATION_URL=http://notification:3005
+      - TOUR_CATALOG_URL=http://tour-catalog-service:3001
+      - BOOKING_URL=http://booking-management-service:3002
+      - PAYMENT_URL=http://payment-service:3004
+      - NOTIFICATION_URL=http://notification-service:3006
     depends_on:
       - redis
     networks:
@@ -1614,7 +1614,7 @@ async function createPaymentWithRetry(paymentData, maxRetries = 3) {
       );
 
       const response = await axios.post(
-        "http://localhost:3003/api/payments",
+        "http://localhost:3004/api/payments",
         paymentData,
         {
           headers: {

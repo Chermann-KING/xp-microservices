@@ -163,7 +163,7 @@ Service       Service         Service
 **Booking Management Service** :
 
 ```javascript
-// booking-service/src/controllers/bookingController.js
+// booking-management-service/src/controllers/bookingController.js
 async function initiateBooking(req, res) {
   const { tourId, userId, participants } = req.body;
 
@@ -272,7 +272,7 @@ eventBroker.subscribe("payment.processed", async (event) => {
 **Booking Management Service** (écoute les résultats) :
 
 ```javascript
-// booking-service/src/consumers/sagaConsumer.js
+// booking-management-service/src/consumers/sagaConsumer.js
 
 // Cas de succès
 eventBroker.subscribe("seats.decremented", async (event) => {
@@ -446,7 +446,10 @@ class TourBookingSaga {
       data: this.bookingData,
     };
 
-    const response = await this.sendCommand("booking-service", command);
+    const response = await this.sendCommand(
+      "booking-management-service",
+      command
+    );
 
     if (!response.success) {
       throw new Error("Échec de création de réservation");
@@ -507,7 +510,7 @@ class TourBookingSaga {
       },
     };
 
-    await this.sendCommand("booking-service", command);
+    await this.sendCommand("booking-management-service", command);
   }
 
   /**
@@ -561,7 +564,7 @@ class TourBookingSaga {
       },
     };
 
-    await this.sendCommand("booking-service", command);
+    await this.sendCommand("booking-management-service", command);
   }
 
   /**
@@ -878,7 +881,7 @@ Résultat: Réservation créée mais aucun événement publié
 Sauvegarder l'événement dans une table "outbox" dans la **même transaction** que les données métier.
 
 ```javascript
-// booking-service/src/services/bookingService.js
+// booking-management-service/src/services/bookingService.js
 async function createBookingWithOutbox(bookingData) {
   const transaction = await sequelize.transaction();
 
@@ -918,7 +921,7 @@ async function createBookingWithOutbox(bookingData) {
 Un processus séparé lit les événements de la table outbox et les publie.
 
 ```javascript
-// booking-service/src/workers/outboxRelay.js
+// booking-management-service/src/workers/outboxRelay.js
 async function processOutboxEvents() {
   // Récupérer les événements non publiés
   const events = await OutboxEvent.findAll({
