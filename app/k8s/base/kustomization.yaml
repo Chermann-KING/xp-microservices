@@ -1,0 +1,63 @@
+# Kustomization - Gestion des ressources Kubernetes
+# Module 6 - Leçon 6.2 : Orchestration Kubernetes
+
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: booking-tourism-app
+
+# Labels communs appliqués à toutes les ressources
+commonLabels:
+  project: booking-tourism-app
+  managed-by: kustomize
+
+# Ressources à déployer (ordre recommandé)
+resources:
+  # 1. Namespace
+  - namespace.yaml
+
+  # 2. Configuration (ConfigMaps et Secrets)
+  - configmap.yaml
+  - secrets.yaml
+
+  # 3. Infrastructure (Bases de données, Cache, Message Broker)
+  - postgres-deployment.yaml
+  - redis-deployment.yaml
+  - rabbitmq-deployment.yaml
+
+  # 4. Services applicatifs
+  - auth-deployment.yaml
+  - tour-deployment.yaml
+  - booking-deployment.yaml
+  - payment-deployment.yaml
+  - notification-deployment.yaml
+  - websocket-deployment.yaml
+
+  # 5. API Gateway (point d'entrée)
+  - api-gateway-deployment.yaml
+
+  # 6. Services Kubernetes (exposition interne)
+  - services-app.yaml
+
+  # 7. Ingress (exposition externe)
+  - ingress.yaml
+
+  # 8. Autoscaling
+  - hpa.yaml
+
+# Images à utiliser (peut être surchargé par environnement)
+images:
+  - name: your-docker-username/auth-service
+    newTag: latest
+  - name: your-docker-username/tour-service
+    newTag: latest
+  - name: your-docker-username/booking-service
+    newTag: latest
+  - name: your-docker-username/payment-service
+    newTag: latest
+  - name: your-docker-username/notification-service
+    newTag: latest
+  - name: your-docker-username/websocket-service
+    newTag: latest
+  - name: your-docker-username/api-gateway
+    newTag: latest

@@ -1,6 +1,6 @@
 # XP Microservices - Application
 
-Architecture microservices pour une plateforme de réservation de tours guidés avec communication event-driven.
+Architecture microservices pour une plateforme de réservation touristique avec communication event-driven.
 
 ## 📦 Services
 
@@ -376,12 +376,15 @@ L'API Gateway applique des limites de taux :
 
 - [Module 4 - Intégration et Sécurité du Traitement des Paiements](../docs/module-4/README.md)
 - [**Module 5 - Architecture Event-Driven et Communication Asynchrone**](../docs/module-5/README.md)
+- [**Module 6 - Déploiement, Monitoring et Scalabilité**](../docs/module-6/README.md)
 - [Module 5 - Progress Tracking](./MODULE-5-PROGRESS.md)
 - [API Gateway README](./api-gateway/README.md)
 - [Auth Service README](./auth-service/README.md)
 - [Payment Service README](./payment-service/README.md)
 - [Notification Service README](./notification-service/README.md)
 - [WebSocket Server README](./websocket-server/README.md)
+- [**Kubernetes Manifests README**](./k8s/base/README.md)
+- [**Kubernetes Deployment Guide**](./k8s/base/DEPLOY.md)
 
 ## ⚙️ Configuration Module 5
 
@@ -512,10 +515,105 @@ cd websocket-server && npm run dev
 # 📡 Broadcast: 5 succès, 0 échecs
 ```
 
+## ☸️ Kubernetes & Production (Module 6)
+
+### Déploiement Kubernetes
+
+L'application est prête pour un déploiement production sur Kubernetes :
+
+```bash
+# Déployer sur Kubernetes
+cd k8s
+./deploy.sh
+
+# Ou avec kubectl
+kubectl apply -k base/
+
+# Vérifier le déploiement
+kubectl get all -n booking-tourism-app
+
+# Port-forward pour tester localement
+kubectl port-forward service/api-gateway-service 8080:8080 -n booking-tourism-app
+```
+
+**Architecture Kubernetes** :
+
+- 📦 **18 manifests YAML** complets
+- 🔐 **ConfigMaps & Secrets** pour configuration
+- 💾 **4 StatefulSets PostgreSQL** avec stockage persistant
+- 🚀 **7 Deployments** pour les microservices
+- 🌐 **Ingress NGINX** avec TLS automatique (Cert-Manager)
+- 📊 **HPA** sur 7 services (auto-scaling CPU/Memory)
+- 🔄 **Kustomize** pour multi-environnements
+
+### Circuit Breaker & Résilience
+
+L'API Gateway implémente le pattern Circuit Breaker :
+
+```javascript
+// Circuit breaker automatique sur chaque service
+// États : CLOSED → OPEN → HALF-OPEN
+```
+
+**Endpoints de monitoring** :
+
+- `GET /circuit-breaker/status` - État de tous les circuits
+- `POST /circuit-breaker/reset/:service` - Réinitialiser un circuit
+- `GET /circuit-breaker/health` - Health check des circuits
+
+**Configuration** :
+
+- Timeout : 5 secondes
+- Seuil d'erreur : 50%
+- Réinitialisation : 30 secondes
+
+### ELK Stack - Logging Centralisé
+
+Stack complète pour la supervision des logs :
+
+```bash
+# Démarrer ELK avec Docker Compose
+docker-compose up -d elasticsearch logstash kibana
+
+# Accès aux interfaces
+# Kibana: http://localhost:5601
+# Elasticsearch: http://localhost:9200
+```
+
+**Pipeline de logs** :
+
+1. **Microservices** → Logs JSON vers Logstash (TCP/UDP port 5000)
+2. **Logstash** → Parse et enrichit les logs
+3. **Elasticsearch** → Stocke les logs indexés
+4. **Kibana** → Dashboards et visualisations
+
+**Index Elasticsearch** : `microservices-logs-YYYY.MM.dd`
+
+### Auto-Scaling Horizontal
+
+HPA configurés pour adaptation dynamique :
+
+| Service         | Min | Max | CPU Target | Memory Target |
+| --------------- | --- | --- | ---------- | ------------- |
+| API Gateway     | 2   | 10  | 70%        | 80%           |
+| Tour Catalog    | 2   | 8   | 70%        | 80%           |
+| Booking Service | 2   | 8   | 70%        | 80%           |
+| Payment Service | 2   | 6   | 70%        | 80%           |
+| Auth Service    | 2   | 8   | 70%        | 80%           |
+| Notification    | 2   | 6   | 70%        | 80%           |
+| WebSocket       | 2   | 8   | 70%        | 80%           |
+
+```bash
+# Vérifier les HPAs
+kubectl get hpa -n booking-tourism-app
+
+# Forcer un scale manuel
+kubectl scale deployment tour-catalog-deployment --replicas=5 -n booking-tourism-app
+```
+
 ## 🎯 Progression Actuelle
 
-✅ **Modules 1-5 complétés** (30/42 leçons = **71.4%**)
-📚 **Module 6 documenté** (théorie complète, implémentation à venir)
+✅ **Modules 1-6 complétés** (36/42 leçons = **85.7%**)
 ⏳ **Module 7 à venir** (6 leçons restantes)
 
 ### Détail des modules
@@ -525,28 +623,49 @@ cd websocket-server && npm run dev
 - ✅ **Module 3** : SOLID Principles & State Management (6 leçons) - Implémenté
 - ✅ **Module 4** : Paiements & Sécurité (6 leçons) - Implémenté
 - ✅ **Module 5** : Architecture Event-Driven (6 leçons) - Implémenté
-- 📚 **Module 6** : Déploiement & Monitoring (6 leçons) - Documentation complète, implémentation partielle
-  - ✅ Leçon 6.1 : Docker Containerization - Documenté
-  - ✅ Leçon 6.2 : Orchestration Kubernetes - Documenté
-  - ✅ Leçon 6.3 : Cloud Deployment - Documenté
-  - ✅ Leçon 6.4 : API Gateway avancé - Documenté
-  - ✅ Leçon 6.5 : ELK Stack - Documenté
-  - ✅ Leçon 6.6 : Scaling Strategies - Documenté
-  - ⏳ Implémentation pratique : À venir
+- ✅ **Module 6** : Déploiement & Monitoring (6 leçons) - Implémenté
+  - ✅ Leçon 6.1 : Docker Containerization - Dockerfiles multi-stage
+  - ✅ Leçon 6.2 : Orchestration Kubernetes - 18 manifests K8s complets
+  - ✅ Leçon 6.3 : Cloud Deployment - Documentation (IaaS/PaaS/CaaS)
+  - ✅ Leçon 6.4 : API Gateway avancé - Circuit Breaker + Rate Limiting
+  - ✅ Leçon 6.5 : ELK Stack - Elasticsearch, Logstash, Kibana
+  - ✅ Leçon 6.6 : Scaling - HPA pour 7 services
 - ⏳ **Module 7** : Testing & Sujets Avancés (6 leçons) - À venir
 
-### Module 5 - Checklist d'implémentation
+### Module 6 - Checklist d'implémentation
 
-- [x] **Leçon 5.1** : Introduction RabbitMQ
-- [x] **Leçon 5.2** : Publisher/Subscriber pattern
-- [x] **Leçon 5.3** : Service de notifications
-- [x] **Leçon 5.4** : Événements de réservation
-- [x] **Leçon 5.5** : Optimistic locking (tour-catalog)
-- [x] **Leçon 5.6** : WebSocket temps réel
-- [x] Infrastructure Docker Compose (RabbitMQ + Redis)
-- [x] Consumer idempotent avec Redis
-- [x] Templates email (Pug)
-- [x] Gestion des erreurs et retry logic
+- [x] **Leçon 6.1** : Docker Containerization
+  - [x] Dockerfiles multi-stage pour tous les services
+  - [x] Health checks dans les conteneurs
+  - [x] Optimisation des images (Alpine, layers)
+- [x] **Leçon 6.2** : Orchestration Kubernetes
+  - [x] Namespace `booking-tourism-app`
+  - [x] ConfigMaps et Secrets
+  - [x] StatefulSets PostgreSQL (4 bases)
+  - [x] Deployments (RabbitMQ, Redis, 7 microservices)
+  - [x] Services ClusterIP pour communication interne
+  - [x] Ingress NGINX avec TLS/SSL
+  - [x] Kustomize pour gestion des environnements
+- [x] **Leçon 6.3** : Cloud Deployment
+  - [x] Documentation IaaS/PaaS/CaaS
+  - [x] Bonnes pratiques sécurité cloud
+- [x] **Leçon 6.4** : API Gateway Avancé
+  - [x] Circuit Breaker avec opossum
+  - [x] Rate Limiting par route
+  - [x] Monitoring des circuit breakers
+  - [x] Fallback automatique
+- [x] **Leçon 6.5** : ELK Stack
+  - [x] Elasticsearch pour stockage des logs
+  - [x] Logstash pour pipeline de logs
+  - [x] Kibana pour visualisation
+  - [x] Configuration Docker Compose
+- [x] **Leçon 6.6** : Scaling Horizontal & Vertical
+  - [x] HPA (Horizontal Pod Autoscaler) pour 7 services
+  - [x] Métriques CPU et Memory
+  - [x] Politiques de scale-up/scale-down
+- [x] Scripts de déploiement
+  - [x] `deploy.sh` - Déploiement automatique
+  - [x] `cleanup.sh` - Nettoyage complet
 
 ## 📝 Licence
 

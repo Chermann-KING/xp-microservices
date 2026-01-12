@@ -1,0 +1,10 @@
+# Namespace - Application de Réservation Touristique
+# Module 6 - Leçon 6.2 : Orchestration Kubernetes
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: booking-tourism-app
+  labels:
+    name: booking-tourism-app
+    environment: production

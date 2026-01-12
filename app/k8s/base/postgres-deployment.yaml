@@ -1,0 +1,290 @@
+# PostgreSQL StatefulSets - Bases de données persistantes
+# Module 6 - Leçon 6.2 : Orchestration Kubernetes
+
+---
+# Auth Service Database
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres-auth
+  namespace: booking-tourism-app
+  labels:
+    app: postgres-auth
+    tier: database
+spec:
+  serviceName: postgres-auth-service
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres-auth
+  template:
+    metadata:
+      labels:
+        app: postgres-auth
+        tier: database
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:15-alpine
+          ports:
+            - containerPort: 5432
+              name: postgres
+          env:
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: database-config
+                  key: POSTGRES_DB_AUTH
+            - name: POSTGRES_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: database-config
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: database-secrets
+                  key: POSTGRES_PASSWORD
+          volumeMounts:
+            - name: postgres-auth-storage
+              mountPath: /var/lib/postgresql/data
+          livenessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - postgres
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - postgres
+            initialDelaySeconds: 5
+            periodSeconds: 5
+  volumeClaimTemplates:
+    - metadata:
+        name: postgres-auth-storage
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 5Gi
+
+---
+# Payment Service Database
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres-payment
+  namespace: booking-tourism-app
+  labels:
+    app: postgres-payment
+    tier: database
+spec:
+  serviceName: postgres-payment-service
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres-payment
+  template:
+    metadata:
+      labels:
+        app: postgres-payment
+        tier: database
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:15-alpine
+          ports:
+            - containerPort: 5432
+              name: postgres
+          env:
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: database-config
+                  key: POSTGRES_DB_PAYMENT
+            - name: POSTGRES_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: database-config
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: database-secrets
+                  key: POSTGRES_PASSWORD
+          volumeMounts:
+            - name: postgres-payment-storage
+              mountPath: /var/lib/postgresql/data
+          livenessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - postgres
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - postgres
+            initialDelaySeconds: 5
+            periodSeconds: 5
+  volumeClaimTemplates:
+    - metadata:
+        name: postgres-payment-storage
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 5Gi
+
+---
+# Booking Service Database
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres-booking
+  namespace: booking-tourism-app
+  labels:
+    app: postgres-booking
+    tier: database
+spec:
+  serviceName: postgres-booking-service
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres-booking
+  template:
+    metadata:
+      labels:
+        app: postgres-booking
+        tier: database
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:15-alpine
+          ports:
+            - containerPort: 5432
+              name: postgres
+          env:
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: database-config
+                  key: POSTGRES_DB_BOOKING
+            - name: POSTGRES_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: database-config
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: database-secrets
+                  key: POSTGRES_PASSWORD
+          volumeMounts:
+            - name: postgres-booking-storage
+              mountPath: /var/lib/postgresql/data
+          livenessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - postgres
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - postgres
+            initialDelaySeconds: 5
+            periodSeconds: 5
+  volumeClaimTemplates:
+    - metadata:
+        name: postgres-booking-storage
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 5Gi
+
+---
+# Tour Catalog Service Database
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres-tour
+  namespace: booking-tourism-app
+  labels:
+    app: postgres-tour
+    tier: database
+spec:
+  serviceName: postgres-tour-service
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres-tour
+  template:
+    metadata:
+      labels:
+        app: postgres-tour
+        tier: database
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:15-alpine
+          ports:
+            - containerPort: 5432
+              name: postgres
+          env:
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: database-config
+                  key: POSTGRES_DB_TOUR
+            - name: POSTGRES_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: database-config
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: database-secrets
+                  key: POSTGRES_PASSWORD
+          volumeMounts:
+            - name: postgres-tour-storage
+              mountPath: /var/lib/postgresql/data
+          livenessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - postgres
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - postgres
+            initialDelaySeconds: 5
+            periodSeconds: 5
+  volumeClaimTemplates:
+    - metadata:
+        name: postgres-tour-storage
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 5Gi

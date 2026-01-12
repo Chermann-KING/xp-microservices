@@ -1,0 +1,153 @@
+# Ingress - Exposition externe de l'application
+# Module 6 - Leçon 6.2 : Orchestration Kubernetes
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: booking-tourism-app-ingress
+  namespace: booking-tourism-app
+  labels:
+    app: booking-tourism-app
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/rate-limit: "100"
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - booking-tourism-app.com
+        - www.booking-tourism-app.com
+        - api.booking-tourism-app.com
+      secretName: booking-tourism-app-tls
+  rules:
+    # API Gateway - Point d'entrée principal
+    - host: booking-tourism-app.com
+      http:
+        paths:
+          # API Gateway - Toutes les routes API
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: api-gateway
+                port:
+                  number: 3000
+
+          # Frontend (si déployé sur Kubernetes)
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: api-gateway
+                port:
+                  number: 3000
+
+    # Sous-domaine www
+    - host: www.booking-tourism-app.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: api-gateway
+                port:
+                  number: 3000
+
+    # Sous-domaine API dédié
+    - host: api.booking-tourism-app.com
+      http:
+        paths:
+          # API Gateway
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: api-gateway
+                port:
+                  number: 3000
+
+          # Routes directes vers services (pour debug/admin)
+          - path: /auth
+            pathType: Prefix
+            backend:
+              service:
+                name: auth-service
+                port:
+                  number: 3003
+
+          - path: /tours
+            pathType: Prefix
+            backend:
+              service:
+                name: tour-service
+                port:
+                  number: 3001
+
+          - path: /bookings
+            pathType: Prefix
+            backend:
+              service:
+                name: booking-service
+                port:
+                  number: 3002
+
+          - path: /payments
+            pathType: Prefix
+            backend:
+              service:
+                name: payment-service
+                port:
+                  number: 3004
+
+          - path: /notifications
+            pathType: Prefix
+            backend:
+              service:
+                name: notification-service
+                port:
+                  number: 3006
+
+          - path: /ws
+            pathType: Prefix
+            backend:
+              service:
+                name: websocket-service
+                port:
+                  number: 3007
+
+---
+# Ingress pour RabbitMQ Management UI (optionnel, pour monitoring)
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: rabbitmq-management-ingress
+  namespace: booking-tourism-app
+  labels:
+    app: rabbitmq
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/auth-type: basic
+    nginx.ingress.kubernetes.io/auth-secret: rabbitmq-basic-auth
+    nginx.ingress.kubernetes.io/auth-realm: "RabbitMQ Management - Authentication Required"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: rabbitmq.booking-tourism-app.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: rabbitmq-management-service
+                port:
+                  number: 15672

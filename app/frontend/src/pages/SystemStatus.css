@@ -1,0 +1,358 @@
+/* System Status Page - Module 6 */
+
+.system-status {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.status-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.status-header h1 {
+  margin: 0;
+  color: #333;
+}
+
+.last-update {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.refresh-btn {
+  padding: 0.5rem 1rem;
+  background: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.3s;
+}
+
+.refresh-btn:hover {
+  background: #45a049;
+}
+
+/* Loading */
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #4caf50;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Status Sections */
+.status-section {
+  margin-bottom: 3rem;
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.status-section h2 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  color: #333;
+  font-size: 1.5rem;
+}
+
+.no-data {
+  text-align: center;
+  color: #999;
+  padding: 2rem;
+}
+
+/* Services Grid */
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.service-card {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  border-radius: 8px;
+  border-left: 4px solid;
+  background: #f9f9f9;
+  transition: transform 0.2s;
+}
+
+.service-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.service-card.status-green {
+  border-left-color: #4caf50;
+}
+
+.service-card.status-orange {
+  border-left-color: #ff9800;
+}
+
+.service-card.status-red {
+  border-left-color: #f44336;
+}
+
+.service-card.status-gray {
+  border-left-color: #9e9e9e;
+}
+
+.service-icon {
+  font-size: 2rem;
+  margin-right: 1rem;
+}
+
+.service-info {
+  flex: 1;
+}
+
+.service-info h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.service-url {
+  font-size: 0.8rem;
+  color: #666;
+  margin: 0.25rem 0;
+  font-family: monospace;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin-top: 0.5rem;
+}
+
+.status-badge.ok {
+  background: #c8e6c9;
+  color: #2e7d32;
+}
+
+.status-badge.error {
+  background: #ffcdd2;
+  color: #c62828;
+}
+
+/* Circuit Breakers */
+.circuit-summary {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.summary-item {
+  flex: 1;
+  min-width: 150px;
+  padding: 1rem;
+  background: #f5f5f5;
+  border-radius: 8px;
+  border-left: 4px solid #9e9e9e;
+}
+
+.summary-item.green {
+  border-left-color: #4caf50;
+}
+
+.summary-item.orange {
+  border-left-color: #ff9800;
+}
+
+.summary-item.red {
+  border-left-color: #f44336;
+}
+
+.summary-label {
+  display: block;
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 0.5rem;
+}
+
+.summary-value {
+  display: block;
+  font-size: 2rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.circuits-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1rem;
+}
+
+.circuit-card {
+  padding: 1.5rem;
+  border-radius: 8px;
+  border-left: 4px solid;
+  background: #f9f9f9;
+}
+
+.circuit-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.circuit-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.circuit-state {
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: bold;
+}
+
+.circuit-state.CLOSED {
+  background: #c8e6c9;
+  color: #2e7d32;
+}
+
+.circuit-state.HALF_OPEN {
+  background: #ffe0b2;
+  color: #ef6c00;
+}
+
+.circuit-state.OPEN {
+  background: #ffcdd2;
+  color: #c62828;
+}
+
+.circuit-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+}
+
+.metric {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem;
+  background: white;
+  border-radius: 4px;
+}
+
+.metric-label {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.metric-value {
+  font-weight: bold;
+  font-family: monospace;
+}
+
+.metric-value.success {
+  color: #4caf50;
+}
+
+.metric-value.error {
+  color: #f44336;
+}
+
+.metric-value.warning {
+  color: #ff9800;
+}
+
+/* Légende */
+.legend {
+  background: #f5f5f5;
+}
+
+.legend h3 {
+  margin-top: 0;
+  font-size: 1.2rem;
+}
+
+.legend-items {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.legend-icon {
+  font-size: 1.5rem;
+}
+
+.legend-icon.green {
+  color: #4caf50;
+}
+
+.legend-icon.orange {
+  color: #ff9800;
+}
+
+.legend-icon.red {
+  color: #f44336;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .system-status {
+    padding: 1rem;
+  }
+
+  .status-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .services-grid,
+  .circuits-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .circuit-summary {
+    flex-direction: column;
+  }
+}
